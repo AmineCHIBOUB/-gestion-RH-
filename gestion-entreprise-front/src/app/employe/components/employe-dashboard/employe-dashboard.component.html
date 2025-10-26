@@ -1,0 +1,242 @@
+<div class="dashboard-container">
+  <!-- Header avec informations de l'employé -->
+  <mat-card class="welcome-card" *ngIf="employe">
+    <mat-card-header>
+      <div mat-card-avatar class="profile-avatar">
+        <img *ngIf="employe.photo" [src]="employe.photo" [alt]="employe.prenom + ' ' + employe.nom">
+        <mat-icon *ngIf="!employe.photo">person</mat-icon>
+      </div>
+      <mat-card-title>
+        {{ getWelcomeMessage() }}, {{ employe.prenom }} {{ employe.nom }}
+      </mat-card-title>
+      <mat-card-subtitle>
+        {{ employe.poste }} - {{ employe.departement }}
+        <mat-chip [color]="getStatutColor(employe.statut)" selected>
+          {{ employe.statut | titlecase }}
+        </mat-chip>
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-actions align="end">
+      <button mat-button (click)="refreshData()" [disabled]="loading">
+        <mat-icon>refresh</mat-icon>
+        Actualiser
+      </button>
+      <button mat-raised-button color="primary" (click)="navigateTo('/employe/profil')">
+        <mat-icon>edit</mat-icon>
+        Modifier mon profil
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  <!-- Statistiques rapides -->
+  <div class="stats-grid" *ngIf="stats">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <mat-icon color="primary">event_available</mat-icon>
+          <div class="stat-info">
+            <h3>{{ stats.congesRestants }}</h3>
+            <p>Jours de congés restants</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <mat-icon color="accent">schedule</mat-icon>
+          <div class="stat-info">
+            <h3>{{ stats.heuresTravaillees }}</h3>
+            <p>Heures travaillées ce mois</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <mat-icon color="warn">folder</mat-icon>
+          <div class="stat-info">
+            <h3>{{ stats.documentsNonLus }}</h3>
+            <p>Documents non lus</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <mat-icon color="primary">campaign</mat-icon>
+          <div class="stat-info">
+            <h3>{{ stats.annoncesNonLues }}</h3>
+            <p>Annonces non lues</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Navigation principale -->
+  <div class="navigation-section">
+    <h2>Accès rapide</h2>
+    <div class="navigation-grid">
+      <mat-card 
+        *ngFor="let card of navigationCards" 
+        class="nav-card clickable"
+        (click)="navigateTo(card.route)"
+        [class]="'nav-card-' + card.color">
+        <mat-card-header>
+          <div mat-card-avatar>
+            <mat-icon [color]="card.color">{{ card.icon }}</mat-icon>
+          </div>
+          <mat-card-title>{{ card.title }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>{{ card.description }}</p>
+        </mat-card-content>
+        <mat-card-actions align="end">
+          <button mat-button [color]="card.color">
+            Accéder
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Activités récentes -->
+  <div class="recent-activities">
+    <div class="activity-section">
+      <h3>Mes derniers congés</h3>
+      <mat-card *ngIf="derniersConges.length === 0" class="empty-state">
+        <mat-card-content>
+          <mat-icon>event_available</mat-icon>
+          <p>Aucune demande de congé récente</p>
+          <button mat-raised-button color="primary" (click)="navigateTo('/employe/conges/demande')">
+            Faire une demande
+          </button>
+        </mat-card-content>
+      </mat-card>
+      
+      <mat-card *ngFor="let conge of derniersConges" class="activity-item">
+        <mat-card-content>
+          <div class="activity-header">
+            <span class="activity-title">{{ conge.typeConge | titlecase }}</span>
+            <mat-chip [color]="getCongeStatutColor(conge.statut)" selected>
+              {{ conge.statut | titlecase }}
+            </mat-chip>
+          </div>
+          <p class="activity-details">
+            Du {{ conge.dateDebut | date:'dd/MM/yyyy' }} au {{ conge.dateFin | date:'dd/MM/yyyy' }}
+            ({{ conge.nbJours }} jour{{ conge.nbJours > 1 ? 's' : '' }})
+          </p>
+          <p *ngIf="conge.motif" class="activity-motif">{{ conge.motif }}</p>
+        </mat-card-content>
+      </mat-card>
+      
+      <div class="see-more" *ngIf="derniersConges.length > 0">
+        <button mat-button color="primary" (click)="navigateTo('/employe/conges')">
+          Voir tous mes congés
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <div class="activity-section">
+      <h3>Documents récents</h3>
+      <mat-card *ngIf="documentsRecents.length === 0" class="empty-state">
+        <mat-card-content>
+          <mat-icon>folder</mat-icon>
+          <p>Aucun nouveau document</p>
+          <button mat-raised-button color="primary" (click)="navigateTo('/employe/documents')">
+            Parcourir les documents
+          </button>
+        </mat-card-content>
+      </mat-card>
+      
+      <mat-card *ngFor="let document of documentsRecents" class="activity-item clickable" (click)="navigateTo('/employe/documents')">
+        <mat-card-content>
+          <div class="activity-header">
+            <span class="activity-title">{{ document.titre }}</span>
+            <mat-chip *ngIf="!document.lu" color="accent" selected>
+              Nouveau
+            </mat-chip>
+          </div>
+          <p class="activity-details">
+            {{ document.typeDocument | titlecase }} - {{ document.dateCreation | date:'dd/MM/yyyy' }}
+          </p>
+          <p *ngIf="document.description" class="activity-description">{{ document.description }}</p>
+        </mat-card-content>
+      </mat-card>
+      
+      <div class="see-more" *ngIf="documentsRecents.length > 0">
+        <button mat-button color="primary" (click)="navigateTo('/employe/documents')">
+          Voir tous les documents
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <div class="activity-section">
+      <h3>Annonces récentes</h3>
+      <mat-card *ngIf="annoncesRecentes.length === 0" class="empty-state">
+        <mat-card-content>
+          <mat-icon>campaign</mat-icon>
+          <p>Aucune nouvelle annonce</p>
+          <button mat-raised-button color="primary" (click)="navigateTo('/employe/annonces')">
+            Voir les annonces
+          </button>
+        </mat-card-content>
+      </mat-card>
+      
+      <mat-card *ngFor="let annonce of annoncesRecentes" class="activity-item clickable" (click)="navigateTo('/employe/annonces')">
+        <mat-card-content>
+          <div class="activity-header">
+            <span class="activity-title">{{ annonce.titre }}</span>
+            <div class="activity-badges">
+              <mat-chip *ngIf="!annonce.lue" color="accent" selected>
+                Nouveau
+              </mat-chip>
+              <mat-chip *ngIf="annonce.priorite === 'haute' || annonce.priorite === 'critique'" color="warn" selected>
+                {{ annonce.priorite | titlecase }}
+              </mat-chip>
+            </div>
+          </div>
+          <p class="activity-details">
+            {{ annonce.typeAnnonce | titlecase }} - {{ annonce.datePublication | date:'dd/MM/yyyy' }}
+          </p>
+          <p class="activity-content">{{ annonce.contenu | slice:0:100 }}{{ annonce.contenu.length > 100 ? '...' : '' }}</p>
+        </mat-card-content>
+      </mat-card>
+      
+      <div class="see-more" *ngIf="annoncesRecentes.length > 0">
+        <button mat-button color="primary" (click)="navigateTo('/employe/annonces')">
+          Voir toutes les annonces
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- État de chargement -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Chargement du tableau de bord...</p>
+  </div>
+
+  <!-- État d'erreur -->
+  <mat-card *ngIf="error" class="error-card">
+    <mat-card-content>
+      <mat-icon color="warn">error</mat-icon>
+      <h3>Erreur de chargement</h3>
+      <p>{{ error }}</p>
+      <button mat-raised-button color="primary" (click)="refreshData()">
+        <mat-icon>refresh</mat-icon>
+        Réessayer
+      </button>
+    </mat-card-content>
+  </mat-card>
+</div>

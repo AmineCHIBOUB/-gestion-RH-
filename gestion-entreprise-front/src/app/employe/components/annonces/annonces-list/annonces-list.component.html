@@ -1,0 +1,144 @@
+<div class="annonces-container">
+  <div class="header">
+    <h2>Annonces et Communications</h2>
+    <button mat-raised-button 
+            color="primary" 
+            (click)="markAllAsRead()"
+            *ngIf="annonceStats && annonceStats.nonLues > 0">
+      <mat-icon>done_all</mat-icon>
+      Tout marquer comme lu
+    </button>
+  </div>
+
+  <!-- Filtres -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Type</mat-label>
+          <mat-select [(value)]="selectedType" (selectionChange)="onFiltersChange()">
+            <mat-option *ngFor="let type of typeOptions" [value]="type.value">
+              {{ type.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline">
+          <mat-label>Priorité</mat-label>
+          <mat-select [(value)]="selectedPriorite" (selectionChange)="onFiltersChange()">
+            <mat-option *ngFor="let priorite of prioriteOptions" [value]="priorite.value">
+              {{ priorite.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        
+        <mat-checkbox [(ngModel)]="showOnlyUnread" 
+                      (change)="onFiltersChange()"
+                      color="primary">
+          Afficher seulement les non lues
+        </mat-checkbox>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Statistiques -->
+  <mat-card class="stats-card" *ngIf="annonceStats">
+    <mat-card-header>
+      <mat-card-title>Statistiques</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="label">Total annonces</span>
+          <span class="value">{{ annonceStats.total }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="label">Annonces lues</span>
+          <span class="value">{{ annonceStats.total - annonceStats.nonLues }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="label">Non lues</span>
+          <span class="value unread">{{ annonceStats.nonLues }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="label">Nouvelles cette semaine</span>
+          <span class="value">{{ getNouvellesCetteSemaine() }}</span>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- État de chargement -->
+  <div class="loading-container" *ngIf="isLoading">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Chargement des annonces...</p>
+  </div>
+
+  <!-- État d'erreur -->
+  <mat-card class="error-card" *ngIf="error && !isLoading">
+    <mat-card-content>
+      <div class="error-content">
+        <mat-icon color="warn">error</mat-icon>
+        <p>{{ error }}</p>
+        <button mat-raised-button color="primary" (click)="retry()">
+          Réessayer
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Liste des annonces -->
+  <div class="annonces-list" *ngIf="!isLoading && !error">
+    <mat-card class="annonce-card" 
+              *ngFor="let annonce of annonces"
+              [class.unread]="!annonce.lue"
+              [class.recent]="isRecent(annonce.datePublication)"
+              (click)="markAsRead(annonce)">
+      <mat-card-header>
+        <div mat-card-avatar class="annonce-avatar">
+          <mat-icon [color]="getPrioriteColor(annonce.priorite)">
+            {{ getTypeIcon(annonce.typeAnnonce) }}
+          </mat-icon>
+        </div>
+        <mat-card-title>
+          <div class="title-row">
+            <span class="title-text">{{ annonce.titre }}</span>
+            <div class="badges">
+              <mat-chip *ngIf="!annonce.lue" color="accent" selected class="unread-badge">
+                Non lu
+              </mat-chip>
+              <mat-chip *ngIf="isRecent(annonce.datePublication)" color="primary" selected class="recent-badge">
+                Nouveau
+              </mat-chip>
+            </div>
+          </div>
+        </mat-card-title>
+        <mat-card-subtitle>
+          <div class="subtitle-row">
+            <span>{{ annonce.datePublication | date:'dd/MM/yyyy à HH:mm' }}</span>
+            <mat-chip [color]="getPrioriteColor(annonce.priorite)" selected class="priorite-chip">
+              {{ getPrioriteLabel(annonce.priorite) }}
+            </mat-chip>
+          </div>
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p class="annonce-content">{{ annonce.contenu }}</p>
+        <div class="annonce-meta">
+          <mat-chip color="primary" selected class="type-chip">
+            {{ getTypeLabel(annonce.typeAnnonce) }}
+          </mat-chip>
+          <span class="author" *ngIf="annonce.publiePar">
+            Par {{ annonce.publiePar }}
+          </span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Message si aucune annonce -->
+    <div class="no-data" *ngIf="annonces.length === 0">
+      <mat-icon>campaign</mat-icon>
+      <p>Aucune annonce trouvée</p>
+    </div>
+  </div>
+</div>

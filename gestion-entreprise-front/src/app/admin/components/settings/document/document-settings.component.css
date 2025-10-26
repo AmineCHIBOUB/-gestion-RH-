@@ -1,0 +1,471 @@
+/* Container principal */
+.document-settings-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* En-tête */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--mat-divider-color);
+}
+
+.header h2 {
+  margin: 0;
+  color: var(--mat-text-color);
+  font-weight: 500;
+  font-size: 1.8em;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.header-actions button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  font-weight: 500;
+  min-width: 140px;
+  height: 48px;
+}
+
+.header-actions button mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* Système d'onglets */
+.mat-mdc-tab-group {
+  margin-bottom: 20px;
+}
+
+.mat-mdc-tab-header {
+  border-bottom: 2px solid var(--mat-divider-color);
+}
+
+.mat-mdc-tab {
+  min-width: 120px;
+  font-weight: 500;
+}
+
+.mat-mdc-tab.mdc-tab--active {
+  color: var(--mat-primary-color);
+}
+
+/* Contenu des onglets */
+.tab-content {
+  padding: 20px 0;
+}
+
+/* Cartes */
+.tab-content mat-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+mat-card-header {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--mat-divider-color);
+}
+
+mat-card-title {
+  color: var(--mat-text-color);
+  font-weight: 500;
+  font-size: 1.3em;
+}
+
+mat-card-content {
+  padding-top: 0;
+}
+
+/* Lignes de formulaire */
+.form-row {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.form-row:last-child {
+  margin-bottom: 0;
+}
+
+/* Champs de formulaire */
+.form-row mat-form-field {
+  flex: 1;
+  min-width: 200px;
+}
+
+.form-row mat-form-field.full-width {
+  flex: 1 1 100%;
+}
+
+/* Styles pour les mat-form-field */
+mat-form-field {
+  margin-bottom: 0;
+}
+
+mat-form-field mat-label {
+  color: var(--mat-text-secondary-color);
+  font-weight: 500;
+}
+
+mat-form-field input,
+mat-form-field mat-select {
+  color: var(--mat-text-color);
+}
+
+/* Styles pour les erreurs */
+mat-error {
+  color: var(--mat-error-color, #f44336);
+  font-size: 0.85em;
+  margin-top: 4px;
+}
+
+/* Styles pour les hints */
+mat-hint {
+  color: var(--mat-text-secondary-color);
+  font-size: 0.85em;
+  font-style: italic;
+}
+
+/* Toggles */
+.form-row mat-slide-toggle {
+  margin-bottom: 8px;
+}
+
+mat-slide-toggle {
+  color: var(--mat-text-color);
+  font-weight: 500;
+}
+
+mat-slide-toggle .mdc-switch--selected .mdc-switch__track {
+  background-color: var(--mat-primary-color);
+}
+
+mat-slide-toggle .mdc-switch--selected .mdc-switch__handle {
+  background-color: var(--mat-primary-color);
+}
+
+/* Sélecteurs multiples */
+mat-select[multiple] {
+  min-height: 48px;
+}
+
+/* Indicateur de chargement */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.loading-container mat-spinner {
+  margin-bottom: 20px;
+}
+
+.loading-container p {
+  color: var(--mat-text-secondary-color);
+  margin: 0;
+  font-size: 1.1em;
+}
+
+/* Messages de statut */
+.message-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  max-width: 400px;
+}
+
+.message-container mat-card {
+  border-radius: 8px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.message-container mat-card.success {
+  border-left: 4px solid #4caf50;
+  background-color: #e8f5e8;
+}
+
+.message-container mat-card.error {
+  border-left: 4px solid #f44336;
+  background-color: #fdeaea;
+}
+
+.message-container mat-card-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+}
+
+.message-container mat-card.success mat-icon {
+  color: #4caf50;
+}
+
+.message-container mat-card.error mat-icon {
+  color: #f44336;
+}
+
+.message-container mat-card.success {
+  color: #2e7d32;
+}
+
+.message-container mat-card.error {
+  color: #c62828;
+}
+
+/* Styles pour les boutons désactivés */
+button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Amélioration des options de sélection */
+mat-option {
+  font-size: 0.95em;
+  padding: 12px 16px;
+}
+
+mat-option:hover {
+  background-color: var(--mat-grey-100, #f5f5f5);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .document-settings-container {
+    padding: 15px;
+  }
+  
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .header-actions {
+    align-self: flex-end;
+  }
+  
+  .form-row {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .form-row mat-form-field {
+    min-width: unset;
+  }
+}
+
+@media (max-width: 768px) {
+  .document-settings-container {
+    padding: 10px;
+  }
+  
+  .header h2 {
+    font-size: 1.5em;
+  }
+  
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .header-actions button {
+    flex: 1;
+    min-width: unset;
+  }
+  
+  .tab-content {
+    padding: 15px 0;
+  }
+  
+  mat-card-title {
+    font-size: 1.2em;
+  }
+  
+  .form-row {
+    gap: 12px;
+  }
+  
+  .message-container {
+    position: relative;
+    top: unset;
+    right: unset;
+    margin-bottom: 20px;
+    max-width: unset;
+  }
+}
+
+@media (max-width: 480px) {
+  .document-settings-container {
+    padding: 8px;
+  }
+  
+  .header {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+  }
+  
+  .header h2 {
+    font-size: 1.3em;
+  }
+  
+  .header-actions button {
+    height: 44px;
+    font-size: 0.9em;
+  }
+  
+  .tab-content {
+    padding: 12px 0;
+  }
+  
+  mat-card-content {
+    padding: 16px 12px;
+  }
+  
+  .form-row {
+    gap: 10px;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.document-settings-container {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tab-content mat-card {
+  animation: slideDown 0.4s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.message-container mat-card {
+  animation: slideInRight 0.3s ease-out;
+}
+
+/* Améliorations d'accessibilité */
+button:focus,
+mat-slide-toggle:focus {
+  outline: 2px solid var(--mat-primary-color);
+  outline-offset: 2px;
+}
+
+mat-form-field:focus-within {
+  outline: 1px solid var(--mat-primary-color);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Amélioration de la typographie */
+.document-settings-container {
+  font-family: 'Roboto', 'Helvetica Neue', sans-serif;
+}
+
+/* Styles pour les transitions */
+button,
+mat-slide-toggle,
+mat-form-field,
+mat-card {
+  transition: all 0.2s ease;
+}
+
+/* Amélioration des cartes */
+mat-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Styles pour les icônes */
+mat-icon {
+  user-select: none;
+}
+
+/* Amélioration du contraste */
+.form-row mat-slide-toggle {
+  color: var(--mat-text-color);
+}
+
+/* Styles pour les onglets actifs */
+.mat-mdc-tab-group .mat-mdc-tab-body-content {
+  padding-top: 0;
+}
+
+/* Amélioration des boutons */
+.header-actions button:hover:not([disabled]) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Styles pour les champs conditionnels */
+.form-row[data-conditional="true"] {
+  margin-left: 20px;
+  border-left: 3px solid var(--mat-primary-color);
+  padding-left: 15px;
+  background-color: var(--mat-grey-50, #fafafa);
+  border-radius: 0 8px 8px 0;
+}
+
+/* Amélioration des sélecteurs */
+mat-select {
+  font-weight: 500;
+}
+
+/* Styles pour les validations */
+mat-form-field.mat-form-field-invalid {
+  animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}

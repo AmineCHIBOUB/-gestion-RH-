@@ -1,0 +1,476 @@
+.profil-edit-container {
+  padding: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+/* En-tête */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  background: white;
+  padding: 20px 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header h1 {
+  margin: 0;
+  color: #333;
+  font-weight: 500;
+  font-size: 28px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.cancel-button {
+  min-width: 100px;
+  height: 40px;
+}
+
+.save-button {
+  min-width: 140px;
+  height: 40px;
+}
+
+.save-button mat-icon {
+  margin-right: 8px;
+}
+
+/* États de chargement et d'erreur */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.loading-container p {
+  margin-top: 16px;
+  color: #666;
+  font-size: 16px;
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-left: 4px solid #f44336;
+}
+
+.error-container mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+}
+
+.error-container p {
+  margin: 0 0 20px 0;
+  color: #666;
+  font-size: 16px;
+  text-align: center;
+}
+
+.error-container button {
+  min-width: 120px;
+}
+
+/* Formulaire */
+.profil-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Cartes */
+.readonly-card,
+.editable-card,
+.emergency-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.readonly-card:hover,
+.editable-card:hover,
+.emergency-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.readonly-card mat-card-header,
+.editable-card mat-card-header,
+.emergency-card mat-card-header {
+  background-color: #f8f9fa;
+  margin: -16px -16px 16px -16px;
+  padding: 16px 24px;
+  border-radius: 8px 8px 0 0;
+}
+
+.readonly-card mat-card-title,
+.editable-card mat-card-title,
+.emergency-card mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #333;
+  font-weight: 500;
+  margin: 0;
+  font-size: 18px;
+}
+
+.readonly-card mat-card-subtitle,
+.editable-card mat-card-subtitle,
+.emergency-card mat-card-subtitle {
+  color: #666;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+/* Icônes dans les titres */
+.readonly-card mat-card-title mat-icon {
+  color: #ff9800;
+}
+
+.editable-card mat-card-title mat-icon {
+  color: #2196f3;
+}
+
+.emergency-card mat-card-title mat-icon {
+  color: #f44336;
+}
+
+/* Grille en lecture seule */
+.readonly-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 16px;
+}
+
+.readonly-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  background-color: #fafafa;
+  border-radius: 6px;
+  border-left: 3px solid #ff9800;
+  transition: background-color 0.2s ease;
+}
+
+.readonly-item:hover {
+  background-color: #f0f0f0;
+}
+
+.readonly-item label {
+  font-weight: 600;
+  color: #555;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.readonly-item span {
+  color: #333;
+  font-size: 16px;
+  font-weight: 400;
+  word-break: break-word;
+}
+
+/* Grille de formulaire */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 16px;
+}
+
+.form-grid .full-width {
+  grid-column: 1 / -1;
+}
+
+/* Champs de formulaire */
+.profil-form mat-form-field {
+  width: 100%;
+}
+
+.profil-form mat-form-field.full-width {
+  grid-column: 1 / -1;
+}
+
+/* Styles pour les champs requis */
+.profil-form mat-form-field mat-label::after {
+  content: '';
+}
+
+.profil-form mat-form-field[required] mat-label::after {
+  content: ' *';
+  color: #f44336;
+}
+
+/* Messages d'erreur */
+mat-error {
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .profil-edit-container {
+    padding: 10px;
+  }
+  
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    padding: 16px;
+  }
+  
+  .header h1 {
+    text-align: center;
+    font-size: 24px;
+  }
+  
+  .actions {
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .cancel-button,
+  .save-button {
+    flex: 1;
+    max-width: 150px;
+  }
+  
+  .readonly-grid,
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .readonly-card mat-card-header,
+  .editable-card mat-card-header,
+  .emergency-card mat-card-header {
+    padding: 12px 16px;
+  }
+  
+  .readonly-card mat-card-title,
+  .editable-card mat-card-title,
+  .emergency-card mat-card-title {
+    font-size: 16px;
+  }
+  
+  .readonly-item {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 12px;
+  }
+  
+  .header h1 {
+    font-size: 20px;
+  }
+  
+  .actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .cancel-button,
+  .save-button {
+    width: 100%;
+    max-width: none;
+  }
+  
+  .readonly-card mat-card-header,
+  .editable-card mat-card-header,
+  .emergency-card mat-card-header {
+    margin: -12px -12px 12px -12px;
+    padding: 12px;
+  }
+  
+  .readonly-item {
+    padding: 10px;
+  }
+  
+  .readonly-item label {
+    font-size: 12px;
+  }
+  
+  .readonly-item span {
+    font-size: 14px;
+  }
+}
+
+/* Accessibilité */
+@media (prefers-reduced-motion: reduce) {
+  .readonly-card,
+  .editable-card,
+  .emergency-card {
+    transition: none;
+  }
+  
+  .readonly-item {
+    transition: none;
+  }
+}
+
+/* Focus states */
+.readonly-card:focus-within,
+.editable-card:focus-within,
+.emergency-card:focus-within {
+  outline: 2px solid #2196f3;
+  outline-offset: 2px;
+}
+
+.cancel-button:focus,
+.save-button:focus {
+  outline: 2px solid #2196f3;
+  outline-offset: 2px;
+}
+
+/* Styles d'impression */
+@media print {
+  .profil-edit-container {
+    background: white;
+    padding: 0;
+  }
+  
+  .header {
+    border-bottom: 2px solid #333;
+    box-shadow: none;
+  }
+  
+  .actions {
+    display: none;
+  }
+  
+  .readonly-card,
+  .editable-card,
+  .emergency-card {
+    box-shadow: none;
+    border: 1px solid #ddd;
+    break-inside: avoid;
+    margin-bottom: 20px;
+  }
+  
+  .readonly-card:hover,
+  .editable-card:hover,
+  .emergency-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+  
+  .readonly-item {
+    background-color: white;
+    border: 1px solid #ddd;
+  }
+  
+  .readonly-item:hover {
+    background-color: white;
+  }
+}
+
+/* Animation pour le chargement */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.readonly-card,
+.editable-card,
+.emergency-card {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Amélioration des composants Material */
+:host ::ng-deep .mat-card {
+  border-radius: 8px;
+}
+
+:host ::ng-deep .mat-card-header-text {
+  margin: 0;
+}
+
+:host ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+  border-radius: 8px;
+}
+
+:host ::ng-deep .mat-button .mat-icon,
+:host ::ng-deep .mat-raised-button .mat-icon {
+  margin-right: 8px;
+}
+
+/* Hover effect pour les boutons */
+.save-button:hover:not([disabled]) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.cancel-button:hover:not([disabled]) {
+  background-color: #f5f5f5;
+}
+
+.error-container button:hover {
+  transform: translateY(-1px);
+}
+
+/* État désactivé pour les boutons */
+.save-button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cancel-button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Amélioration de la lisibilité */
+.readonly-item span {
+  line-height: 1.4;
+}
+
+/* Styles pour les champs de texte */
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Validation visuelle */
+.profil-form mat-form-field.ng-invalid.ng-touched {
+  border-left: 3px solid #f44336;
+}
+
+.profil-form mat-form-field.ng-valid.ng-touched {
+  border-left: 3px solid #4caf50;
+}

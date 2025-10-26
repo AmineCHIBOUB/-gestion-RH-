@@ -1,0 +1,103 @@
+<div class="user-reports-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Rapports Utilisateurs</mat-card-title>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <!-- Filtres -->
+      <form [formGroup]="filterForm" class="filters-form">
+        <div class="filter-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Date de début</mat-label>
+            <input matInput [matDatepicker]="startPicker" formControlName="dateFrom">
+            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+            <mat-datepicker #startPicker></mat-datepicker>
+          </mat-form-field>
+          
+          <mat-form-field appearance="outline">
+            <mat-label>Date de fin</mat-label>
+            <input matInput [matDatepicker]="endPicker" formControlName="dateTo">
+            <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+            <mat-datepicker #endPicker></mat-datepicker>
+          </mat-form-field>
+          
+          <mat-form-field appearance="outline">
+            <mat-label>Département</mat-label>
+            <mat-select formControlName="department">
+              <mat-option value="">Tous</mat-option>
+              <mat-option value="IT">IT</mat-option>
+              <mat-option value="HR">RH</mat-option>
+              <mat-option value="Finance">Finance</mat-option>
+            </mat-select>
+          </mat-form-field>
+          
+          <mat-form-field appearance="outline">
+            <mat-label>Statut</mat-label>
+            <mat-select formControlName="status">
+              <mat-option value="">Tous</mat-option>
+              <mat-option value="active">Actif</mat-option>
+              <mat-option value="inactive">Inactif</mat-option>
+            </mat-select>
+          </mat-form-field>
+          
+          <button mat-raised-button color="primary" (click)="onFilterChange()">
+            <mat-icon>search</mat-icon>
+            Filtrer
+          </button>
+          
+          <button mat-raised-button color="accent" (click)="exportReport()">
+            <mat-icon>download</mat-icon>
+            Exporter
+          </button>
+        </div>
+      </form>
+      
+      <!-- Tableau des résultats -->
+      <div class="table-container">
+        <mat-spinner *ngIf="loading" diameter="50"></mat-spinner>
+        
+        <table mat-table [dataSource]="userReports" *ngIf="!loading" class="reports-table">
+          <ng-container matColumnDef="user">
+            <th mat-header-cell *matHeaderCellDef>Utilisateur</th>
+            <td mat-cell *matCellDef="let report">{{report.user}}</td>
+          </ng-container>
+          
+          <ng-container matColumnDef="department">
+            <th mat-header-cell *matHeaderCellDef>Département</th>
+            <td mat-cell *matCellDef="let report">{{report.department}}</td>
+          </ng-container>
+          
+          <ng-container matColumnDef="role">
+            <th mat-header-cell *matHeaderCellDef>Rôle</th>
+            <td mat-cell *matCellDef="let report">{{report.role}}</td>
+          </ng-container>
+          
+          <ng-container matColumnDef="last_login">
+            <th mat-header-cell *matHeaderCellDef>Dernière connexion</th>
+            <td mat-cell *matCellDef="let report">{{report.last_login | date:'short'}}</td>
+          </ng-container>
+          
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Statut</th>
+            <td mat-cell *matCellDef="let report">
+              <span [class]="'status-' + report.status">{{report.status}}</span>
+            </td>
+          </ng-container>
+          
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let report">
+              <button mat-icon-button>
+                <mat-icon>visibility</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+          
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

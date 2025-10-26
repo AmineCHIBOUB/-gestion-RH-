@@ -1,0 +1,35 @@
+<div class="calcul-paie-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Calcul de Paie</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="calculForm" (ngSubmit)="calculerPaie()">
+        <mat-form-field>
+          <mat-label>Employé</mat-label>
+          <mat-select formControlName="employeId">
+            <mat-option *ngFor="let employe of employes" [value]="employe.id">
+              {{employe.nom}} {{employe.prenom}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        
+        <mat-form-field>
+          <mat-label>Période</mat-label>
+          <input matInput type="month" formControlName="periode">
+        </mat-form-field>
+        
+        <div class="actions">
+          <button mat-raised-button color="primary" type="submit">Calculer</button>
+        </div>
+      </form>
+      
+      <div *ngIf="resultatCalcul" class="resultat">
+        <h3>Résultat du calcul</h3>
+        <p>Salaire brut: {{resultatCalcul.salaireBrut | currency:'EUR'}}</p>
+        <p>Cotisations: {{resultatCalcul.cotisations | currency:'EUR'}}</p>
+        <p>Salaire net: {{resultatCalcul.salaireNet | currency:'EUR'}}</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

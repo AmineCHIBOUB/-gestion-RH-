@@ -1,0 +1,304 @@
+<div class="rapports-conges-container">
+  <!-- Header -->
+  <div class="header">
+    <h2><mat-icon>event_available</mat-icon> Rapports de Congés</h2>
+    <p class="subtitle">Analyse et suivi des congés des employés</p>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="statistics-grid">
+    <div class="stat-card total">
+      <div class="stat-icon">
+        <mat-icon>event</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.totalConges }}</h3>
+        <p>Total Congés</p>
+      </div>
+    </div>
+    <div class="stat-card approved">
+      <div class="stat-icon">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.congesApprouves }}</h3>
+        <p>Congés Approuvés</p>
+      </div>
+    </div>
+    <div class="stat-card pending">
+      <div class="stat-icon">
+        <mat-icon>schedule</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.congesEnAttente }}</h3>
+        <p>En Attente</p>
+      </div>
+    </div>
+    <div class="stat-card rejected">
+      <div class="stat-icon">
+        <mat-icon>cancel</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.congesRejetes }}</h3>
+        <p>Congés Rejetés</p>
+      </div>
+    </div>
+    <div class="stat-card days">
+      <div class="stat-icon">
+        <mat-icon>today</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.totalJoursConges }}</h3>
+        <p>Total Jours</p>
+      </div>
+    </div>
+    <div class="stat-card average">
+      <div class="stat-icon">
+        <mat-icon>person_outline</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.moyenneCongesParEmploye }}</h3>
+        <p>Moyenne par Employé</p>
+      </div>
+    </div>
+    <div class="stat-card utilization">
+      <div class="stat-icon">
+        <mat-icon>percent</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.tauxUtilisationConges }}%</h3>
+        <p>Taux d'Utilisation</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="filters-grid">
+      <div class="filter-group">
+        <label for="startDate">Date de Début</label>
+        <input type="date" id="startDate" [(ngModel)]="filters.startDate" (change)="onFilterChange()">
+      </div>
+      <div class="filter-group">
+        <label for="endDate">Date de Fin</label>
+        <input type="date" id="endDate" [(ngModel)]="filters.endDate" (change)="onFilterChange()">
+      </div>
+      <div class="filter-group">
+        <label for="department">Département</label>
+        <select id="department" [(ngModel)]="filters.department" (change)="onFilterChange()">
+          <option value="">Tous les départements</option>
+          <option *ngFor="let dept of departments" [value]="dept.id">{{ dept.nom }}</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="employee">Employé</label>
+        <select id="employee" [(ngModel)]="filters.employee" (change)="onFilterChange()">
+          <option value="">Tous les employés</option>
+          <option *ngFor="let emp of employees" [value]="emp.id">{{ emp.prenom }} {{ emp.nom }}</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="type">Type de Congé</label>
+        <select id="type" [(ngModel)]="filters.type" (change)="onFilterChange()">
+          <option value="">Tous les types</option>
+          <option value="conge_paye">Congé Payé</option>
+          <option value="conge_maladie">Congé Maladie</option>
+          <option value="conge_maternite">Congé Maternité</option>
+          <option value="conge_formation">Congé Formation</option>
+          <option value="rtt">RTT</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="status">Statut</label>
+        <select id="status" [(ngModel)]="filters.status" (change)="onFilterChange()">
+          <option value="">Tous les statuts</option>
+          <option value="approuve">Approuvé</option>
+          <option value="en_attente">En Attente</option>
+          <option value="rejete">Rejeté</option>
+        </select>
+      </div>
+      <div class="filter-actions">
+        <button type="button" class="btn btn-secondary" (click)="resetFilters()">
+          <mat-icon>refresh</mat-icon> Réinitialiser
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="charts-section">
+    <div class="charts-grid">
+      <!-- Evolution Chart -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3><mat-icon>trending_up</mat-icon> Évolution des Congés</h3>
+        </div>
+        <div class="chart-content">
+          <canvas #evolutionChart></canvas>
+        </div>
+      </div>
+
+      <!-- Types Chart -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3><mat-icon>pie_chart</mat-icon> Répartition par Type</h3>
+        </div>
+        <div class="chart-content">
+          <canvas #typesChart></canvas>
+        </div>
+      </div>
+
+      <!-- Departments Chart -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3><i class="fas fa-bar-chart"></i> Congés par Département</h3>
+        </div>
+        <div class="chart-content">
+          <canvas #departmentsChart></canvas>
+        </div>
+      </div>
+
+      <!-- Utilization Chart -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3><i class="fas fa-chart-area"></i> Utilisation des Congés</h3>
+        </div>
+        <div class="chart-content">
+          <canvas #utilizationChart></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export Actions -->
+  <div class="export-section">
+    <div class="export-actions">
+      <button type="button" class="btn btn-primary" (click)="exportToPDF()">
+        <i class="fas fa-file-pdf"></i> Exporter PDF
+      </button>
+      <button type="button" class="btn btn-success" (click)="exportToExcel()">
+        <i class="fas fa-file-excel"></i> Exporter Excel
+      </button>
+      <button type="button" class="btn btn-info" (click)="printReport()">
+        <i class="fas fa-print"></i> Imprimer
+      </button>
+    </div>
+  </div>
+
+  <!-- Detailed Table -->
+  <div class="table-section">
+    <div class="table-header">
+      <h3><i class="fas fa-table"></i> Détail des Congés</h3>
+      <div class="table-actions">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" placeholder="Rechercher..." [(ngModel)]="searchTerm" (input)="onSearch()">
+        </div>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th (click)="sort('employee')" [class.sorted]="sortField === 'employee'">
+              Employé
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'employee' && sortDirection === 'asc'" 
+                 [class.fa-sort-down]="sortField === 'employee' && sortDirection === 'desc'"></i>
+            </th>
+            <th (click)="sort('department')" [class.sorted]="sortField === 'department'">
+              Département
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'department' && sortDirection === 'asc'" 
+                 [class.fa-sort-down]="sortField === 'department' && sortDirection === 'desc'"></i>
+            </th>
+            <th (click)="sort('type')" [class.sorted]="sortField === 'type'">
+              Type
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'type' && sortDirection === 'asc'" 
+                 [class.fa-sort-down]="sortField === 'type' && sortDirection === 'desc'"></i>
+            </th>
+            <th (click)="sort('startDate')" [class.sorted]="sortField === 'startDate'">
+              Date Début
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'startDate' && sortDirection === 'asc'" 
+                 [class.fa-sort-down]="sortField === 'startDate' && sortDirection === 'desc'"></i>
+            </th>
+            <th (click)="sort('endDate')" [class.sorted]="sortField === 'endDate'">
+              Date Fin
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'endDate' && sortDirection === 'asc'" 
+                 [class.fa-sort-down]="sortField === 'endDate' && sortDirection === 'desc'"></i>
+            </th>
+            <th (click)="sort('duration')" [class.sorted]="sortField === 'duration'">
+              Durée (jours)
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'duration' && sortDirection === 'asc'" 
+                 [class.fa-sort-down]="sortField === 'duration' && sortDirection === 'desc'"></i>
+            </th>
+            <th (click)="sort('status')" [class.sorted]="sortField === 'status'">
+              Statut
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'status' && sortDirection === 'asc'" 
+                 [class.fa-sort-down]="sortField === 'status' && sortDirection === 'desc'"></i>
+            </th>
+            <th>Date Demande</th>
+            <th>Approuvé par</th>
+            <th>Commentaire</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let conge of paginatedConges">
+            <td>
+              <div class="employee-info">
+                <div class="employee-name">{{ conge.employee.prenom }} {{ conge.employee.nom }}</div>
+                <div class="employee-matricule">{{ conge.employee.matricule }}</div>
+              </div>
+            </td>
+            <td>{{ conge.employee.department?.nom || 'Non assigné' }}</td>
+            <td>
+              <span class="type-badge" [class]="'type-' + conge.type">
+                {{ getTypeLabel(conge.type) }}
+              </span>
+            </td>
+            <td>{{ conge.startDate | date:'dd/MM/yyyy' }}</td>
+            <td>{{ conge.endDate | date:'dd/MM/yyyy' }}</td>
+            <td>{{ conge.duration }}</td>
+            <td>
+              <span class="status-badge" [class]="'status-' + conge.status">
+                <i class="fas" 
+                   [class.fa-check]="conge.status === 'approuve'" 
+                   [class.fa-clock]="conge.status === 'en_attente'"
+                   [class.fa-times]="conge.status === 'rejete'"></i>
+                {{ getStatusLabel(conge.status) }}
+              </span>
+            </td>
+            <td>{{ conge.requestDate | date:'dd/MM/yyyy' }}</td>
+            <td>{{ conge.approvedBy || '-' }}</td>
+            <td class="comment-cell">{{ conge.comment || '-' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-container" *ngIf="totalPages > 1">
+      <div class="pagination-info">
+        Affichage de {{ (currentPage - 1) * pageSize + 1 }} à {{ Math.min(currentPage * pageSize, totalItems) }} sur {{ totalItems }} éléments
+      </div>
+      <div class="pagination">
+        <button [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button *ngFor="let page of getPageNumbers()" 
+                [class.active]="page === currentPage" 
+                (click)="goToPage(page)">
+          {{ page }}
+        </button>
+        <button [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div class="loading-spinner" *ngIf="loading">
+    <i class="fas fa-spinner fa-spin"></i>
+    <p>Chargement des données...</p>
+  </div>
+</div>

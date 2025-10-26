@@ -1,0 +1,322 @@
+<div class="ajustements-container">
+  <!-- En-tête -->
+  <div class="header">
+    <h2>Ajustements de Présences</h2>
+    <button mat-raised-button color="primary" (click)="openForm()">
+      <mat-icon>add</mat-icon>
+      Nouvel Ajustement
+    </button>
+  </div>
+
+  <!-- Statistiques -->
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-value">{{ stats.totalAjustements }}</div>
+        <div class="stat-label">Total Ajustements</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card pending">
+      <mat-card-content>
+        <div class="stat-value">{{ stats.ajustementsEnAttente }}</div>
+        <div class="stat-label">En Attente</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card approved">
+      <mat-card-content>
+        <div class="stat-value">{{ stats.ajustementsApprouves }}</div>
+        <div class="stat-label">Approuvés</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card rejected">
+      <mat-card-content>
+        <div class="stat-value">{{ stats.ajustementsRejetes }}</div>
+        <div class="stat-label">Rejetés</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-value">{{ stats.totalHeuresAjustees }}h</div>
+        <div class="stat-label">Heures Ajustées</div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Filtres -->
+  <mat-card class="filters-card">
+    <mat-card-header>
+      <mat-card-title>Filtres</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="filterForm" class="filters-form">
+        <div class="filter-row">
+          <mat-form-field>
+            <mat-label>Date début</mat-label>
+            <input matInput type="date" formControlName="dateDebut">
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Date fin</mat-label>
+            <input matInput type="date" formControlName="dateFin">
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Employé</mat-label>
+            <input matInput formControlName="employe" placeholder="Nom ou prénom">
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Statut</mat-label>
+            <mat-select formControlName="statut">
+              <mat-option value="">Tous</mat-option>
+              <mat-option *ngFor="let statut of statuts" [value]="statut.value">
+                {{ statut.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Motif</mat-label>
+            <mat-select formControlName="motif">
+              <mat-option value="">Tous</mat-option>
+              <mat-option *ngFor="let motif of motifs" [value]="motif.value">
+                {{ motif.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="filter-actions">
+          <button mat-button type="button" (click)="applyFilters()">
+            <mat-icon>search</mat-icon>
+            Filtrer
+          </button>
+          <button mat-button type="button" (click)="resetFilters()">
+            <mat-icon>clear</mat-icon>
+            Réinitialiser
+          </button>
+          <button mat-button type="button" (click)="exportAjustements()">
+            <mat-icon>download</mat-icon>
+            Exporter
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Tableau des ajustements -->
+  <mat-card class="table-card">
+    <mat-card-content>
+      <div class="table-container">
+        <table mat-table [dataSource]="getPaginatedData()" class="ajustements-table">
+          <!-- Colonne Employé -->
+          <ng-container matColumnDef="employe">
+            <th mat-header-cell *matHeaderCellDef>Employé</th>
+            <td mat-cell *matCellDef="let ajustement">
+              <div class="employee-info">
+                <div class="employee-name">
+                  {{ ajustement.employe.prenom }} {{ ajustement.employe.nom }}
+                </div>
+                <div class="employee-matricule">{{ ajustement.employe.matricule }}</div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Date -->
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef>Date</th>
+            <td mat-cell *matCellDef="let ajustement">
+              {{ ajustement.date | date:'dd/MM/yyyy' }}
+            </td>
+          </ng-container>
+
+          <!-- Colonne Heure Originale -->
+          <ng-container matColumnDef="heureOriginale">
+            <th mat-header-cell *matHeaderCellDef>Heure Originale</th>
+            <td mat-cell *matCellDef="let ajustement">
+              <div class="time-info">
+                <div>{{ ajustement.heureEntreeOriginale || 'N/A' }} - {{ ajustement.heureSortieOriginale || 'N/A' }}</div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Heure Ajustée -->
+          <ng-container matColumnDef="heureAjustee">
+            <th mat-header-cell *matHeaderCellDef>Heure Ajustée</th>
+            <td mat-cell *matCellDef="let ajustement">
+              <div class="time-info adjusted">
+                <div>{{ ajustement.heureEntreeAjustee }} - {{ ajustement.heureSortieAjustee }}</div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Motif -->
+          <ng-container matColumnDef="motif">
+            <th mat-header-cell *matHeaderCellDef>Motif</th>
+            <td mat-cell *matCellDef="let ajustement">
+              <mat-chip>{{ getMotifLabel(ajustement.motif) }}</mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Statut -->
+          <ng-container matColumnDef="statut">
+            <th mat-header-cell *matHeaderCellDef>Statut</th>
+            <td mat-cell *matCellDef="let ajustement">
+              <mat-chip [style.background-color]="getStatutColor(ajustement.statut)" class="status-chip">
+                {{ ajustement.statut | titlecase }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Demandé par -->
+          <ng-container matColumnDef="demandePar">
+            <th mat-header-cell *matHeaderCellDef>Demandé par</th>
+            <td mat-cell *matCellDef="let ajustement">
+              {{ ajustement.demandePar.prenom }} {{ ajustement.demandePar.nom }}
+            </td>
+          </ng-container>
+
+          <!-- Colonne Date création -->
+          <ng-container matColumnDef="dateCreation">
+            <th mat-header-cell *matHeaderCellDef>Date création</th>
+            <td mat-cell *matCellDef="let ajustement">
+              {{ ajustement.dateCreation | date:'dd/MM/yyyy HH:mm' }}
+            </td>
+          </ng-container>
+
+          <!-- Colonne Actions -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let ajustement">
+              <div class="actions">
+                <button mat-icon-button (click)="openForm(ajustement)" matTooltip="Modifier">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button 
+                  mat-icon-button 
+                  color="primary" 
+                  (click)="approuverAjustement(ajustement)" 
+                  matTooltip="Approuver"
+                  *ngIf="ajustement.statut === 'en_attente'">
+                  <mat-icon>check</mat-icon>
+                </button>
+                <button 
+                  mat-icon-button 
+                  color="warn" 
+                  (click)="rejeterAjustement(ajustement)" 
+                  matTooltip="Rejeter"
+                  *ngIf="ajustement.statut === 'en_attente'">
+                  <mat-icon>close</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="deleteAjustement(ajustement)" matTooltip="Supprimer">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <mat-paginator
+        [length]="totalItems"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[5, 10, 25, 50]"
+        (page)="onPageChange($event)"
+        showFirstLastButtons>
+      </mat-paginator>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Formulaire d'ajustement -->
+  <div class="form-overlay" *ngIf="showForm" (click)="closeForm()">
+    <mat-card class="form-card" (click)="$event.stopPropagation()">
+      <mat-card-header>
+        <mat-card-title>
+          {{ editingAjustement ? 'Modifier l\'ajustement' : 'Nouvel ajustement' }}
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="ajustementForm" (ngSubmit)="saveAjustement()">
+          <div class="form-row">
+            <mat-form-field>
+              <mat-label>Employé</mat-label>
+              <mat-select formControlName="employeId" required>
+                <!-- Options d'employés à charger dynamiquement -->
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Date</mat-label>
+              <input matInput type="date" formControlName="date" required>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field>
+              <mat-label>Heure entrée originale</mat-label>
+              <input matInput type="time" formControlName="heureEntreeOriginale">
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Heure sortie originale</mat-label>
+              <input matInput type="time" formControlName="heureSortieOriginale">
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field>
+              <mat-label>Heure entrée ajustée</mat-label>
+              <input matInput type="time" formControlName="heureEntreeAjustee" required>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Heure sortie ajustée</mat-label>
+              <input matInput type="time" formControlName="heureSortieAjustee" required>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field>
+              <mat-label>Motif</mat-label>
+              <mat-select formControlName="motif" required>
+                <mat-option *ngFor="let motif of motifs" [value]="motif.value">
+                  {{ motif.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <mat-form-field class="full-width">
+            <mat-label>Commentaire</mat-label>
+            <textarea matInput formControlName="commentaire" rows="3" required></textarea>
+          </mat-form-field>
+
+          <mat-form-field class="full-width">
+            <mat-label>Justificatif (optionnel)</mat-label>
+            <input matInput formControlName="justificatif">
+          </mat-form-field>
+
+          <div class="form-actions">
+            <button mat-button type="button" (click)="closeForm()">Annuler</button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="!ajustementForm.valid || isLoading">
+              {{ editingAjustement ? 'Modifier' : 'Créer' }}
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Indicateur de chargement -->
+  <div class="loading-overlay" *ngIf="isLoading">
+    <mat-spinner></mat-spinner>
+  </div>
+</div>

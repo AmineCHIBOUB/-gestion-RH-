@@ -1,0 +1,152 @@
+<div class="bulletin-detail-container">
+  <!-- Header avec navigation -->
+  <div class="header">
+    <button mat-icon-button (click)="goBack()" matTooltip="Retour à la liste">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h2 *ngIf="bulletin">Bulletin de paie - {{ bulletin.periode }}</h2>
+    <h2 *ngIf="!bulletin && !isLoading">Bulletin de paie</h2>
+    <button mat-raised-button 
+            color="primary" 
+            *ngIf="bulletin"
+            (click)="downloadBulletin()">
+      <mat-icon>download</mat-icon>
+      Télécharger
+    </button>
+  </div>
+
+  <!-- État de chargement -->
+  <div class="loading-container" *ngIf="isLoading">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Chargement du bulletin de paie...</p>
+  </div>
+
+  <!-- État d'erreur -->
+  <mat-card class="error-card" *ngIf="error && !isLoading">
+    <mat-card-content>
+      <div class="error-content">
+        <mat-icon color="warn">error</mat-icon>
+        <p>{{ error }}</p>
+        <button mat-raised-button color="primary" (click)="retry()">
+          Réessayer
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Détails du bulletin -->
+  <div class="bulletin-content" *ngIf="bulletin && !isLoading">
+    <!-- Informations générales -->
+    <mat-card class="info-card">
+      <mat-card-header>
+        <mat-card-title>Informations générales</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="label">Période</span>
+            <span class="value">{{ bulletin.periode }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Date d'émission</span>
+            <span class="value">{{ bulletin.dateEmission | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Heures travaillées</span>
+            <span class="value">{{ bulletin.heuresTravaillees }}h</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Taux horaire</span>
+            <span class="value">{{ formatCurrency(bulletin.tauxHoraire) }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Salaires -->
+    <mat-card class="salary-card">
+      <mat-card-header>
+        <mat-card-title>Rémunération</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="salary-section">
+          <div class="salary-item main">
+            <span class="label">Salaire de base</span>
+            <span class="value">{{ formatCurrency(bulletin.salaireBase) }}</span>
+          </div>
+          
+          <!-- Primes -->
+          <div class="primes-section" *ngIf="bulletin.primes && bulletin.primes.length > 0">
+            <h4>Primes et indemnités</h4>
+            <div class="prime-item" *ngFor="let prime of bulletin.primes">
+              <span class="label">{{ prime.libelle }}</span>
+              <span class="value">{{ formatCurrency(prime.montant) }}</span>
+            </div>
+          </div>
+
+          <div class="salary-item total">
+            <span class="label">Salaire brut</span>
+            <span class="value">{{ formatCurrency(bulletin.salaireBrut) }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Cotisations -->
+    <mat-card class="cotisations-card">
+      <mat-card-header>
+        <mat-card-title>Cotisations et déductions</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="cotisations-section">
+          <!-- Cotisations sociales -->
+          <div class="cotisation-item">
+            <span class="label">Cotisations salariales</span>
+            <span class="value">{{ formatCurrency(bulletin.cotisationsSalariales) }}</span>
+          </div>
+          <div class="cotisation-item">
+            <span class="label">Cotisations patronales</span>
+            <span class="value">{{ formatCurrency(bulletin.cotisationsPatronales) }}</span>
+          </div>
+
+          <!-- Autres déductions -->
+          <div class="deductions-section" *ngIf="bulletin.deductions && bulletin.deductions.length > 0">
+            <h4>Autres déductions</h4>
+            <div class="deduction-item" *ngFor="let deduction of bulletin.deductions">
+              <span class="label">{{ deduction.libelle }}</span>
+              <span class="value">{{ formatCurrency(deduction.montant) }}</span>
+            </div>
+          </div>
+
+          <div class="cotisation-item total">
+            <span class="label">Total déductions</span>
+            <span class="value">{{ formatCurrency(bulletin.totalDeductions) }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Résultat final -->
+    <mat-card class="result-card">
+      <mat-card-header>
+        <mat-card-title>Net à payer</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="result-section">
+          <div class="result-item">
+            <span class="label">Salaire brut</span>
+            <span class="value">{{ formatCurrency(bulletin.salaireBrut) }}</span>
+          </div>
+          <div class="result-item">
+            <span class="label">Total déductions</span>
+            <span class="value negative">- {{ formatCurrency(bulletin.totalDeductions) }}</span>
+          </div>
+          <div class="result-item final">
+            <span class="label">Net à payer</span>
+            <span class="value">{{ formatCurrency(bulletin.salaireNet) }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

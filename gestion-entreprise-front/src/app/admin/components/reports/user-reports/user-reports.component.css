@@ -1,0 +1,485 @@
+/* Variables de couleurs */
+:root {
+  --primary-color: #6366f1;
+  --purple-color: #8b5cf6;
+  --info-color: #06b6d4;
+  --teal-color: #14b8a6;
+  --secondary-color: #f59e0b;
+  --background-white: #ffffff;
+  --text-light: #64748b;
+  --border-light: #e2e8f0;
+  --shadow-light: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Container principal avec fond blanc */
+.user-reports-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white;
+  min-height: 100vh;
+}
+
+/* En-tête avec dégradé coloré */
+.header {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--purple-color) 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-medium);
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Carte principale avec fond blanc */
+.user-reports-container mat-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: white;
+}
+
+/* En-tête de carte */
+mat-card-header {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+mat-card-title {
+  background: linear-gradient(135deg, var(--primary-color), var(--purple-color));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  font-weight: 600;
+  font-size: 1.5em;
+}
+
+/* Formulaire de filtres */
+.filters-form {
+  margin-bottom: 30px;
+}
+
+.filter-row {
+  display: flex;
+  gap: 15px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.filter-row mat-form-field {
+  flex: 1;
+  min-width: 150px;
+}
+
+.filter-row button {
+  height: 56px;
+  min-width: 120px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.filter-row button mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* Container du tableau avec fond blanc */
+.table-container {
+  position: relative;
+  min-height: 200px;
+  overflow-x: auto;
+  background: white;
+  border-radius: 8px;
+  box-shadow: var(--shadow-light);
+}
+
+/* Tableau avec fond blanc */
+.reports-table {
+  width: 100%;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* En-têtes du tableau avec style coloré sur fond blanc */
+.reports-table .mat-mdc-header-cell {
+  background: white;
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  background-image: linear-gradient(135deg, var(--primary-color), var(--purple-color));
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 1rem;
+  border-bottom: 2px solid var(--border-light);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.reports-table .mat-mdc-header-cell:hover {
+  background-image: linear-gradient(135deg, var(--info-color), var(--teal-color));
+  transform: translateY(-1px);
+}
+
+.reports-table .mat-mdc-header-cell::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.reports-table .mat-mdc-header-cell:hover::before {
+  left: 100%;
+}
+
+/* Cellules du tableau sur fond blanc */
+.reports-table td {
+  padding: 16px 12px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-light);
+  font-size: 0.95em;
+  background: white;
+}
+
+/* Lignes du tableau avec effet hover coloré */
+.reports-table tr:hover {
+  background: linear-gradient(135deg, #f8faff 0%, #f0f9ff 100%);
+  transition: all 0.3s ease;
+}
+
+/* Boutons avec dégradés colorés */
+.filter-row button {
+  background: linear-gradient(135deg, var(--primary-color), var(--purple-color));
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: var(--shadow-medium);
+  transition: all 0.3s ease;
+}
+
+.filter-row button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(99, 102, 241, 0.3);
+}
+
+/* Indicateur de chargement */
+.table-container mat-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+}
+
+/* Tableau des rapports */
+.reports-table {
+  width: 100%;
+  background-color: var(--mat-card-background-color);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* En-têtes du tableau */
+.reports-table th {
+  background-color: var(--mat-grey-50, #fafafa);
+  color: var(--mat-text-color);
+  font-weight: 600;
+  font-size: 0.9em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 16px 12px;
+  border-bottom: 2px solid var(--mat-divider-color);
+}
+
+/* Cellules du tableau */
+.reports-table td {
+  padding: 16px 12px;
+  border-bottom: 1px solid var(--mat-divider-color);
+  color: var(--mat-text-color);
+  font-size: 0.95em;
+}
+
+/* Lignes du tableau */
+.reports-table tr:hover {
+  background-color: var(--mat-grey-50, #fafafa);
+  transition: background-color 0.2s ease;
+}
+
+/* Styles pour les statuts */
+.status-active {
+  color: #4caf50;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-inactive {
+  color: #f44336;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+/* Boutons d'action dans le tableau */
+.reports-table button {
+  color: var(--mat-primary-color);
+  transition: all 0.2s ease;
+}
+
+.reports-table button:hover {
+  background-color: var(--mat-primary-50, rgba(63, 81, 181, 0.1));
+  transform: scale(1.1);
+}
+
+.reports-table button mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+/* Colonnes spécifiques */
+.mat-column-user {
+  font-weight: 500;
+  color: var(--mat-primary-color);
+}
+
+.mat-column-department {
+  font-style: italic;
+  color: var(--mat-text-secondary-color);
+}
+
+.mat-column-role {
+  font-weight: 500;
+}
+
+.mat-column-last_login {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.9em;
+}
+
+.mat-column-status {
+  text-align: center;
+}
+
+.mat-column-actions {
+  text-align: center;
+  width: 80px;
+}
+
+/* États vides */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--mat-text-secondary-color);
+}
+
+.empty-state mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .user-reports-container {
+    padding: 15px;
+  }
+  
+  .filter-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-row mat-form-field {
+    min-width: unset;
+  }
+  
+  .filter-row button {
+    height: 48px;
+  }
+}
+
+@media (max-width: 768px) {
+  .user-reports-container {
+    padding: 10px;
+  }
+  
+  mat-card-title {
+    font-size: 1.3em;
+  }
+  
+  .filter-row {
+    gap: 12px;
+  }
+  
+  /* Tableau responsive */
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .reports-table {
+    min-width: 600px;
+  }
+  
+  .reports-table th,
+  .reports-table td {
+    padding: 12px 8px;
+    font-size: 0.9em;
+  }
+  
+  .reports-table th {
+    font-size: 0.8em;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-reports-container {
+    padding: 8px;
+  }
+  
+  mat-card-title {
+    font-size: 1.2em;
+  }
+  
+  .filter-row button {
+    min-width: 100px;
+    font-size: 0.9em;
+  }
+  
+  .reports-table {
+    min-width: 500px;
+  }
+  
+  .reports-table th,
+  .reports-table td {
+    padding: 10px 6px;
+    font-size: 0.85em;
+  }
+}
+
+/* En-têtes du tableau avec style Role Management */
+.reports-table .mat-mdc-header-cell {
+  background: white;
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  background-image: linear-gradient(135deg, var(--primary-color), var(--purple-color));
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 1rem;
+  border-bottom: 2px solid var(--border-light);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.reports-table .mat-mdc-header-cell:hover {
+  background-image: linear-gradient(135deg, var(--info-color), var(--teal-color));
+  transform: translateY(-1px);
+}
+
+.reports-table .mat-mdc-header-cell::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.reports-table .mat-mdc-header-cell:hover::before {
+  left: 100%;
+}
+
+/* ... existing code ... */
+
+.reports-table {
+  animation: slideUp 0.4s ease-out;
+}
+
+/* Améliorations d'accessibilité */
+.reports-table button:focus {
+  outline: 2px solid var(--mat-primary-color);
+  outline-offset: 2px;
+}
+
+.filter-row button:focus {
+  outline: 2px solid var(--mat-primary-color);
+  outline-offset: 2px;
+}
+
+/* Amélioration de la typographie */
+.reports-table {
+  font-family: 'Roboto', 'Helvetica Neue', sans-serif;
+}
+
+/* Styles pour les transitions */
+.reports-table tr,
+.reports-table button,
+.filter-row button {
+  transition: all 0.2s ease;
+}
+
+/* Amélioration des cartes */
+mat-card {
+  overflow: hidden;
+}
+
+/* Styles pour les icônes */
+mat-icon {
+  user-select: none;
+}
+
+/* Amélioration du contraste */
+.reports-table th {
+  color: var(--mat-text-color);
+}
+
+/* Styles pour les formulaires */
+.filters-form mat-form-field {
+  margin-bottom: 0;
+}
+
+/* Amélioration des boutons */
+.filter-row button {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Styles pour le chargement */
+.table-container[data-loading="true"] {
+  pointer-events: none;
+  opacity: 0.7;
+}

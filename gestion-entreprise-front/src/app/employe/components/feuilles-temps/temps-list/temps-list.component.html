@@ -1,0 +1,162 @@
+<div class="temps-list-container">
+  <!-- En-tête du composant en premier -->
+  <div class="header">
+    <h2>Mes Feuilles de Temps</h2>
+    <div class="header-actions">
+      <button mat-raised-button color="primary" (click)="createNewFeuille()">
+        <mat-icon>add</mat-icon>
+        Nouvelle feuille
+      </button>
+    </div>
+  </div>
+
+  <!-- Section des filtres après l'en-tête -->
+  <div class="filters-section">
+    <h3>Filtres de période</h3>
+    <div class="filters-controls">
+      <mat-form-field appearance="outline" class="period-selector">
+        <mat-label>Mois</mat-label>
+        <mat-select [(value)]="selectedMonth" (selectionChange)="onPeriodChange()">
+          <mat-option *ngFor="let month of availableMonths" [value]="month.value">
+            {{ month.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="period-selector">
+        <mat-label>Année</mat-label>
+        <mat-select [(value)]="selectedYear" (selectionChange)="onYearChange()">
+          <mat-option *ngFor="let year of availableYears" [value]="year">
+            {{ year }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <!-- Statistiques -->
+  <mat-card class="stats-card" *ngIf="tempsStats">
+    <mat-card-header>
+      <mat-card-title>Statistiques {{ selectedYear }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="label">Heures travaillées</span>
+          <span class="value">{{ tempsStats.heuresMois }}h</span>
+        </div>
+        <div class="stat-item">
+          <span class="label">Heures supplémentaires</span>
+          <span class="value">{{ tempsStats.heuresSupplementaires }}h</span>
+        </div>
+        <div class="stat-item">
+          <span class="label">Moyenne mensuelle</span>
+          <span class="value">{{ tempsStats.moyenneHebdomadaire }}h</span>
+        </div>
+        <!-- Retirer cette ligne car la propriété n'existe pas -->
+        <!-- <div class="stat-item">
+          <span class="label">Feuilles validées</span>
+          <span class="value">{{ tempsStats.feuillesValidees }}</span>
+        </div> -->
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- État de chargement -->
+  <div class="loading-container" *ngIf="isLoading">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Chargement des feuilles de temps...</p>
+  </div>
+
+  <!-- État d'erreur -->
+  <mat-card class="error-card" *ngIf="error && !isLoading">
+    <mat-card-content>
+      <div class="error-content">
+        <mat-icon color="warn">error</mat-icon>
+        <p>{{ error }}</p>
+        <button mat-raised-button color="primary" (click)="retry()">
+          Réessayer
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Liste des feuilles de temps -->
+  <mat-card class="temps-card" *ngIf="!isLoading && !error">
+    <mat-card-header>
+      <mat-card-title>
+        Feuilles de temps - {{ getSelectedMonthLabel() }} {{ selectedYear }}
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="table-container">
+        <table mat-table [dataSource]="dataSource" class="temps-table">
+          <!-- Colonne Période -->
+          <ng-container matColumnDef="periode">
+            <th mat-header-cell *matHeaderCellDef>Période</th>
+            <td mat-cell *matCellDef="let feuille">{{ feuille.periode }}</td>
+          </ng-container>
+
+          <!-- Colonne Total Heures -->
+          <ng-container matColumnDef="totalHeures">
+            <th mat-header-cell *matHeaderCellDef>Total Heures</th>
+            <td mat-cell *matCellDef="let feuille">{{ feuille.totalHeures }}h</td>
+          </ng-container>
+
+          <!-- Colonne Statut -->
+          <ng-container matColumnDef="statut">
+            <th mat-header-cell *matHeaderCellDef>Statut</th>
+            <td mat-cell *matCellDef="let feuille">
+              <mat-chip [color]="getStatutColor(feuille.statut)" selected>
+                {{ getStatutLabel(feuille.statut) }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Date de création -->
+          <ng-container matColumnDef="dateCreation">
+            <th mat-header-cell *matHeaderCellDef>Créée le</th>
+            <td mat-cell *matCellDef="let feuille">
+              {{ feuille.dateCreation | date:'dd/MM/yyyy' }}
+            </td>
+          </ng-container>
+
+          <!-- Colonne Actions -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let feuille">
+              <button mat-icon-button 
+                      matTooltip="Voir les détails"
+                      (click)="viewFeuille(feuille)">
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button mat-icon-button 
+                      matTooltip="Modifier"
+                      *ngIf="canEdit(feuille)"
+                      (click)="editFeuille(feuille)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button 
+                      matTooltip="Soumettre pour validation"
+                      *ngIf="canSubmit(feuille)"
+                      (click)="submitFeuille(feuille)">
+                <mat-icon>send</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <!-- Message si aucune feuille -->
+        <div class="no-data" *ngIf="dataSource.data.length === 0 && !isLoading">
+          <mat-icon>schedule</mat-icon>
+          <p>Aucune feuille de temps trouvée pour cette période</p>
+          <button mat-raised-button color="primary" (click)="createNewFeuille()">
+            Créer une nouvelle feuille
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

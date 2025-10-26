@@ -1,0 +1,128 @@
+<div class="admin-dashboard">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <h1>Tableau de bord Administrateur</h1>
+    <div class="header-actions">
+      <button mat-raised-button color="primary" (click)="refreshData()" [disabled]="loading">
+        <mat-icon>refresh</mat-icon>
+        Actualiser
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Chargement des données...</p>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading" class="dashboard-content">
+    <!-- Statistiques principales -->
+    <div class="stats-grid">
+      <mat-card class="stat-card users">
+        <mat-card-content>
+          <div class="stat-content">
+            <div class="stat-info">
+              <div class="stat-number">{{ stats.totalUsers }}</div>
+              <div class="stat-label">Utilisateurs totaux</div>
+              <div class="stat-detail">
+                <span class="active">{{ stats.activeUsers }} actifs</span>
+                <span class="inactive">{{ stats.inactiveUsers }} inactifs</span>
+              </div>
+            </div>
+            <mat-icon class="stat-icon">people</mat-icon>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card departments">
+        <mat-card-content>
+          <div class="stat-content">
+            <div class="stat-info">
+              <div class="stat-number">{{ stats.totalDepartments }}</div>
+              <div class="stat-label">Départements</div>
+            </div>
+            <mat-icon class="stat-icon">business</mat-icon>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card posts">
+        <mat-card-content>
+          <div class="stat-content">
+            <div class="stat-info">
+              <div class="stat-number">{{ stats.totalPosts }}</div>
+              <div class="stat-label">Postes totaux</div>
+              <div class="stat-detail">
+                <span class="active">{{ stats.activePosts }} actifs</span>
+                <span class="inactive">{{ stats.inactivePosts }} inactifs</span>
+              </div>
+            </div>
+            <mat-icon class="stat-icon">work</mat-icon>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card roles">
+        <mat-card-content>
+          <div class="stat-content">
+            <div class="stat-info">
+              <div class="stat-number">{{ stats.totalRoles }}</div>
+              <div class="stat-label">Rôles disponibles</div>
+            </div>
+            <mat-icon class="stat-icon">assignment_ind</mat-icon>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Actions rapides -->
+    <mat-card class="quick-actions-card">
+      <mat-card-header>
+        <mat-card-title>Actions rapides</mat-card-title>
+        <mat-card-subtitle>Accès direct aux fonctionnalités principales</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="quick-actions-grid">
+          <mat-card *ngFor="let action of quickActions" class="action-card" (click)="navigateToAction(action.route)" [class]="action.color">
+            <mat-card-content>
+              <mat-icon [color]="action.color">{{ action.icon }}</mat-icon>
+              <div class="action-content">
+                <h3>{{ action.title }}</h3>
+                <p>{{ action.description }}</p>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Activités récentes -->
+    <mat-card class="recent-activities-card">
+      <mat-card-header>
+        <mat-card-title>Activités récentes</mat-card-title>
+        <mat-card-subtitle>Dernières actions effectuées sur la plateforme</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div *ngIf="stats.recentActivities.length === 0" class="no-activities">
+          <mat-icon>info</mat-icon>
+          <p>Aucune activité récente</p>
+        </div>
+        <mat-list *ngIf="stats.recentActivities.length > 0">
+          <mat-list-item *ngFor="let activity of stats.recentActivities">
+            <mat-icon matListItemIcon [class]="'activity-icon ' + activity.type">{{ activity.icon }}</mat-icon>
+            <div matListItemTitle>{{ activity.description }}</div>
+            <div matListItemLine>{{ activity.user }} - {{ activity.timestamp | date:'short' }}</div>
+          </mat-list-item>
+        </mat-list>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button routerLink="/admin/logs/audit">
+          <mat-icon>history</mat-icon>
+          Voir tous les logs
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

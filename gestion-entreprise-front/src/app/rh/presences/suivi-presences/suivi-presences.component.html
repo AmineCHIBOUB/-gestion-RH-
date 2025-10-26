@@ -1,0 +1,200 @@
+<div class="suivi-presences-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Suivi des Présences</mat-card-title>
+      <mat-card-subtitle>Gestion et suivi des présences des employés</mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <!-- Filtres -->
+      <div class="filters-section">
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Filtres de recherche</mat-panel-title>
+          </mat-expansion-panel-header>
+          
+          <div class="filters-grid">
+            <mat-form-field>
+              <mat-label>Employé</mat-label>
+              <input matInput [(ngModel)]="filters.employe" placeholder="Nom ou prénom">
+            </mat-form-field>
+            
+            <mat-form-field>
+              <mat-label>Date début</mat-label>
+              <input matInput [matDatepicker]="pickerDebut" [(ngModel)]="filters.dateDebut">
+              <mat-datepicker-toggle matSuffix [for]="pickerDebut"></mat-datepicker-toggle>
+              <mat-datepicker #pickerDebut></mat-datepicker>
+            </mat-form-field>
+            
+            <mat-form-field>
+              <mat-label>Date fin</mat-label>
+              <input matInput [matDatepicker]="pickerFin" [(ngModel)]="filters.dateFin">
+              <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
+              <mat-datepicker #pickerFin></mat-datepicker>
+            </mat-form-field>
+            
+            <mat-form-field>
+              <mat-label>Département</mat-label>
+              <mat-select [(ngModel)]="filters.departement">
+                <mat-option value="">Tous</mat-option>
+                <mat-option *ngFor="let dept of departements" [value]="dept">
+                  {{dept}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            
+            <mat-form-field>
+              <mat-label>Statut</mat-label>
+              <mat-select [(ngModel)]="filters.statut">
+                <mat-option value="">Tous</mat-option>
+                <mat-option value="present">Présent</mat-option>
+                <mat-option value="absent">Absent</mat-option>
+                <mat-option value="en_cours">En cours</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          
+          <div class="filter-actions">
+            <button mat-raised-button color="primary" (click)="applyFilters()">
+              <mat-icon>search</mat-icon>
+              Rechercher
+            </button>
+            <button mat-button (click)="clearFilters()">
+              <mat-icon>clear</mat-icon>
+              Effacer
+            </button>
+            <button mat-raised-button color="accent" (click)="exportPresences()">
+              <mat-icon>download</mat-icon>
+              Exporter
+            </button>
+          </div>
+        </mat-expansion-panel>
+      </div>
+      
+      <!-- Tableau -->
+      <div class="table-container">
+        <mat-table [dataSource]="filteredPresences" matSort (matSortChange)="sortData($event)" class="mat-elevation-2">
+          <!-- Colonne Employé -->
+          <ng-container matColumnDef="employe">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Employé</mat-header-cell>
+            <mat-cell *matCellDef="let presence">
+              <div class="employee-info">
+                <strong>{{presence.employe.nom}} {{presence.employe.prenom}}</strong>
+                <small>{{presence.employe.poste}}</small>
+              </div>
+            </mat-cell>
+          </ng-container>
+          
+          <!-- Colonne Date -->
+          <ng-container matColumnDef="date">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Date</mat-header-cell>
+            <mat-cell *matCellDef="let presence">{{presence.date | date:'dd/MM/yyyy'}}</mat-cell>
+          </ng-container>
+          
+          <!-- Colonne Heure arrivée -->
+          <ng-container matColumnDef="heureArrivee">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Arrivée</mat-header-cell>
+            <mat-cell *matCellDef="let presence">
+              <span *ngIf="presence.heureArrivee" class="time-badge arrival">
+                {{presence.heureArrivee | date:'HH:mm'}}
+              </span>
+              <span *ngIf="!presence.heureArrivee" class="no-data">-</span>
+            </mat-cell>
+          </ng-container>
+          
+          <!-- Colonne Heure départ -->
+          <ng-container matColumnDef="heureDepart">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Départ</mat-header-cell>
+            <mat-cell *matCellDef="let presence">
+              <span *ngIf="presence.heureDepart" class="time-badge departure">
+                {{presence.heureDepart | date:'HH:mm'}}
+              </span>
+              <span *ngIf="!presence.heureDepart && presence.heureArrivee" class="in-progress">En cours</span>
+              <span *ngIf="!presence.heureDepart && !presence.heureArrivee" class="no-data">-</span>
+            </mat-cell>
+          </ng-container>
+          
+          <!-- Colonne Temps travaillé -->
+          <ng-container matColumnDef="tempsTravaille">
+            <mat-header-cell *matHeaderCellDef>Temps travaillé</mat-header-cell>
+            <mat-cell *matCellDef="let presence">
+              <span class="duration-badge work">
+                {{getTempsTravaille(presence)}}
+              </span>
+            </mat-cell>
+          </ng-container>
+          
+          <!-- Colonne Temps pause -->
+          <ng-container matColumnDef="tempsPause">
+            <mat-header-cell *matHeaderCellDef>Temps pause</mat-header-cell>
+            <mat-cell *matCellDef="let presence">
+              <span class="duration-badge pause">
+                {{getTempsPause(presence)}}
+              </span>
+            </mat-cell>
+          </ng-container>
+          
+          <!-- Colonne Statut -->
+          <ng-container matColumnDef="statut">
+            <mat-header-cell *matHeaderCellDef>Statut</mat-header-cell>
+            <mat-cell *matCellDef="let presence">
+              <mat-chip [color]="getStatutColor(presence)" selected>
+                {{getStatutPresence(presence)}}
+              </mat-chip>
+            </mat-cell>
+          </ng-container>
+          
+          <!-- Colonne Actions -->
+          <ng-container matColumnDef="actions">
+            <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+            <mat-cell *matCellDef="let presence">
+              <button mat-icon-button [matMenuTriggerFor]="menu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="voirDetails(presence)">
+                  <mat-icon>visibility</mat-icon>
+                  <span>Voir détails</span>
+                </button>
+                <button mat-menu-item (click)="modifierPresence(presence)">
+                  <mat-icon>edit</mat-icon>
+                  <span>Modifier</span>
+                </button>
+                <button mat-menu-item>
+                  <mat-icon>print</mat-icon>
+                  <span>Imprimer</span>
+                </button>
+              </mat-menu>
+            </mat-cell>
+          </ng-container>
+          
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        </mat-table>
+        
+        <!-- Pagination -->
+        <mat-paginator
+          [length]="totalItems"
+          [pageSize]="pageSize"
+          [pageIndex]="pageIndex"
+          [pageSizeOptions]="[5, 10, 25, 50]"
+          (page)="onPageChange($event)"
+          showFirstLastButtons>
+        </mat-paginator>
+      </div>
+      
+      <!-- Loading -->
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner></mat-spinner>
+        <p>Chargement des présences...</p>
+      </div>
+      
+      <!-- Aucun résultat -->
+      <div *ngIf="!loading && filteredPresences.length === 0" class="no-data">
+        <mat-icon>schedule</mat-icon>
+        <h3>Aucune présence trouvée</h3>
+        <p>Aucune présence ne correspond aux critères de recherche.</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

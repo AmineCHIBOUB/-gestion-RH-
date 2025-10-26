@@ -1,0 +1,206 @@
+<div class="pieces-jointes-container">
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>attach_file</mat-icon>
+        Pièces Jointes - {{employeeName}}
+      </mat-card-title>
+      <mat-card-subtitle>Gestion des documents de l'employé</mat-card-subtitle>
+    </mat-card-header>
+  </mat-card>
+
+  <!-- Zone d'upload -->
+  <mat-card class="upload-card">
+    <mat-card-header>
+      <mat-card-title>Ajouter des Documents</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="upload-zone" 
+           (dragover)="onDragOver($event)" 
+           (dragleave)="onDragLeave($event)" 
+           (drop)="onDrop($event)"
+           [class.drag-over]="isDragOver">
+        <mat-icon class="upload-icon">cloud_upload</mat-icon>
+        <p class="upload-text">Glissez-déposez vos fichiers ici ou</p>
+        <button mat-raised-button color="primary" (click)="fileInput.click()">
+          <mat-icon>add</mat-icon>
+          Sélectionner des fichiers
+        </button>
+        <input #fileInput type="file" multiple (change)="onFileSelected($event)" style="display: none;">
+        <p class="upload-info">Formats acceptés: PDF, DOC, DOCX, JPG, PNG (Max: 10MB par fichier)</p>
+      </div>
+      
+      <!-- Formulaire de métadonnées -->
+      <form [formGroup]="uploadForm" *ngIf="selectedFiles.length > 0" class="metadata-form">
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Type de document</mat-label>
+            <mat-select formControlName="type">
+              <mat-option value="cv">CV</mat-option>
+              <mat-option value="diplome">Diplôme</mat-option>
+              <mat-option value="certificat">Certificat</mat-option>
+              <mat-option value="contrat">Contrat</mat-option>
+              <mat-option value="piece_identite">Pièce d'identité</mat-option>
+              <mat-option value="autre">Autre</mat-option>
+            </mat-select>
+          </mat-form-field>
+          
+          <mat-form-field appearance="outline">
+            <mat-label>Description</mat-label>
+            <input matInput formControlName="description" placeholder="Description du document">
+          </mat-form-field>
+        </div>
+        
+        <div class="selected-files">
+          <h4>Fichiers sélectionnés:</h4>
+          <mat-list>
+            <mat-list-item *ngFor="let file of selectedFiles; let i = index">
+              <mat-icon matListItemIcon>{{getFileIcon(file.type)}}</mat-icon>
+              <div matListItemTitle>{{file.name}}</div>
+              <div matListItemLine>{{formatFileSize(file.size)}}</div>
+              <button mat-icon-button (click)="removeFile(i)" matListItemMeta>
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-list-item>
+          </mat-list>
+        </div>
+        
+        <div class="upload-actions">
+          <button mat-raised-button color="primary" (click)="uploadFiles()" [disabled]="uploading">
+            <mat-icon>cloud_upload</mat-icon>
+            {{uploading ? 'Upload en cours...' : 'Uploader'}}
+          </button>
+          <button mat-stroked-button (click)="cancelUpload()">
+            <mat-icon>cancel</mat-icon>
+            Annuler
+          </button>
+        </div>
+        
+        <!-- Barre de progression -->
+        <mat-progress-bar *ngIf="uploading" [value]="uploadProgress" mode="determinate"></mat-progress-bar>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Filtres -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Type de document</mat-label>
+          <mat-select [(value)]="selectedType" (selectionChange)="onFilterChange()">
+            <mat-option value="">Tous les types</mat-option>
+            <mat-option value="cv">CV</mat-option>
+            <mat-option value="diplome">Diplôme</mat-option>
+            <mat-option value="certificat">Certificat</mat-option>
+            <mat-option value="contrat">Contrat</mat-option>
+            <mat-option value="piece_identite">Pièce d'identité</mat-option>
+            <mat-option value="autre">Autre</mat-option>
+          </mat-select>
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline">
+          <mat-label>Date d'ajout</mat-label>
+          <mat-date-range-input [rangePicker]="picker">
+            <input matStartDate placeholder="Date début" [(ngModel)]="startDate" (dateChange)="onFilterChange()">
+            <input matEndDate placeholder="Date fin" [(ngModel)]="endDate" (dateChange)="onFilterChange()">
+          </mat-date-range-input>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field>
+        
+        <button mat-raised-button color="primary" (click)="resetFilters()">
+          <mat-icon>refresh</mat-icon>
+          Réinitialiser
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Liste des documents -->
+  <mat-card class="documents-card">
+    <mat-card-header>
+      <mat-card-title>Documents ({{documents.length}})</mat-card-title>
+      <div class="header-actions">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Rechercher</mat-label>
+          <input matInput [(ngModel)]="searchTerm" (input)="onSearch()" placeholder="Nom du fichier...">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+      </div>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <div class="documents-grid" *ngIf="!loading; else loadingTemplate">
+        <div class="document-card" *ngFor="let doc of filteredDocuments">
+          <div class="document-header">
+            <mat-icon class="file-icon" [class]="getFileTypeClass(doc.type)">{{getFileIcon(doc.mimeType)}}</mat-icon>
+            <div class="document-info">
+              <div class="document-name">{{doc.nom}}</div>
+              <div class="document-meta">
+                <span class="file-size">{{formatFileSize(doc.taille)}}</span>
+                <span class="separator">•</span>
+                <span class="upload-date">{{doc.dateAjout | date:'dd/MM/yyyy'}}</span>
+              </div>
+            </div>
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="viewDocument(doc)">
+                <mat-icon>visibility</mat-icon>
+                <span>Voir</span>
+              </button>
+              <button mat-menu-item (click)="downloadDocument(doc)">
+                <mat-icon>download</mat-icon>
+                <span>Télécharger</span>
+              </button>
+              <button mat-menu-item (click)="editDocument(doc)">
+                <mat-icon>edit</mat-icon>
+                <span>Modifier</span>
+              </button>
+              <mat-divider></mat-divider>
+              <button mat-menu-item (click)="deleteDocument(doc.id)" class="delete-action">
+                <mat-icon>delete</mat-icon>
+                <span>Supprimer</span>
+              </button>
+            </mat-menu>
+          </div>
+          
+          <div class="document-body">
+            <div class="document-type">
+              <mat-chip [color]="getTypeColor(doc.type)" selected>
+                {{getTypeLabel(doc.type)}}
+              </mat-chip>
+            </div>
+            <div class="document-description" *ngIf="doc.description">
+              {{doc.description}}
+            </div>
+          </div>
+          
+          <div class="document-footer">
+            <div class="added-by">
+              <mat-icon>person</mat-icon>
+              <span>Ajouté par {{doc.ajoutePar}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Message si aucun document -->
+      <div class="no-documents" *ngIf="filteredDocuments.length === 0 && !loading">
+        <mat-icon>folder_open</mat-icon>
+        <h3>Aucun document trouvé</h3>
+        <p>Aucun document ne correspond aux critères de recherche.</p>
+      </div>
+      
+      <!-- Template de chargement -->
+      <ng-template #loadingTemplate>
+        <div class="loading-container">
+          <mat-spinner diameter="50"></mat-spinner>
+          <p>Chargement des documents...</p>
+        </div>
+      </ng-template>
+    </mat-card-content>
+  </mat-card>
+</div>

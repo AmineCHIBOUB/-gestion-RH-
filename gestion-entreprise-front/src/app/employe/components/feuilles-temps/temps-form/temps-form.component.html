@@ -1,0 +1,165 @@
+<div class="temps-form-container">
+  <div class="header">
+    <button mat-icon-button (click)="cancel()" matTooltip="Retour à la liste">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h2>{{ isEditMode ? 'Modifier la feuille de temps' : 'Nouvelle feuille de temps' }}</h2>
+  </div>
+
+  <!-- État de chargement -->
+  <div class="loading-container" *ngIf="isLoading">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Chargement de la feuille de temps...</p>
+  </div>
+
+  <!-- État d'erreur -->
+  <mat-card class="error-card" *ngIf="error && !isLoading">
+    <mat-card-content>
+      <div class="error-content">
+        <mat-icon color="warn">error</mat-icon>
+        <p>{{ error }}</p>
+        <button mat-raised-button color="primary" (click)="cancel()">
+          Retour à la liste
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Formulaire -->
+  <form [formGroup]="tempsForm" *ngIf="!isLoading && !error">
+    <!-- Sélection de la période -->
+    <mat-card class="period-card">
+      <mat-card-header>
+        <mat-card-title>Période</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="period-selectors">
+          <mat-form-field appearance="outline">
+            <mat-label>Mois</mat-label>
+            <mat-select formControlName="mois" 
+                        [disabled]="isEditMode"
+                        (selectionChange)="onPeriodChange()">
+              <mat-option *ngFor="let month of availableMonths" [value]="month.value">
+                {{ month.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Année</mat-label>
+            <mat-input type="number" 
+                       formControlName="annee"
+                       [disabled]="isEditMode"
+                       (change)="onPeriodChange()">
+            </mat-input>
+          </mat-form-field>
+          <div class="total-hours">
+            <span class="label">Total heures :</span>
+            <span class="value">{{ totalHeures }}h</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Saisie des heures -->
+    <mat-card class="hours-card">
+      <mat-card-header>
+        <mat-card-title>
+          Saisie des heures - {{ selectedMonthLabel }} {{ selectedYear }}
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="hours-grid" formArrayName="heuresJours">
+          <div class="day-item" 
+               *ngFor="let dayControl of heuresJours.controls; let i = index"
+               [formGroupName]="i"
+               [class.weekend]="isWeekend(daysInMonth[i])">
+            
+            <div class="day-header">
+              <span class="day-name">{{ getDayName(daysInMonth[i]) }}</span>
+              <span class="day-number">{{ daysInMonth[i].getDate() }}</span>
+            </div>
+
+            <div class="hours-inputs" *ngIf="!isWeekend(daysInMonth[i]) || dayControl.get('heuresNormales')?.value > 0 || dayControl.get('heuresSupplementaires')?.value > 0">
+              <mat-form-field appearance="outline" class="hours-field">
+                <mat-label>H. normales</mat-label>
+                <input matInput 
+                       type="number" 
+                       min="0" 
+                       max="12" 
+                       step="0.5"
+                       formControlName="heuresNormales"
+                       [readonly]="!canEdit()">
+                <mat-error *ngIf="dayControl.get('heuresNormales')?.hasError('min')">
+                  Minimum 0 heure
+                </mat-error>
+                <mat-error *ngIf="dayControl.get('heuresNormales')?.hasError('max')">
+                  Maximum 12 heures
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="hours-field">
+                <mat-label>H. sup.</mat-label>
+                <input matInput 
+                       type="number" 
+                       min="0" 
+                       max="8" 
+                       step="0.5"
+                       formControlName="heuresSupplementaires"
+                       [readonly]="!canEdit()">
+                <mat-error *ngIf="dayControl.get('heuresSupplementaires')?.hasError('min')">
+                  Minimum 0 heure
+                </mat-error>
+                <mat-error *ngIf="dayControl.get('heuresSupplementaires')?.hasError('max')">
+                  Maximum 8 heures
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="comment-field" *ngIf="dayControl.get('commentaire')?.value || canEdit()">
+                <mat-label>Commentaire</mat-label>
+                <input matInput 
+                       formControlName="commentaire"
+                       [readonly]="!canEdit()"
+                       placeholder="Optionnel">
+              </mat-form-field>
+            </div>
+
+            <div class="weekend-label" *ngIf="isWeekend(daysInMonth[i]) && dayControl.get('heuresNormales')?.value === 0 && dayControl.get('heuresSupplementaires')?.value === 0">
+              <span>Week-end</span>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Actions -->
+    <div class="actions" *ngIf="canEdit()">
+      <button mat-button type="button" (click)="cancel()">
+        Annuler
+      </button>
+      <button mat-raised-button 
+              color="accent" 
+              type="button" 
+              (click)="saveDraft()"
+              [disabled]="tempsForm.invalid">
+        Sauvegarder le brouillon
+      </button>
+      <button mat-raised-button 
+              color="primary" 
+              type="button" 
+              (click)="submitForValidation()"
+              [disabled]="tempsForm.invalid || totalHeures === 0">
+        Soumettre pour validation
+      </button>
+    </div>
+
+    <!-- Message si non modifiable -->
+    <mat-card class="readonly-message" *ngIf="!canEdit()">
+      <mat-card-content>
+        <div class="readonly-content">
+          <mat-icon color="primary">info</mat-icon>
+          <p>Cette feuille de temps ne peut plus être modifiée car elle a été validée.</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </form>
+</div>

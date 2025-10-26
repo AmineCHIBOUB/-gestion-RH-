@@ -1,0 +1,137 @@
+<div class="user-form-container">
+  <h2 mat-dialog-title>{{isEditMode ? 'Modifier' : 'Créer'}} un Utilisateur</h2>
+  
+  <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+    <mat-dialog-content>
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nom complet</mat-label>
+          <input matInput formControlName="firstName" placeholder="Entrez le nom complet">
+          <mat-error *ngIf="userForm.get('firstName')?.hasError('required')">
+            Le nom est requis
+          </mat-error>
+          <mat-error *ngIf="userForm.get('name')?.hasError('minlength')">
+            Le nom doit contenir au moins 2 caractères
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" placeholder="exemple@email.com">
+          <mat-error *ngIf="userForm.get('email')?.hasError('required')">
+            L'email est requis
+          </mat-error>
+          <mat-error *ngIf="userForm.get('email')?.hasError('email')">
+            Format d'email invalide
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row" *ngIf="!isEditMode">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Mot de passe</mat-label>
+          <input matInput type="password" formControlName="password" placeholder="Mot de passe">
+          <mat-error *ngIf="userForm.get('password')?.hasError('required')">
+            Le mot de passe est requis
+          </mat-error>
+          <mat-error *ngIf="userForm.get('password')?.hasError('minlength')">
+            Le mot de passe doit contenir au moins 6 caractères
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Prénom</mat-label>
+          <input matInput formControlName="firstName" placeholder="Entrez le prénom">
+          <mat-error *ngIf="userForm.get('firstName')?.hasError('required')">
+            Le prénom est requis
+          </mat-error>
+          <mat-error *ngIf="userForm.get('firstName')?.hasError('minlength')">
+            Le prénom doit contenir au moins 2 caractères
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nom</mat-label>
+          <input matInput formControlName="lastName" placeholder="Entrez le nom">
+          <mat-error *ngIf="userForm.get('lastName')?.hasError('required')">
+            Le nom est requis
+          </mat-error>
+          <mat-error *ngIf="userForm.get('lastName')?.hasError('minlength')">
+            Le nom doit contenir au moins 2 caractères
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Rôle</mat-label>
+          <mat-select formControlName="role">
+            <mat-option *ngFor="let role of roles" [value]="role.name">
+              {{role.displayName}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="userForm.get('role')?.hasError('required')">
+            Le rôle est requis
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Département</mat-label>
+          <mat-select formControlName="department_id">
+            <mat-option *ngFor="let dept of departments" [value]="dept.id">
+              {{dept.name}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="userForm.get('department_id')?.hasError('required')">
+            Le département est requis
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Poste</mat-label>
+          <mat-select formControlName="post_id" [disabled]="!userForm.get('department_id')?.value">
+            <mat-option *ngFor="let post of filteredPosts" [value]="post.id">
+              {{post.titre}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="userForm.get('post_id')?.hasError('required')">
+            Le poste est requis
+          </mat-error>
+          <mat-hint *ngIf="!userForm.get('department_id')?.value">
+            Sélectionnez d'abord un département
+          </mat-hint>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Statut</mat-label>
+          <mat-select formControlName="isActive">
+            <mat-option [value]="true">Actif</mat-option>
+            <mat-option [value]="false">Inactif</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+      <button mat-button type="button" (click)="onCancel()" [disabled]="loading">
+        Annuler
+      </button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="!userForm.valid || loading">
+        <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
+        {{isEditMode ? 'Mettre à jour' : 'Créer'}}
+      </button>
+    </mat-dialog-actions>
+  </form>
+</div>

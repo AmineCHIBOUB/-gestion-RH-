@@ -1,0 +1,182 @@
+<div class="validation-conges">
+  <!-- Header Section -->
+  <div class="header">
+    <h1>Gestion des Congés</h1>
+    <div class="stats">
+      <mat-chip color="primary" selected>
+        {{ stats.total }} congé(s) au total
+      </mat-chip>
+    </div>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="stats-cards">
+    <div class="stat-card total">
+      <div class="stat-number">{{ stats.total }}</div>
+      <div class="stat-label">Total</div>
+    </div>
+    <div class="stat-card pending">
+      <div class="stat-number">{{ stats.pending }}</div>
+      <div class="stat-label">En attente</div>
+    </div>
+    <div class="stat-card approved">
+      <div class="stat-number">{{ stats.approved }}</div>
+      <div class="stat-label">Approuvés</div>
+    </div>
+    <div class="stat-card rejected">
+      <div class="stat-number">{{ stats.rejected }}</div>
+      <div class="stat-label">Refusés</div>
+    </div>
+  </div>
+
+  <!-- Filter Tabs -->
+  <div class="filter-tabs">
+    <mat-tab-group [(selectedIndex)]="currentFilter" (selectedTabChange)="onFilterChange($event)">
+      <mat-tab label="Tous ({{ stats.total }})">
+        <ng-template matTabContent>
+          <div style="padding: 16px;">Affichage de tous les congés</div>
+        </ng-template>
+      </mat-tab>
+      <mat-tab label="En attente ({{ stats.pending }})">
+        <ng-template matTabContent>
+          <div style="padding: 16px;">Affichage des congés en attente</div>
+        </ng-template>
+      </mat-tab>
+      <mat-tab label="Approuvés ({{ stats.approved }})">
+        <ng-template matTabContent>
+          <div style="padding: 16px;">Affichage des congés approuvés</div>
+        </ng-template>
+      </mat-tab>
+      <mat-tab label="Refusés ({{ stats.rejected }})">
+        <ng-template matTabContent>
+          <div style="padding: 16px;">Affichage des congés refusés</div>
+        </ng-template>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+
+  <!-- Actions Bar -->
+  <div class="actions-bar" *ngIf="filteredConges.length > 0">
+    <div class="selection-info">
+      <mat-checkbox 
+        [checked]="selectedDemandes.size === filteredConges.length && filteredConges.length > 0"
+        [indeterminate]="selectedDemandes.size > 0 && selectedDemandes.size < filteredConges.length"
+        (change)="selectAll()">
+        Tout sélectionner
+      </mat-checkbox>
+      <span class="selected-count" *ngIf="selectedDemandes.size > 0">
+        {{ selectedDemandes.size }} sélectionné(s)
+      </span>
+    </div>
+
+    <div class="bulk-actions" *ngIf="selectedDemandes.size > 0 && currentFilter !== 2 && currentFilter !== 3">
+      <button mat-raised-button color="primary" (click)="approuverSelections()">
+        <mat-icon>check</mat-icon>
+        Approuver ({{ selectedDemandes.size }})
+      </button>
+      <button mat-raised-button color="warn" (click)="refuserSelections()">
+        <mat-icon>close</mat-icon>
+        Refuser ({{ selectedDemandes.size }})
+      </button>
+    </div>
+  </div>
+
+  <!-- Demandes Container -->
+  <div class="demandes-container" *ngIf="!loading">
+    <div class="demandes-grid" *ngIf="filteredConges.length > 0; else noDemandes">
+      <mat-card class="demande-card fade-in" *ngFor="let demande of filteredConges" 
+                [class.selected]="selectedDemandes.has(demande.id)">
+        <mat-card-header>
+          <div class="card-header-content">
+            <mat-checkbox 
+              [checked]="selectedDemandes.has(demande.id)"
+              (change)="toggleSelection(demande.id)">
+            </mat-checkbox>
+            <div class="employe-info">
+              <h3>{{ demande.employe?.prenom }} {{ demande.employe?.nom }}</h3>
+              <p class="poste">{{ demande.employe?.poste || 'Poste non spécifié' }}</p>
+            </div>
+          </div>
+          <div class="type-badge" [style.background-color]="getTypeColor(demande.type_conge)">
+            {{ getTypeLabel(demande.type_conge) }}
+          </div>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div class="demande-details">
+            <div class="detail-item">
+              <mat-icon>event</mat-icon>
+              <div class="detail-content">
+                <span class="label">Période :</span>
+                <span class="value">
+                  {{ demande.date_debut | date:'dd/MM/yyyy' }} - {{ demande.date_fin | date:'dd/MM/yyyy' }}
+                </span>
+              </div>
+            </div>
+
+            <div class="detail-item">
+              <mat-icon>schedule</mat-icon>
+              <div class="detail-content">
+                <span class="label">Durée :</span>
+                <span class="value">{{ demande.nombre_jours || calculerDuree(demande.date_debut, demande.date_fin) }} jour(s)</span>
+              </div>
+            </div>
+
+            <div class="detail-item">
+              <mat-icon>info</mat-icon>
+              <div class="detail-content">
+                <span class="label">Statut :</span>
+                <span class="value">
+                  <span class="status-badge" [class]="demande.statut">
+                    {{ getStatutLabel(demande.statut) }}
+                  </span>
+                </span>
+              </div>
+            </div>
+
+            <div class="detail-item">
+              <mat-icon>today</mat-icon>
+              <div class="detail-content">
+                <span class="label">Demandé le :</span>
+                <span class="value">{{ demande.created_at | date:'dd/MM/yyyy à HH:mm' }}</span>
+              </div>
+            </div>
+
+            <div class="detail-item" *ngIf="demande.motif">
+              <mat-icon>comment</mat-icon>
+              <div class="detail-content">
+                <span class="label">Motif :</span>
+                <span class="value">{{ demande.motif }}</span>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions *ngIf="demande.statut === 'en_attente'">
+          <button mat-raised-button color="primary" (click)="approuverDemande(demande.id)">
+            <mat-icon>check</mat-icon>
+            Approuver
+          </button>
+          <button mat-raised-button color="warn" (click)="refuserDemande(demande.id)">
+            <mat-icon>close</mat-icon>
+            Refuser
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+
+    <ng-template #noDemandes>
+      <div class="no-demandes">
+        <mat-icon class="no-demandes-icon">inbox</mat-icon>
+        <h2>Aucun congé trouvé</h2>
+        <p>Il n'y a aucun congé correspondant aux critères sélectionnés.</p>
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner></mat-spinner>
+    <p>Chargement des congés...</p>
+  </div>
+</div>

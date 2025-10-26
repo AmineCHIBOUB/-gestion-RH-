@@ -1,0 +1,202 @@
+<div class="export-paie-container">
+  <div class="header">
+    <h2>Export de Paie</h2>
+    <div class="actions">
+      <button mat-stroked-button (click)="resetForm()">
+        <mat-icon>refresh</mat-icon>
+        Réinitialiser
+      </button>
+    </div>
+  </div>
+
+  <div class="content-grid">
+    <!-- Formulaire d'export -->
+    <div class="export-form-card">
+      <div class="card-header">
+        <h3>Configuration de l'export</h3>
+      </div>
+      
+      <form [formGroup]="exportForm" class="export-form">
+        <!-- Type d'export -->
+        <div class="form-section">
+          <h4>Type d'export</h4>
+          <mat-radio-group formControlName="typeExport" (change)="onTypeExportChange()">
+            <div class="radio-grid">
+              <mat-radio-button *ngFor="let type of typesExport" [value]="type.value" class="radio-card">
+                <div class="radio-content">
+                  <div class="radio-title">{{ type.label }}</div>
+                  <div class="radio-description">{{ type.description }}</div>
+                </div>
+              </mat-radio-button>
+            </div>
+          </mat-radio-group>
+        </div>
+
+        <!-- Format d'export -->
+        <div class="form-section">
+          <h4>Format d'export</h4>
+          <div class="format-grid">
+            <mat-radio-group formControlName="format">
+              <mat-radio-button *ngFor="let format of formatsExport" [value]="format.value" class="format-option">
+                <div class="format-content">
+                  <mat-icon>{{ format.icon }}</mat-icon>
+                  <span>{{ format.label }}</span>
+                </div>
+              </mat-radio-button>
+            </mat-radio-group>
+          </div>
+        </div>
+
+        <!-- Période -->
+        <div class="form-section">
+          <h4>Période</h4>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Période</mat-label>
+              <mat-select formControlName="periode">
+                <mat-option *ngFor="let periode of periodesDisponibles" [value]="periode">
+                  {{ formatPeriode(periode) }}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="exportForm.get('periode')?.hasError('required')">
+                La période est requise
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Filtres -->
+        <div class="form-section">
+          <h4>Filtres</h4>
+          <div class="form-row">
+            <div class="form-field half-width">
+              <mat-form-field appearance="outline">
+                <mat-label>Département</mat-label>
+                <mat-select formControlName="departement">
+                  <mat-option value="">Tous les départements</mat-option>
+                  <mat-option *ngFor="let dept of departements" [value]="dept">
+                    {{ dept }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            
+            <div class="form-field half-width">
+              <mat-form-field appearance="outline">
+                <mat-label>Employés spécifiques</mat-label>
+                <mat-select formControlName="employes" multiple>
+                  <mat-option *ngFor="let employe of employes" [value]="employe.id">
+                    {{ employe.prenom }} {{ employe.nom }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+
+        <!-- Options -->
+        <div class="form-section">
+          <h4>Options</h4>
+          <div class="options-grid">
+            <mat-checkbox formControlName="inclureArchives">
+              Inclure les employés archivés
+            </mat-checkbox>
+            <mat-checkbox formControlName="inclureVariables">
+              Inclure les éléments variables
+            </mat-checkbox>
+            <mat-checkbox formControlName="inclureCharges">
+              Inclure les charges sociales
+            </mat-checkbox>
+          </div>
+        </div>
+
+        <!-- Sécurité -->
+        <div class="form-section" *ngIf="exportForm.get('format')?.value === 'pdf'">
+          <h4>Sécurité</h4>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Mot de passe (optionnel)</mat-label>
+              <input matInput type="password" formControlName="motDePasse" 
+                     placeholder="Mot de passe pour protéger le fichier">
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Commentaire -->
+        <div class="form-section">
+          <h4>Commentaire</h4>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Commentaire</mat-label>
+              <textarea matInput formControlName="commentaire" rows="3" 
+                        placeholder="Commentaire sur cet export (optionnel)"></textarea>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="form-actions">
+          <button mat-stroked-button type="button" (click)="previsualiser()" 
+                  [disabled]="!exportForm.valid || isLoading">
+            <mat-icon>visibility</mat-icon>
+            Prévisualiser
+          </button>
+          <button mat-raised-button color="primary" type="button" (click)="lancerExport()" 
+                  [disabled]="!exportForm.valid || isExporting">
+            <mat-icon>download</mat-icon>
+            <span *ngIf="!isExporting">Lancer l'export</span>
+            <span *ngIf="isExporting">Export en cours...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Historique des exports -->
+    <div class="history-card">
+      <div class="card-header">
+        <h3>Historique des exports</h3>
+      </div>
+      
+      <div class="history-list" *ngIf="exportHistory.length > 0">
+        <div class="history-item" *ngFor="let export of exportHistory">
+          <div class="export-info">
+            <div class="export-title">
+              {{ getTypeExportLabel(export.type) }} - {{ formatPeriode(export.periode) }}
+            </div>
+            <div class="export-details">
+              <span class="export-format">{{ getFormatLabel(export.format) }}</span>
+              <span class="export-date">{{ export.dateCreation | date:'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+            <div class="export-comment" *ngIf="export.commentaire">
+              {{ export.commentaire }}
+            </div>
+          </div>
+          <div class="export-status">
+            <span class="status-badge" [class]="getStatutExportClass(export.statut)">
+              {{ export.statut }}
+            </span>
+          </div>
+          <div class="export-actions">
+            <button mat-icon-button (click)="retelechargerExport(export.id)" 
+                    [disabled]="export.statut !== 'termine'" 
+                    matTooltip="Retélécharger">
+              <mat-icon>download</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="no-history" *ngIf="exportHistory.length === 0">
+        <mat-icon>history</mat-icon>
+        <p>Aucun export réalisé</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Indicateur de chargement -->
+  <div class="loading-overlay" *ngIf="isLoading || isExporting">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p *ngIf="isExporting">Export en cours, veuillez patienter...</p>
+    <p *ngIf="isLoading">Chargement...</p>
+  </div>
+</div>

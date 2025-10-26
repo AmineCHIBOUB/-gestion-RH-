@@ -1,0 +1,211 @@
+<div class="nouvelle-demande-container">
+  <div class="header">
+    <h1>Nouvelle Demande de Congé</h1>
+    <div class="actions">
+      <button 
+        mat-button 
+        (click)="onCancel()"
+        [disabled]="submitting"
+        class="cancel-button">
+        Annuler
+      </button>
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="onSubmit()"
+        [disabled]="!isFormValid() || submitting"
+        class="submit-button">
+        <mat-icon *ngIf="submitting">hourglass_empty</mat-icon>
+        <mat-icon *ngIf="!submitting">send</mat-icon>
+        {{ submitting ? 'Envoi...' : 'Envoyer la Demande' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Chargement des données...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <mat-icon color="warn">error</mat-icon>
+    <p>{{ error }}</p>
+    <button mat-button color="primary" (click)="loadInitialData()">
+      <mat-icon>refresh</mat-icon>
+      Réessayer
+    </button>
+  </div>
+
+  <!-- Form Content -->
+  <div *ngIf="!loading && !error" class="form-content">
+    <!-- Solde des Congés -->
+    <mat-card class="solde-card" *ngIf="soldeConges">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>account_balance</mat-icon>
+          Votre Solde de Congés
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="solde-summary">
+          <div class="solde-item">
+            <span class="label">Congés Payés :</span>
+            <span class="value">{{ soldeConges?.congesPayes?.restant || 0 }} jours</span>
+          </div>
+          <div class="solde-item">
+            <span class="label">RTT :</span>
+            <span class="value">{{ soldeConges?.rtt?.restant || 0 }} jours</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Formulaire -->
+    <form [formGroup]="demandeForm" class="demande-form">
+      <mat-card class="form-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>event</mat-icon>
+            Informations de la Demande
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-grid">
+            <!-- Type de Congé -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Type de Congé *</mat-label>
+              <mat-select formControlName="typeCongeId">
+                <mat-option *ngFor="let type of typesConge" [value]="type.id">
+                  {{ type.nom }} 
+                  <span class="type-description" *ngIf="type.description">
+                    - {{ type.description }}
+                  </span>
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="demandeForm.get('typeCongeId')?.hasError('required')">
+                {{ getErrorMessage('typeCongeId') }}
+              </mat-error>
+            </mat-form-field>
+
+            <!-- Date de Début -->
+            <mat-form-field appearance="outline">
+              <mat-label>Date de Début *</mat-label>
+              <input 
+                matInput 
+                [matDatepicker]="pickerDebut"
+                formControlName="dateDebut"
+                [min]="minDate"
+                [max]="maxDate">
+              <mat-datepicker-toggle matSuffix [for]="pickerDebut"></mat-datepicker-toggle>
+              <mat-datepicker #pickerDebut></mat-datepicker>
+              <mat-error *ngIf="demandeForm.get('dateDebut')?.hasError('required')">
+                {{ getErrorMessage('dateDebut') }}
+              </mat-error>
+            </mat-form-field>
+
+            <!-- Date de Fin -->
+            <mat-form-field appearance="outline">
+              <mat-label>Date de Fin *</mat-label>
+              <input 
+                matInput 
+                [matDatepicker]="pickerFin"
+                formControlName="dateFin"
+                [min]="demandeForm.get('dateDebut')?.value || minDate"
+                [max]="maxDate">
+              <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
+              <mat-datepicker #pickerFin></mat-datepicker>
+              <mat-error *ngIf="demandeForm.get('dateFin')?.hasError('required')">
+                {{ getErrorMessage('dateFin') }}
+              </mat-error>
+            </mat-form-field>
+
+            <!-- Nombre de Jours -->
+            <mat-form-field appearance="outline">
+              <mat-label>Nombre de Jours</mat-label>
+              <input 
+                matInput 
+                type="number"
+                formControlName="nbJours"
+                readonly>
+              <mat-hint>Calculé automatiquement (jours ouvrables)</mat-hint>
+            </mat-form-field>
+
+            <!-- Motif -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Motif</mat-label>
+              <input 
+                matInput 
+                formControlName="motif"
+                placeholder="Motif de la demande (optionnel)">
+            </mat-form-field>
+
+            <!-- Commentaire -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Commentaire</mat-label>
+              <textarea 
+                matInput 
+                formControlName="commentaire"
+                rows="3"
+                placeholder="Commentaire ou informations supplémentaires (optionnel)">
+              </textarea>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Résumé de la Demande -->
+      <mat-card class="summary-card" *ngIf="nbJoursOuvrables > 0">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>summarize</mat-icon>
+            Résumé de votre Demande
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="summary-grid">
+            <div class="summary-item">
+              <span class="label">Période :</span>
+              <span class="value">
+                {{ demandeForm.get('dateDebut')?.value | date:'dd/MM/yyyy' }} - 
+                {{ demandeForm.get('dateFin')?.value | date:'dd/MM/yyyy' }}
+              </span>
+            </div>
+            <div class="summary-item">
+              <span class="label">Durée totale :</span>
+              <span class="value">{{ nbJoursCalcule }} jour(s) calendaire(s)</span>
+            </div>
+            <div class="summary-item">
+              <span class="label">Jours ouvrables :</span>
+              <span class="value">{{ nbJoursOuvrables }} jour(s)</span>
+            </div>
+            <div class="summary-item" *ngIf="getSelectedTypeConge()">
+              <span class="label">Type :</span>
+              <span class="value">{{ getSelectedTypeConge()?.nom }}</span>
+            </div>
+            <div class="summary-item" *ngIf="getSelectedTypeConge()?.code !== 'CE'">
+              <span class="label">Solde après :</span>
+              <span class="value" [class.insufficient]="nbJoursOuvrables > getSoldeDisponible()">
+                {{ getSoldeDisponible() - nbJoursOuvrables }} jour(s)
+              </span>
+            </div>
+          </div>
+
+          <!-- Alerte solde insuffisant -->
+          <mat-card class="alert-card" *ngIf="getSelectedTypeConge()?.code !== 'CE' && nbJoursOuvrables > getSoldeDisponible()">
+            <mat-card-content>
+              <div class="alert-content">
+                <mat-icon color="warn">warning</mat-icon>
+                <div>
+                  <strong>Solde insuffisant</strong>
+                  <p>Vous demandez {{ nbJoursOuvrables }} jours mais vous n'avez que {{ getSoldeDisponible() }} jours disponibles.</p>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </mat-card-content>
+      </mat-card>
+    </form>
+  </div>
+</div>

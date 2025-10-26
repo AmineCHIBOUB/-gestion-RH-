@@ -1,0 +1,275 @@
+<div class="rapports-absences-container">
+  <!-- Header -->
+  <div class="header">
+    <h2><mat-icon>bar_chart</mat-icon> Rapports d'Absences</h2>
+    <p class="subtitle">Analyse et suivi des absences des employés</p>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="statistics-grid">
+    <div class="stat-card total">
+      <div class="stat-icon">
+        <mat-icon>event_busy</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.totalAbsences }}</h3>
+        <p>Total Absences</p>
+      </div>
+    </div>
+    <div class="stat-card rate">
+      <div class="stat-icon">
+        <mat-icon>percent</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.absenteeismRate }}%</h3>
+        <p>Taux d'Absentéisme</p>
+      </div>
+    </div>
+    <div class="stat-card average">
+      <div class="stat-icon">
+        <mat-icon>person_outline</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.averageAbsencesPerEmployee }}</h3>
+        <p>Moyenne par Employé</p>
+      </div>
+    </div>
+    <div class="stat-card days">
+      <div class="stat-icon">
+        <mat-icon>today</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.totalAbsenceDays }}</h3>
+        <p>Total Jours d'Absence</p>
+      </div>
+    </div>
+    <div class="stat-card justified">
+      <div class="stat-icon">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.justifiedAbsences }}</h3>
+        <p>Absences Justifiées</p>
+      </div>
+    </div>
+    <div class="stat-card unjustified">
+      <div class="stat-icon">
+        <mat-icon>cancel</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.unjustifiedAbsences }}</h3>
+        <p>Absences Non Justifiées</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="filters-grid">
+      <div class="filter-group">
+        <label for="startDate">Date de Début</label>
+        <input type="date" id="startDate" [(ngModel)]="filters.startDate" (change)="onFilterChange()">
+      </div>
+      <div class="filter-group">
+        <label for="endDate">Date de Fin</label>
+        <input type="date" id="endDate" [(ngModel)]="filters.endDate" (change)="onFilterChange()">
+      </div>
+      <div class="filter-group">
+        <label for="department">Département</label>
+        <select id="department" [(ngModel)]="filters.department" (change)="onFilterChange()">
+          <option value="">Tous les départements</option>
+          <option *ngFor="let dept of departments" [value]="dept.id">{{ dept.nom }}</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="employee">Employé</label>
+        <select id="employee" [(ngModel)]="filters.employee" (change)="onFilterChange()">
+          <option value="">Tous les employés</option>
+          <option *ngFor="let emp of employees" [value]="emp.id">{{ emp.prenom }} {{ emp.nom }}</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="reason">Motif</label>
+        <select id="reason" [(ngModel)]="filters.reason" (change)="onFilterChange()">
+          <option value="">Tous les motifs</option>
+          <option value="maladie">Maladie</option>
+          <option value="conge">Congé</option>
+          <option value="formation">Formation</option>
+          <option value="personnel">Personnel</option>
+          <option value="autre">Autre</option>
+        </select>
+      </div>
+      <div class="filter-actions">
+        <button type="button" class="btn btn-secondary" (click)="resetFilters()">
+          <mat-icon>refresh</mat-icon> Réinitialiser
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="charts-section">
+    <div class="charts-grid">
+      <!-- Evolution Chart -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3><mat-icon>trending_up</mat-icon> Évolution des Absences</h3>
+        </div>
+        <div class="chart-content">
+          <canvas #evolutionChart></canvas>
+        </div>
+      </div>
+
+      <!-- Reasons Chart -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3><i class="fas fa-pie-chart"></i> Répartition par Motif</h3>
+        </div>
+        <div class="chart-content">
+          <canvas #reasonsChart></canvas>
+        </div>
+      </div>
+
+      <!-- Departments Chart -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3><i class="fas fa-bar-chart"></i> Absences par Département</h3>
+        </div>
+        <div class="chart-content">
+          <canvas #departmentsChart></canvas>
+        </div>
+      </div>
+
+      <!-- Absenteeism Rate Chart -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3><i class="fas fa-area-chart"></i> Taux d'Absentéisme par Employé</h3>
+        </div>
+        <div class="chart-content">
+          <canvas #absenteeismRateChart></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export Actions -->
+  <div class="export-section">
+    <div class="export-actions">
+      <button type="button" class="btn btn-primary" (click)="exportToPDF()">
+        <i class="fas fa-file-pdf"></i> Exporter PDF
+      </button>
+      <button type="button" class="btn btn-success" (click)="exportToExcel()">
+        <i class="fas fa-file-excel"></i> Exporter Excel
+      </button>
+      <button type="button" class="btn btn-info" (click)="printReport()">
+        <i class="fas fa-print"></i> Imprimer
+      </button>
+    </div>
+  </div>
+
+  <!-- Detailed Table -->
+  <div class="table-section">
+    <div class="table-header">
+      <h3><i class="fas fa-table"></i> Détail des Absences</h3>
+      <div class="table-actions">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" placeholder="Rechercher..." [(ngModel)]="searchTerm" (input)="onSearch()">
+        </div>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th (click)="sort('employee')" [class.sorted]="sortField === 'employee'">
+              Employé
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'employee' && sortDirection === 'asc'" 
+                 [class.fa-sort-down]="sortField === 'employee' && sortDirection === 'desc'"></i>
+            </th>
+            <th (click)="sort('department')" [class.sorted]="sortField === 'department'">
+              Département
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'department' && sortDirection === 'asc'" 
+                 [class.fa-sort-down]="sortField === 'department' && sortDirection === 'desc'"></i>
+            </th>
+            <th (click)="sort('startDate')" [class.sorted]="sortField === 'startDate'">
+              Date Début
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'startDate' && sortDirection === 'asc'" 
+                 [class.fa-sort-down]="sortField === 'startDate' && sortDirection === 'desc'"></i>
+            </th>
+            <th (click)="sort('endDate')" [class.sorted]="sortField === 'endDate'">
+              Date Fin
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'endDate' && sortDirection === 'asc'" 
+                 [class.fa-sort-down]="sortField === 'endDate' && sortDirection === 'desc'"></i>
+            </th>
+            <th (click)="sort('duration')" [class.sorted]="sortField === 'duration'">
+              Durée (jours)
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'duration' && sortDirection === 'asc'" 
+                 [class.fa-sort-down]="sortField === 'duration' && sortDirection === 'desc'"></i>
+            </th>
+            <th (click)="sort('reason')" [class.sorted]="sortField === 'reason'">
+              Motif
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'reason' && sortDirection === 'asc'" 
+                 [class.fa-sort-down]="sortField === 'reason' && sortDirection === 'desc'"></i>
+            </th>
+            <th>Justifiée</th>
+            <th>Commentaire</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let absence of paginatedAbsences">
+            <td>
+              <div class="employee-info">
+                <div class="employee-name">{{ absence.employee.prenom }} {{ absence.employee.nom }}</div>
+                <div class="employee-matricule">{{ absence.employee.matricule }}</div>
+              </div>
+            </td>
+            <td>{{ absence.employee.department?.nom }}</td>
+            <td>{{ absence.startDate | date:'dd/MM/yyyy' }}</td>
+            <td>{{ absence.endDate | date:'dd/MM/yyyy' }}</td>
+            <td>{{ absence.duration }}</td>
+            <td>
+              <span class="reason-badge" [class]="'reason-' + absence.reason">
+                {{ getReasonLabel(absence.reason) }}
+              </span>
+            </td>
+            <td>
+              <span class="status-badge" [class]="absence.justified ? 'justified' : 'unjustified'">
+                <i class="fas" [class.fa-check]="absence.justified" [class.fa-times]="!absence.justified"></i>
+                {{ absence.justified ? 'Oui' : 'Non' }}
+              </span>
+            </td>
+            <td class="comment-cell">{{ absence.comment || '-' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-container" *ngIf="totalPages > 1">
+      <div class="pagination-info">
+        Affichage de {{ (currentPage - 1) * pageSize + 1 }} à {{ Math.min(currentPage * pageSize, totalItems) }} sur {{ totalItems }} éléments
+      </div>
+      <div class="pagination">
+        <button [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button *ngFor="let page of getPageNumbers()" 
+                [class.active]="page === currentPage" 
+                (click)="goToPage(page)">
+          {{ page }}
+        </button>
+        <button [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div class="loading-spinner" *ngIf="loading">
+    <i class="fas fa-spinner fa-spin"></i>
+    <p>Chargement des données...</p>
+  </div>
+</div>

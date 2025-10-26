@@ -1,0 +1,582 @@
+<div class="suivi-candidats-container">
+  <!-- En-tête -->
+  <div class="header">
+    <div class="title-section">
+      <h1>
+        <mat-icon>people</mat-icon>
+        Suivi des Candidats
+      </h1>
+      <p class="subtitle">Gérez et suivez vos candidats tout au long du processus de recrutement</p>
+    </div>
+    <div class="actions">
+      <button mat-raised-button color="primary" (click)="openForm()">
+        <mat-icon>add</mat-icon>
+        Nouveau Candidat
+      </button>
+      <button mat-stroked-button (click)="exportData()">
+        <mat-icon>download</mat-icon>
+        Exporter
+      </button>
+    </div>
+  </div>
+
+  <!-- Statistiques -->
+  <div class="stats-grid">
+    <mat-card class="stat-card total">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon">
+            <mat-icon>people</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ stats.total }}</h3>
+            <p>Total Candidats</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card nouveaux">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon">
+            <mat-icon>fiber_new</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ stats.nouveaux }}</h3>
+            <p>Nouveaux</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card en-cours">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon">
+            <mat-icon>hourglass_empty</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ stats.enCours }}</h3>
+            <p>En Cours</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card entretiens">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon">
+            <mat-icon>event</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ stats.entretiens }}</h3>
+            <p>Entretiens</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card acceptes">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon">
+            <mat-icon>check_circle</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ stats.acceptes }}</h3>
+            <p>Acceptés</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card rejetes">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon">
+            <mat-icon>cancel</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ stats.rejetes }}</h3>
+            <p>Rejetés</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card conversion">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon">
+            <mat-icon>trending_up</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ stats.tauxConversion }}%</h3>
+            <p>Taux de Conversion</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card temps">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon">
+            <mat-icon>schedule</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ stats.tempsTraitementMoyen }}j</h3>
+            <p>Temps Moyen</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Filtres -->
+  <mat-card class="filters-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>filter_list</mat-icon>
+        Filtres
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="filterForm" class="filters-form">
+        <div class="filters-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Recherche</mat-label>
+            <input matInput formControlName="search" placeholder="Nom, email, poste...">
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Statut</mat-label>
+            <mat-select formControlName="statut">
+              <mat-option value="">Tous</mat-option>
+              <mat-option *ngFor="let statut of statutOptions" [value]="statut.value">
+                {{ statut.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Poste</mat-label>
+            <input matInput formControlName="poste" placeholder="Nom du poste">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Source</mat-label>
+            <mat-select formControlName="source">
+              <mat-option value="">Toutes</mat-option>
+              <mat-option *ngFor="let source of sourceOptions" [value]="source">
+                {{ source }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="filters-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Date début</mat-label>
+            <input matInput [matDatepicker]="dateDebut" formControlName="dateDebut">
+            <mat-datepicker-toggle matSuffix [for]="dateDebut"></mat-datepicker-toggle>
+            <mat-datepicker #dateDebut></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Date fin</mat-label>
+            <input matInput [matDatepicker]="dateFin" formControlName="dateFin">
+            <mat-datepicker-toggle matSuffix [for]="dateFin"></mat-datepicker-toggle>
+            <mat-datepicker #dateFin></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Score min</mat-label>
+            <input matInput type="number" formControlName="scoreMin" min="0" max="100">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Score max</mat-label>
+            <input matInput type="number" formControlName="scoreMax" min="0" max="100">
+          </mat-form-field>
+
+          <button mat-stroked-button type="button" (click)="clearFilters()">
+            <mat-icon>clear</mat-icon>
+            Effacer
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Tableau des candidats -->
+  <mat-card class="table-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>list</mat-icon>
+        Liste des Candidats ({{ totalItems }})
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="table-container">
+        <table mat-table [dataSource]="getPaginatedData()" matSort (matSortChange)="sortData($event)" class="candidats-table">
+          <!-- Colonne Nom -->
+          <ng-container matColumnDef="nom">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom</th>
+            <td mat-cell *matCellDef="let candidat">
+              <div class="candidat-info">
+                <div class="candidat-name">{{ candidat.prenom }} {{ candidat.nom }}</div>
+                <div class="candidat-phone">{{ candidat.telephone }}</div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Email -->
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+            <td mat-cell *matCellDef="let candidat">
+              <a [href]="'mailto:' + candidat.email" class="email-link">{{ candidat.email }}</a>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Poste -->
+          <ng-container matColumnDef="poste">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Poste</th>
+            <td mat-cell *matCellDef="let candidat">
+              <div class="poste-info">
+                <div class="poste-title">{{ candidat.poste }}</div>
+                <div class="experience">{{ candidat.experience }} ans d'exp.</div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Statut -->
+          <ng-container matColumnDef="statut">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
+            <td mat-cell *matCellDef="let candidat">
+              <mat-chip-set>
+                <mat-chip [style.background-color]="getStatutColor(candidat.statut)">
+                  <mat-chip-avatar>
+                    <mat-icon>{{ getStatutIcon(candidat.statut) }}</mat-icon>
+                  </mat-chip-avatar>
+                  <!-- CORRECTION: Remplacer l'expression complexe -->
+                  {{ getStatutLabel(candidat.statut) }}
+                </mat-chip>
+              </mat-chip-set>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Source -->
+          <ng-container matColumnDef="source">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Source</th>
+            <td mat-cell *matCellDef="let candidat">{{ candidat.source }}</td>
+          </ng-container>
+
+          <!-- Colonne Date de postulation -->
+          <ng-container matColumnDef="datePostulation">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Date Postulation</th>
+            <td mat-cell *matCellDef="let candidat">
+              {{ candidat.datePostulation | date:'dd/MM/yyyy' }}
+            </td>
+          </ng-container>
+
+          <!-- Colonne Score -->
+          <ng-container matColumnDef="score">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Score</th>
+            <td mat-cell *matCellDef="let candidat">
+              <div class="score-container" *ngIf="candidat.score !== undefined">
+                <mat-progress-bar 
+                  mode="determinate" 
+                  [value]="candidat.score"
+                  [color]="candidat.score >= 70 ? 'primary' : candidat.score >= 50 ? 'accent' : 'warn'">
+                </mat-progress-bar>
+                <span class="score-text">{{ candidat.score }}%</span>
+              </div>
+              <span *ngIf="candidat.score === undefined" class="no-score">-</span>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Actions -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let candidat">
+              <button mat-icon-button [matMenuTriggerFor]="actionsMenu" [matMenuTriggerData]="{candidat: candidat}">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              
+              <mat-menu #actionsMenu="matMenu">
+                <ng-template matMenuContent let-candidat="candidat">
+                  <button mat-menu-item (click)="viewCandidat(candidat)">
+                    <mat-icon>visibility</mat-icon>
+                    <span>Voir détails</span>
+                  </button>
+                  <button mat-menu-item (click)="openForm(candidat)">
+                    <mat-icon>edit</mat-icon>
+                    <span>Modifier</span>
+                  </button>
+                  <button mat-menu-item (click)="planifierEntretien(candidat)">
+                    <mat-icon>event</mat-icon>
+                    <span>Planifier entretien</span>
+                  </button>
+                  <mat-divider></mat-divider>
+                  <button mat-menu-item (click)="updateStatut(candidat, 'accepte')" *ngIf="candidat?.statut !== 'accepte'">
+                    <mat-icon>check_circle</mat-icon>
+                    <span>Accepter</span>
+                  </button>
+                  <button mat-menu-item (click)="updateStatut(candidat, 'rejete')" *ngIf="candidat?.statut !== 'rejete'">
+                    <mat-icon>cancel</mat-icon>
+                    <span>Rejeter</span>
+                  </button>
+                  <mat-divider></mat-divider>
+                  <button mat-menu-item (click)="deleteCandidat(candidat)" class="delete-action">
+                    <mat-icon>delete</mat-icon>
+                    <span>Supprimer</span>
+                  </button>
+                </ng-template>
+              </mat-menu>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <!-- Message si aucune donnée -->
+        <div *ngIf="hasNoData" class="no-data">
+          <mat-icon>people_outline</mat-icon>
+          <h3>Aucun candidat trouvé</h3>
+          <p>Aucun candidat ne correspond aux critères de recherche.</p>
+        </div>
+
+        <!-- Indicateur de chargement -->
+        <div *ngIf="loading" class="loading">
+          <mat-spinner></mat-spinner>
+          <p>Chargement des candidats...</p>
+        </div>
+      </div> <!-- Fermeture du div table-container -->
+
+      <!-- Pagination -->
+      <mat-paginator
+        [length]="totalItems"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[5, 10, 25, 50]"
+        [pageIndex]="pageIndex"
+        (page)="onPageChange($event)"
+        showFirstLastButtons>
+      </mat-paginator>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Formulaire de candidat -->
+  <div class="form-overlay" *ngIf="showForm" (click)="closeForm()">
+    <div class="form-container" (click)="$event.stopPropagation()">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>{{ editMode ? 'edit' : 'add' }}</mat-icon>
+            {{ editMode ? 'Modifier le candidat' : 'Nouveau candidat' }}
+          </mat-card-title>
+          <button mat-icon-button (click)="closeForm()" class="close-button">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <form [formGroup]="candidatForm" (ngSubmit)="onSubmit()">
+            <div class="form-grid">
+              <!-- Informations personnelles -->
+              <div class="form-section">
+                <h3>Informations personnelles</h3>
+                <div class="form-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Prénom *</mat-label>
+                    <input matInput formControlName="prenom">
+                    <mat-error *ngIf="candidatForm.get('prenom')?.hasError('required')">
+                      Le prénom est requis
+                    </mat-error>
+                    <mat-error *ngIf="candidatForm.get('prenom')?.hasError('minlength')">
+                      Le prénom doit contenir au moins 2 caractères
+                    </mat-error>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Nom *</mat-label>
+                    <input matInput formControlName="nom">
+                    <mat-error *ngIf="candidatForm.get('nom')?.hasError('required')">
+                      Le nom est requis
+                    </mat-error>
+                    <mat-error *ngIf="candidatForm.get('nom')?.hasError('minlength')">
+                      Le nom doit contenir au moins 2 caractères
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+
+                <div class="form-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Email *</mat-label>
+                    <input matInput type="email" formControlName="email">
+                    <mat-error *ngIf="candidatForm.get('email')?.hasError('required')">
+                      L'email est requis
+                    </mat-error>
+                    <mat-error *ngIf="candidatForm.get('email')?.hasError('email')">
+                      Format d'email invalide
+                    </mat-error>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Téléphone *</mat-label>
+                    <input matInput formControlName="telephone">
+                    <mat-error *ngIf="candidatForm.get('telephone')?.hasError('required')">
+                      Le téléphone est requis
+                    </mat-error>
+                    <mat-error *ngIf="candidatForm.get('telephone')?.hasError('pattern')">
+                      Format de téléphone invalide
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <!-- Informations professionnelles -->
+              <div class="form-section">
+                <h3>Informations professionnelles</h3>
+                <div class="form-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Poste *</mat-label>
+                    <input matInput formControlName="poste">
+                    <mat-error *ngIf="candidatForm.get('poste')?.hasError('required')">
+                      Le poste est requis
+                    </mat-error>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Expérience (années) *</mat-label>
+                    <input matInput type="number" formControlName="experience" min="0">
+                    <mat-error *ngIf="candidatForm.get('experience')?.hasError('required')">
+                      L'expérience est requise
+                    </mat-error>
+                    <mat-error *ngIf="candidatForm.get('experience')?.hasError('min')">
+                      L'expérience ne peut pas être négative
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+
+                <div class="form-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Salaire souhaité (€)</mat-label>
+                    <input matInput type="number" formControlName="salaireSouhaite" min="0">
+                    <mat-error *ngIf="candidatForm.get('salaireSouhaite')?.hasError('min')">
+                      Le salaire ne peut pas être négatif
+                    </mat-error>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Disponibilité *</mat-label>
+                    <input matInput [matDatepicker]="disponibilite" formControlName="disponibilite">
+                    <mat-datepicker-toggle matSuffix [for]="disponibilite"></mat-datepicker-toggle>
+                    <mat-datepicker #disponibilite></mat-datepicker>
+                    <mat-error *ngIf="candidatForm.get('disponibilite')?.hasError('required')">
+                      La disponibilité est requise
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <!-- Suivi candidature -->
+              <div class="form-section">
+                <h3>Suivi candidature</h3>
+                <div class="form-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Statut *</mat-label>
+                    <mat-select formControlName="statut">
+                      <mat-option *ngFor="let statut of statutOptions" [value]="statut.value">
+                        {{ statut.label }}
+                      </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="candidatForm.get('statut')?.hasError('required')">
+                      Le statut est requis
+                    </mat-error>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Source *</mat-label>
+                    <mat-select formControlName="source">
+                      <mat-option *ngFor="let source of sourceOptions" [value]="source">
+                        {{ source }}
+                      </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="candidatForm.get('source')?.hasError('required')">
+                      La source est requise
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+
+                <div class="form-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Date de postulation *</mat-label>
+                    <input matInput [matDatepicker]="datePostulation" formControlName="datePostulation">
+                    <mat-datepicker-toggle matSuffix [for]="datePostulation"></mat-datepicker-toggle>
+                    <mat-datepicker #datePostulation></mat-datepicker>
+                    <mat-error *ngIf="candidatForm.get('datePostulation')?.hasError('required')">
+                      La date de postulation est requise
+                    </mat-error>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Date d'entretien</mat-label>
+                    <input matInput [matDatepicker]="dateEntretien" formControlName="dateEntretien">
+                    <mat-datepicker-toggle matSuffix [for]="dateEntretien"></mat-datepicker-toggle>
+                    <mat-datepicker #dateEntretien></mat-datepicker>
+                  </mat-form-field>
+                </div>
+
+                <div class="form-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Score (0-100)</mat-label>
+                    <input matInput type="number" formControlName="score" min="0" max="100">
+                    <mat-error *ngIf="candidatForm.get('score')?.hasError('min')">
+                      Le score minimum est 0
+                    </mat-error>
+                    <mat-error *ngIf="candidatForm.get('score')?.hasError('max')">
+                      Le score maximum est 100
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Notes</mat-label>
+                  <textarea matInput formControlName="notes" rows="3" placeholder="Notes sur le candidat..."></textarea>
+                </mat-form-field>
+              </div>
+
+              <!-- Documents -->
+              <div class="form-section">
+                <h3>Documents</h3>
+                <div class="form-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>CV</mat-label>
+                    <input matInput formControlName="cv" placeholder="Nom du fichier CV">
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Lettre de motivation</mat-label>
+                    <input matInput formControlName="lettreMotivation" placeholder="Nom du fichier lettre">
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </form>
+        </mat-card-content>
+        
+        <mat-card-actions align="end">
+          <button mat-button type="button" (click)="closeForm()">Annuler</button>
+          <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="candidatForm.invalid">
+            {{ editMode ? 'Modifier' : 'Ajouter' }}
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+</div>

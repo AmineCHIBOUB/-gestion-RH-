@@ -1,0 +1,148 @@
+<div class="liste-employes">
+  <div class="header">
+    <h1>Gestion des Employés</h1>
+    <div class="header-actions">
+      <button mat-raised-button color="primary" routerLink="/rh/employes/nouveau">
+        <mat-icon>person_add</mat-icon>
+        Nouvel Employé
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtres -->
+  <mat-card class="filter-card">
+    <mat-card-header>
+      <mat-card-title>Filtres</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="filterForm" class="filter-form">
+        <mat-form-field>
+          <mat-label>Nom</mat-label>
+          <input matInput formControlName="nom" placeholder="Rechercher par nom">
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Département</mat-label>
+          <mat-select formControlName="departement">
+            <mat-option value="">Tous</mat-option>
+            <mat-option *ngFor="let dept of departements" [value]="dept">{{ dept }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Poste</mat-label>
+          <mat-select formControlName="poste">
+            <mat-option value="">Tous</mat-option>
+            <mat-option *ngFor="let poste of postes" [value]="poste">{{ poste }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Statut</mat-label>
+          <mat-select formControlName="statut">
+            <mat-option value="">Tous</mat-option>
+            <mat-option *ngFor="let statut of statuts" [value]="statut">{{ statut }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Type de Contrat</mat-label>
+          <mat-select formControlName="typeContrat">
+            <mat-option value="">Tous</mat-option>
+            <mat-option *ngFor="let type of typesContrat" [value]="type">{{ type }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="filter-actions">
+          <button mat-raised-button color="primary" (click)="appliquerFiltre()">
+            <mat-icon>search</mat-icon>
+            Filtrer
+          </button>
+          <button mat-stroked-button (click)="reinitialiserFiltre()">
+            <mat-icon>clear</mat-icon>
+            Réinitialiser
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Tableau -->
+  <mat-card class="table-card">
+    <mat-card-content>
+      <div class="table-container">
+        <table mat-table [dataSource]="dataSource" matSort class="employes-table">
+          <ng-container matColumnDef="matricule">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Matricule</th>
+            <td mat-cell *matCellDef="let employe">{{ employe.matricule }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="nom">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom</th>
+            <td mat-cell *matCellDef="let employe">{{ employe.nom }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="prenom">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Prénom</th>
+            <td mat-cell *matCellDef="let employe">{{ employe.prenom }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef>Email</th>
+            <td mat-cell *matCellDef="let employe">{{ employe.email }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="poste">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Poste</th>
+            <td mat-cell *matCellDef="let employe">{{ employe.poste }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="departement">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Département</th>
+            <td mat-cell *matCellDef="let employe">{{ employe.departement }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="statut">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
+            <td mat-cell *matCellDef="let employe">
+              <mat-chip [color]="getStatutColor(employe.statut)" selected>
+                {{ employe.statut }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let employe">
+              <button mat-icon-button [matMenuTriggerFor]="menu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+
+
+                <button mat-menu-item (click)="supprimerEmploye(employe)" class="delete-action">
+                  <mat-icon>delete</mat-icon>
+                  <span>Supprimer</span>
+                </button>
+              </mat-menu>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <div class="no-data" *ngIf="dataSource.data.length === 0 && !loading">
+          <mat-icon>people_outline</mat-icon>
+          <p>Aucun employé trouvé</p>
+        </div>
+
+        <div class="loading" *ngIf="loading">
+          <mat-spinner></mat-spinner>
+        </div>
+      </div>
+
+      <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" showFirstLastButtons></mat-paginator>
+    </mat-card-content>
+  </mat-card>
+</div>

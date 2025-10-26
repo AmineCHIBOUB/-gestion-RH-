@@ -1,0 +1,309 @@
+/* Variables de couleurs */
+:root {
+  --primary-color: #6366f1;
+  --secondary-color: #ec4899;
+  --success-color: #10b981;
+  --info-color: #06b6d4;
+  --purple-color: #8b5cf6;
+  --teal-color: #14b8a6;
+  --background-white: #ffffff;
+  --text-dark: #1f2937;
+  --text-light: #6b7280;
+  --border-light: #e5e7eb;
+  --shadow-light: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Container principal avec fond blanc */
+.role-list-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white;
+  min-height: 100vh;
+}
+
+/* En-tête avec dégradé coloré */
+.header {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--purple-color) 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-medium);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Conteneur de recherche avec fond blanc */
+.search-container {
+  background: var(--background-white);
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: var(--shadow-light);
+  margin-bottom: 2rem;
+  border: 1px solid var(--border-light);
+}
+
+.search-field {
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Container du tableau avec fond blanc */
+.table-container {
+  position: relative;
+  min-height: 200px;
+  overflow-x: auto;
+  background: white;
+  border-radius: 8px;
+  box-shadow: var(--shadow-light);
+  border: 1px solid var(--border-light);
+}
+
+/* Tableau avec fond blanc */
+.roles-table {
+  width: 100%;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* En-têtes du tableau avec style coloré sur fond blanc */
+.roles-table .mat-mdc-header-cell {
+  background: white;
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  background-image: linear-gradient(135deg, var(--primary-color), var(--purple-color));
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 1rem;
+  border-bottom: 2px solid var(--border-light);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.roles-table .mat-mdc-header-cell:hover {
+  background-image: linear-gradient(135deg, var(--info-color), var(--teal-color));
+  transform: translateY(-1px);
+}
+
+.roles-table .mat-mdc-header-cell::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.roles-table .mat-mdc-header-cell:hover::before {
+  left: 100%;
+}
+
+/* Cellules du tableau sur fond blanc */
+.roles-table .mat-mdc-cell {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-light);
+  font-size: 0.95em;
+  background: white;
+  vertical-align: middle;
+}
+
+/* Lignes du tableau avec effet hover coloré */
+.roles-table .mat-mdc-row:hover {
+  background: linear-gradient(135deg, #f8faff 0%, #f0f9ff 100%);
+  transition: all 0.3s ease;
+}
+
+/* Chips colorés pour les permissions */
+.mat-mdc-chip {
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.mat-mdc-chip.mat-primary {
+  background: linear-gradient(135deg, var(--primary-color), var(--purple-color));
+  color: white;
+}
+
+.mat-mdc-chip.mat-accent {
+  background: linear-gradient(135deg, var(--info-color), var(--teal-color));
+  color: white;
+}
+
+/* Boutons d'action avec dégradés */
+.mat-mdc-icon-button {
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.mat-mdc-icon-button:not([color="warn"]) {
+  background: linear-gradient(135deg, var(--primary-color), var(--purple-color));
+  color: white;
+}
+
+.mat-mdc-icon-button[color="warn"] {
+  background: linear-gradient(135deg, #ef4444, var(--secondary-color));
+  color: white;
+}
+
+.mat-mdc-icon-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Bouton principal */
+.mat-mdc-raised-button.mat-primary {
+  background: linear-gradient(135deg, var(--primary-color), var(--purple-color));
+  color: white;
+  border-radius: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: var(--shadow-medium);
+  transition: all 0.3s ease;
+}
+
+.mat-mdc-raised-button.mat-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(99, 102, 241, 0.3);
+}
+
+/* Loading container avec fond blanc */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  background: var(--background-white);
+  border-radius: 12px;
+  box-shadow: var(--shadow-light);
+}
+
+.loading-container p {
+  margin-top: 1rem;
+  color: var(--text-light);
+  font-weight: 500;
+}
+
+/* Animations pour les en-têtes */
+/* Supprimez ces animations */
+/* @keyframes headerPulse { ... } */
+/* @keyframes headerGlow { ... } */
+/* @keyframes headerShimmer { ... } */
+
+/* Supprimez aussi les animation-delay pour chaque en-tête */
+/* .roles-table .mat-mdc-header-cell:nth-child(1) { animation-delay: 0s; } */
+/* .roles-table .mat-mdc-header-cell:nth-child(2) { animation-delay: 0.2s; } */
+/* etc... */
+
+.roles-table .mat-mdc-header-cell:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+.roles-table .mat-mdc-header-cell:nth-child(4) {
+  animation-delay: 0.6s;
+}
+
+.roles-table .mat-mdc-header-cell:nth-child(5) {
+  animation-delay: 0.8s;
+}
+
+@keyframes headerShimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .search-container {
+    padding: 1rem;
+  }
+  
+  .roles-table .mat-mdc-cell,
+  .roles-table .mat-mdc-header-cell {
+    padding: 0.5rem;
+    font-size: 0.75rem;
+  }
+}
+.role-name {
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.role-description {
+  color: #718096;
+  font-size: 0.875rem;
+}
+
+.permissions-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.permission-badge {
+  background: #e2e8f0;
+  color: #4a5568;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-edit {
+  background: #4299e1;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.btn-delete {
+  background: #f56565;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+}

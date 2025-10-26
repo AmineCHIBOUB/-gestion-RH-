@@ -1,0 +1,488 @@
+/* Container principal */
+.pieces-jointes-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+/* Header Card */
+.header-card {
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.header-card mat-card-header {
+  padding: 24px;
+}
+
+.header-card mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 28px;
+  font-weight: 600;
+  color: white;
+}
+
+.header-card mat-card-title mat-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+}
+
+.header-card mat-card-subtitle {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 16px;
+  margin-top: 8px;
+}
+
+/* Upload Card */
+.upload-card {
+  margin-bottom: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.upload-card mat-card-header {
+  background-color: #f8f9fa;
+  padding: 20px 24px;
+}
+
+.upload-card mat-card-title {
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+/* Zone d'upload */
+.upload-zone {
+  border: 2px dashed #ddd;
+  border-radius: 12px;
+  padding: 48px 24px;
+  text-align: center;
+  background-color: #fafafa;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  margin-bottom: 24px;
+}
+
+.upload-zone:hover {
+  border-color: #667eea;
+  background-color: #f0f4ff;
+  transform: translateY(-2px);
+}
+
+.upload-zone.drag-over {
+  border-color: #667eea;
+  background-color: #e3f2fd;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.2);
+}
+
+.upload-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: #667eea;
+  margin-bottom: 16px;
+}
+
+.upload-text {
+  font-size: 18px;
+  color: #666;
+  margin-bottom: 16px;
+}
+
+.upload-info {
+  font-size: 14px;
+  color: #999;
+  margin-top: 16px;
+  margin-bottom: 0;
+}
+
+/* Formulaire de métadonnées */
+.metadata-form {
+  background-color: #f8f9fa;
+  padding: 24px;
+  border-radius: 8px;
+  margin-top: 24px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.form-row mat-form-field {
+  width: 100%;
+}
+
+/* Fichiers sélectionnés */
+.selected-files {
+  margin-bottom: 24px;
+}
+
+.selected-files h4 {
+  color: #2c3e50;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.selected-files mat-list {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.selected-files mat-list-item {
+  border-bottom: 1px solid #eee;
+}
+
+.selected-files mat-list-item:last-child {
+  border-bottom: none;
+}
+
+/* Actions d'upload */
+.upload-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.upload-actions button {
+  min-width: 120px;
+}
+
+/* Barre de progression */
+mat-progress-bar {
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+/* Filtres Card */
+.filters-card {
+  margin-bottom: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+}
+
+.filters-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 16px;
+  align-items: end;
+}
+
+.filters-row mat-form-field {
+  width: 100%;
+}
+
+/* Documents Card */
+.documents-card {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.documents-card mat-card-header {
+  background-color: #f8f9fa;
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.documents-card mat-card-title {
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.search-field {
+  min-width: 300px;
+}
+
+/* Grille des documents */
+.documents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+  padding: 24px;
+}
+
+/* Carte de document */
+.document-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  border: 1px solid #eee;
+}
+
+.document-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Header du document */
+.document-header {
+  display: flex;
+  align-items: flex-start;
+  padding: 20px;
+  gap: 16px;
+}
+
+.file-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.file-icon.pdf { color: #e74c3c; }
+.file-icon.doc { color: #3498db; }
+.file-icon.image { color: #f39c12; }
+.file-icon.default { color: #95a5a6; }
+
+.document-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.document-name {
+  font-weight: 600;
+  font-size: 16px;
+  color: #2c3e50;
+  margin-bottom: 4px;
+  word-break: break-word;
+}
+
+.document-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #666;
+}
+
+.separator {
+  color: #ddd;
+}
+
+/* Corps du document */
+.document-body {
+  padding: 0 20px 16px;
+}
+
+.document-type {
+  margin-bottom: 12px;
+}
+
+.document-type mat-chip {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.document-description {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+  background-color: #f8f9fa;
+  padding: 12px;
+  border-radius: 6px;
+  border-left: 3px solid #667eea;
+}
+
+/* Footer du document */
+.document-footer {
+  padding: 16px 20px;
+  background-color: #f8f9fa;
+  border-top: 1px solid #eee;
+}
+
+.added-by {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #666;
+}
+
+.added-by mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+/* Actions de suppression */
+.delete-action {
+  color: #e74c3c !important;
+}
+
+.delete-action mat-icon {
+  color: #e74c3c;
+}
+
+/* Message aucun document */
+.no-documents {
+  text-align: center;
+  padding: 60px 24px;
+  color: #666;
+}
+
+.no-documents mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: #ddd;
+  margin-bottom: 16px;
+}
+
+.no-documents h3 {
+  margin: 16px 0 8px;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.no-documents p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Container de chargement */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  color: #666;
+}
+
+.loading-container p {
+  margin-top: 16px;
+  font-size: 16px;
+}
+
+/* Couleurs des types de documents */
+mat-chip[color="primary"] {
+  background-color: #667eea !important;
+  color: white !important;
+}
+
+mat-chip[color="accent"] {
+  background-color: #f39c12 !important;
+  color: white !important;
+}
+
+mat-chip[color="warn"] {
+  background-color: #e74c3c !important;
+  color: white !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .pieces-jointes-container {
+    padding: 16px;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .filters-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .documents-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 16px;
+  }
+  
+  .search-field {
+    min-width: auto;
+    width: 100%;
+  }
+  
+  .upload-zone {
+    padding: 32px 16px;
+  }
+  
+  .upload-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .upload-actions button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-card mat-card-title {
+    font-size: 24px;
+  }
+  
+  .document-header {
+    padding: 16px;
+  }
+  
+  .document-body {
+    padding: 0 16px 12px;
+  }
+  
+  .document-footer {
+    padding: 12px 16px;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.document-card {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* États de focus et accessibilité */
+.upload-zone:focus-within {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+button:focus {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* Amélioration des performances */
+.documents-grid {
+  contain: layout style;
+}
+
+.document-card {
+  contain: layout style paint;
+}

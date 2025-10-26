@@ -1,0 +1,575 @@
+/* Variables CSS pour les couleurs dégradées */
+:root {
+  --primary-color: #6366f1; /* Violet/Indigo */
+  --secondary-color: #ec4899; /* Rose/Magenta */
+  --success-color: #10b981; /* Vert */
+  --warning-color: #f59e0b; /* Orange */
+  --error-color: #ef4444; /* Rouge */
+  --info-color: #06b6d4; /* Cyan */
+  --purple-color: #8b5cf6; /* Violet clair */
+  --teal-color: #14b8a6; /* Teal */
+  --background-white: #ffffff;
+  --text-dark: #1f2937;
+  --text-light: #6b7280;
+  --border-light: #e5e7eb;
+  --shadow-light: rgba(0, 0, 0, 0.1);
+  --shadow-medium: rgba(0, 0, 0, 0.15);
+}
+
+/* Container principal avec arrière-plan dégradé */
+.dashboard-container,
+.employee-dashboard {
+  padding: 24px;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  min-height: 100vh;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Carte de bienvenue avec gradient violet-rose */
+.welcome-card,
+.welcome-section {
+  background: linear-gradient(135deg, #6366f1, #ec4899);
+  color: white;
+  padding: 32px;
+  border-radius: 16px;
+  margin-bottom: 32px;
+  box-shadow: 0 8px 32px rgba(99, 102, 241, 0.3);
+  position: relative;
+  overflow: hidden;
+  animation: headerShimmer 3s ease-in-out infinite;
+}
+
+.welcome-card::before,
+.welcome-section::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  animation: shimmer 3s linear infinite;
+}
+
+.welcome-card mat-card-header {
+  background: transparent;
+  color: white;
+  padding: 0;
+  margin: 0;
+}
+
+.welcome-card mat-card-title,
+.welcome-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 8px 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.welcome-card mat-card-subtitle,
+.welcome-subtitle {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+}
+
+.profile-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-avatar mat-icon {
+  font-size: 32px;
+  color: white;
+}
+
+/* Grille des statistiques */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+/* Cartes de statistiques avec gradients colorés */
+.stat-card {
+  border-radius: 16px;
+  box-shadow: 0 8px 32px var(--shadow-light);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  position: relative;
+  background: white;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #6366f1, #ec4899, #06b6d4, #10b981);
+}
+
+.stat-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px var(--shadow-medium);
+}
+
+.stat-card mat-card-content {
+  padding: 32px !important;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.stat-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.stat-content mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #6366f1, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent; /* Fallback pour les navigateurs non compatibles */
+}
+
+.stat-info {
+  flex: 1;
+}
+
+.stat-info h3 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #6366f1, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent; /* Fallback pour les navigateurs non compatibles */
+  margin: 0 0 8px 0;
+  line-height: 1;
+}
+
+.stat-info p {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin: 0;
+}
+
+/* Actions rapides avec style moderne */
+.quick-actions,
+.navigation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.action-card,
+.nav-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px var(--shadow-light);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+}
+
+.action-card::before,
+.nav-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #6366f1, #ec4899, #06b6d4, #10b981);
+}
+
+.action-card:hover,
+.nav-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px var(--shadow-medium);
+}
+
+.action-card {
+  padding: 32px;
+  text-align: center;
+}
+
+.nav-card mat-card-header {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  padding: 24px;
+  margin: 0;
+}
+
+.nav-card mat-card-title {
+  color: white;
+  font-weight: 600;
+  font-size: 20px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.nav-card mat-card-content {
+  padding: 24px !important;
+}
+
+.nav-card mat-card-content p {
+  color: var(--text-light);
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Couleurs spécifiques pour les cartes de navigation */
+.nav-card-primary::before {
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+}
+
+.nav-card-accent::before {
+  background: linear-gradient(90deg, #ec4899, #f97316);
+}
+
+.nav-card-warn::before {
+  background: linear-gradient(90deg, #f59e0b, #d97706);
+}
+
+.nav-card-primary mat-card-header {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+}
+
+.nav-card-accent mat-card-header {
+  background: linear-gradient(135deg, #ec4899, #f97316);
+}
+
+.nav-card-warn mat-card-header {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.action-icon {
+  font-size: 3rem;
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, #6366f1, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent; /* Fallback pour les navigateurs non compatibles */
+}
+
+.action-title {
+  font-weight: 700;
+  font-size: 1.25rem;
+  background: linear-gradient(135deg, #6366f1, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent; /* Fallback pour les navigateurs non compatibles */
+  margin-bottom: 12px;
+}
+
+.action-description {
+  color: var(--text-light);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* Section de navigation */
+.navigation-section {
+  margin-bottom: 32px;
+}
+
+.navigation-section h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #6366f1, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent; /* Fallback pour les navigateurs non compatibles */
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+/* Items récents avec style amélioré */
+.recent-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 24px;
+}
+
+.recent-card {
+  background: white;
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px var(--shadow-light);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.recent-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #6366f1, #ec4899, #06b6d4, #10b981);
+}
+
+.recent-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px var(--shadow-medium);
+}
+
+.recent-header {
+  font-weight: 700;
+  font-size: 1.25rem;
+  background: linear-gradient(135deg, #6366f1, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent; /* Fallback pour les navigateurs non compatibles */
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--border-light);
+}
+
+.recent-item {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border-light);
+  transition: all 0.2s ease;
+}
+
+.recent-item:hover {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  padding-left: 16px;
+  padding-right: 16px;
+  margin-left: -16px;
+  margin-right: -16px;
+  border-radius: 8px;
+}
+
+.recent-item:last-child {
+  border-bottom: none;
+}
+
+/* Actions des cartes */
+.welcome-card mat-card-actions {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 16px 24px;
+  margin: 16px -24px -24px -24px;
+}
+
+.welcome-card mat-card-actions button {
+  color: white;
+  border-color: rgba(255, 255, 255, 0.3);
+  transition: all 0.2s ease;
+}
+
+.welcome-card mat-card-actions button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.welcome-card mat-card-actions button[mat-raised-button] {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.welcome-card mat-card-actions button[mat-raised-button]:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px) scale(1.05);
+}
+
+/* Animations */
+@keyframes headerShimmer {
+  0%, 100% {
+    background: linear-gradient(135deg, #6366f1, #ec4899);
+  }
+  50% {
+    background: linear-gradient(135deg, #8b5cf6, #f97316);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stat-card,
+.action-card,
+.nav-card,
+.recent-card {
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .stats-grid,
+  .quick-actions,
+  .navigation-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+  
+  .recent-items {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-container,
+  .employee-dashboard {
+    padding: 16px;
+  }
+  
+  .welcome-card,
+  .welcome-section {
+    padding: 24px;
+  }
+  
+  .welcome-card mat-card-title,
+  .welcome-title {
+    font-size: 1.5rem;
+  }
+  
+  .stats-grid,
+  .quick-actions,
+  .navigation-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  
+  .stat-card mat-card-content,
+  .action-card,
+  .nav-card mat-card-content {
+    padding: 24px !important;
+  }
+  
+  .stat-info h3 {
+    font-size: 2rem;
+  }
+  
+  .action-icon {
+    font-size: 2.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid,
+  .quick-actions,
+  .navigation-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stat-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 16px;
+  }
+}
+
+/* Accessibilité */
+@media (prefers-reduced-motion: reduce) {
+  .stat-card,
+  .action-card,
+  .nav-card,
+  .recent-card,
+  .welcome-card {
+    transition: none;
+    animation: none;
+  }
+  
+  .welcome-card,
+  .welcome-section {
+    animation: none;
+  }
+}
+
+/* Focus states pour l'accessibilité */
+.stat-card:focus-within,
+.action-card:focus-within,
+.nav-card:focus-within,
+.recent-card:focus-within {
+  outline: 3px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.welcome-card mat-card-actions button:focus {
+  outline: 3px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
+/* Amélioration des composants Material */
+:host ::ng-deep .mat-card {
+  border-radius: 16px;
+}
+
+:host ::ng-deep .mat-card-header-text {
+  margin: 0;
+}
+
+:host ::ng-deep .mat-button .mat-icon,
+:host ::ng-deep .mat-raised-button .mat-icon {
+  margin-right: 8px;
+}
+
+:host ::ng-deep .mat-chip {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  font-weight: 600;
+  border-radius: 12px;
+}
+
+/* Hover effects améliorés */
+.action-card:hover .action-icon,
+.nav-card:hover mat-card-avatar mat-icon {
+  transform: scale(1.1) rotate(5deg);
+  transition: all 0.3s ease;
+}
+
+.welcome-card mat-card-actions button:hover mat-icon {
+  transform: scale(1.1);
+  transition: all 0.2s ease;
+}

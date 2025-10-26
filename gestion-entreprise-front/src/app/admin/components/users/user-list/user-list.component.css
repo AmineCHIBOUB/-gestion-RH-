@@ -1,0 +1,155 @@
+/* Variables de couleurs */
+:root {
+  --primary-color: #1976d2;
+  --accent-color: #ff4081;
+  --warn-color: #f44336;
+  --background-color: #f5f5f5;
+  --card-background: #ffffff;
+  --text-primary: #212121;
+  --text-secondary: #757575;
+  --border-color: #e0e0e0;
+}
+
+.user-list-container {
+  padding: 24px;
+  background-color: var(--background-color);
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 16px;
+  background-color: var(--card-background);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header h2 {
+  margin: 0;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.search-container {
+  margin-bottom: 24px;
+  padding: 16px;
+  background-color: var(--card-background);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.search-field {
+  width: 100%;
+  max-width: 400px;
+}
+
+.table-container {
+  background-color: var(--card-background);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.users-table {
+  width: 100%;
+}
+
+.users-table th {
+  background-color: var(--primary-color);
+  color: white;
+  font-weight: 500;
+}
+
+.users-table td, .users-table th {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.users-table tr:hover {
+  background-color: #f5f5f5;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  background-color: var(--card-background);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.loading-container p {
+  margin-top: 16px;
+  color: var(--text-secondary);
+}
+
+.no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  background-color: var(--card-background);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.no-data mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
+.no-data p {
+  color: var(--text-secondary);
+  font-size: 16px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .user-list-container {
+    padding: 16px;
+  }
+  
+  .header {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+  
+  .users-table {
+    font-size: 14px;
+  }
+  
+  .users-table td, .users-table th {
+    padding: 8px 12px;
+  }
+}
+
+/* Animation pour les boutons */
+button {
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Styles pour les chips de rôle */
+mat-chip {
+  font-weight: 500;
+}
+
+/* Styles pour le toggle */
+mat-slide-toggle {
+  margin: 0;
+}

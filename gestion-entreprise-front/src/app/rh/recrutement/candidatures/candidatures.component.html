@@ -1,0 +1,336 @@
+<div class="candidatures-container">
+  <!-- Header -->
+  <div class="header">
+    <h2><i class="fas fa-user-tie"></i> Gestion des Candidatures</h2>
+    <p>Suivi et gestion des candidatures reçues</p>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="stats-grid">
+    <div class="stat-card total">
+      <div class="stat-icon">
+        <i class="fas fa-users"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.totalCandidatures }}</h3>
+        <p>Total Candidatures</p>
+      </div>
+    </div>
+
+    <div class="stat-card new">
+      <div class="stat-icon">
+        <i class="fas fa-user-plus"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.newCandidatures }}</h3>
+        <p>Nouvelles</p>
+      </div>
+    </div>
+
+    <div class="stat-card review">
+      <div class="stat-icon">
+        <i class="fas fa-eye"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.inReview }}</h3>
+        <p>En Examen</p>
+      </div>
+    </div>
+
+    <div class="stat-card interviewed">
+      <div class="stat-icon">
+        <i class="fas fa-comments"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.interviewed }}</h3>
+        <p>Entretiens</p>
+      </div>
+    </div>
+
+    <div class="stat-card accepted">
+      <div class="stat-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.accepted }}</h3>
+        <p>Acceptées</p>
+      </div>
+    </div>
+
+    <div class="stat-card rejected">
+      <div class="stat-icon">
+        <i class="fas fa-times-circle"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.rejected }}</h3>
+        <p>Rejetées</p>
+      </div>
+    </div>
+
+    <div class="stat-card conversion">
+      <div class="stat-icon">
+        <i class="fas fa-percentage"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.conversionRate | number:'1.1-1' }}%</h3>
+        <p>Taux de Conversion</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="filters-grid">
+      <div class="filter-group">
+        <label>Statut</label>
+        <select [(ngModel)]="filters.status" (change)="applyFilters()">
+          <option value="">Tous les statuts</option>
+          <option value="new">Nouvelle</option>
+          <option value="in_review">En examen</option>
+          <option value="interviewed">Entretien réalisé</option>
+          <option value="accepted">Acceptée</option>
+          <option value="rejected">Rejetée</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Poste</label>
+        <select [(ngModel)]="filters.position" (change)="applyFilters()">
+          <option value="">Tous les postes</option>
+          <option *ngFor="let position of positions" [value]="position.name">{{ position.name }}</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Source</label>
+        <select [(ngModel)]="filters.source" (change)="applyFilters()">
+          <option value="">Toutes les sources</option>
+          <option *ngFor="let source of sources" [value]="source.name">{{ source.name }}</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Date de début</label>
+        <input type="date" [(ngModel)]="filters.dateFrom" (change)="applyFilters()">
+      </div>
+
+      <div class="filter-group">
+        <label>Date de fin</label>
+        <input type="date" [(ngModel)]="filters.dateTo" (change)="applyFilters()">
+      </div>
+
+      <div class="filter-actions">
+        <button class="btn btn-secondary" (click)="resetFilters()">
+          <i class="fas fa-undo"></i> Réinitialiser
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions-section">
+    <button class="btn btn-primary" (click)="openModal('add')">
+      <i class="fas fa-plus"></i> Ajouter Candidature
+    </button>
+    <button class="btn btn-success" (click)="exportData()">
+      <i class="fas fa-download"></i> Exporter
+    </button>
+  </div>
+
+  <!-- Table -->
+  <div class="table-section">
+    <div class="table-header">
+      <h3><i class="fas fa-table"></i> Liste des Candidatures</h3>
+      <div class="table-actions">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" placeholder="Rechercher..." [(ngModel)]="searchTerm" (input)="filterData()">
+        </div>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th (click)="sortData('candidateName')" class="sortable">
+              Candidat
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'candidateName' && sortDirection === 'asc'"
+                 [class.fa-sort-down]="sortField === 'candidateName' && sortDirection === 'desc'"></i>
+            </th>
+            <th (click)="sortData('position')" class="sortable">
+              Poste
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'position' && sortDirection === 'asc'"
+                 [class.fa-sort-down]="sortField === 'position' && sortDirection === 'desc'"></i>
+            </th>
+            <th (click)="sortData('source')" class="sortable">
+              Source
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'source' && sortDirection === 'asc'"
+                 [class.fa-sort-down]="sortField === 'source' && sortDirection === 'desc'"></i>
+            </th>
+            <th (click)="sortData('applicationDate')" class="sortable">
+              Date de Candidature
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'applicationDate' && sortDirection === 'asc'"
+                 [class.fa-sort-down]="sortField === 'applicationDate' && sortDirection === 'desc'"></i>
+            </th>
+            <th (click)="sortData('experience')" class="sortable">
+              Expérience
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'experience' && sortDirection === 'asc'"
+                 [class.fa-sort-down]="sortField === 'experience' && sortDirection === 'desc'"></i>
+            </th>
+            <th (click)="sortData('status')" class="sortable">
+              Statut
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'status' && sortDirection === 'asc'"
+                 [class.fa-sort-down]="sortField === 'status' && sortDirection === 'desc'"></i>
+            </th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let candidature of paginatedData" class="table-row">
+            <td>
+              <div class="candidate-info">
+                <strong>{{ candidature.candidateName }}</strong>
+                <small>{{ candidature.email }}</small>
+                <small>{{ candidature.phone }}</small>
+              </div>
+            </td>
+            <td>{{ candidature.position }}</td>
+            <td>
+              <span class="source-badge" [class]="'source-' + candidature.source.toLowerCase().replace(' ', '-')">
+                {{ candidature.source }}
+              </span>
+            </td>
+            <td>{{ candidature.applicationDate | date:'dd/MM/yyyy' }}</td>
+            <td>{{ candidature.experience }}</td>
+            <td>
+              <span class="status-badge" [class]="'status-' + candidature.status">
+                {{ getStatusLabel(candidature.status) }}
+              </span>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn btn-sm btn-info" (click)="openModal('view', candidature)" title="Voir">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-warning" (click)="openModal('edit', candidature)" title="Modifier">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-success" (click)="downloadCV(candidature)" title="Télécharger CV">
+                  <i class="fas fa-file-pdf"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" (click)="deleteCandidature(candidature.id)" title="Supprimer">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-container" *ngIf="totalPages > 1">
+      <div class="pagination-info">
+        Affichage de {{ (currentPage - 1) * pageSize + 1 }} à {{ Math.min(currentPage * pageSize, filteredData.length) }} sur {{ filteredData.length }} entrées
+      </div>
+      <div class="pagination">
+        <button class="btn btn-sm" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button *ngFor="let page of getPageNumbers()" 
+                class="btn btn-sm" 
+                [class.active]="page === currentPage"
+                (click)="goToPage(page)">
+          {{ page }}
+        </button>
+        <button class="btn btn-sm" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>
+          <i class="fas fa-user-tie"></i>
+          {{ modalMode === 'add' ? 'Ajouter' : modalMode === 'edit' ? 'Modifier' : 'Voir' }} Candidature
+        </h3>
+        <button class="close-btn" (click)="closeModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Nom du candidat *</label>
+              <input type="text" [(ngModel)]="selectedCandidature.candidateName" name="candidateName" 
+                     [readonly]="modalMode === 'view'" required>
+            </div>
+            <div class="form-group">
+              <label>Email *</label>
+              <input type="email" [(ngModel)]="selectedCandidature.email" name="email" 
+                     [readonly]="modalMode === 'view'" required>
+            </div>
+            <div class="form-group">
+              <label>Téléphone</label>
+              <input type="tel" [(ngModel)]="selectedCandidature.phone" name="phone" 
+                     [readonly]="modalMode === 'view'">
+            </div>
+            <div class="form-group">
+              <label>Poste *</label>
+              <select [(ngModel)]="selectedCandidature.position" name="position" 
+                      [disabled]="modalMode === 'view'" required>
+                <option value="">Sélectionner un poste</option>
+                <option *ngFor="let position of positions" [value]="position.name">{{ position.name }}</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Source</label>
+              <select [(ngModel)]="selectedCandidature.source" name="source" 
+                      [disabled]="modalMode === 'view'">
+                <option value="">Sélectionner une source</option>
+                <option *ngFor="let source of sources" [value]="source.name">{{ source.name }}</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Date de candidature</label>
+              <input type="date" [(ngModel)]="selectedCandidature.applicationDate" name="applicationDate" 
+                     [readonly]="modalMode === 'view'">
+            </div>
+            <div class="form-group">
+              <label>Expérience</label>
+              <input type="text" [(ngModel)]="selectedCandidature.experience" name="experience" 
+                     [readonly]="modalMode === 'view'" placeholder="Ex: 3 ans">
+            </div>
+            <div class="form-group">
+              <label>Statut</label>
+              <select [(ngModel)]="selectedCandidature.status" name="status" 
+                      [disabled]="modalMode === 'view'">
+                <option value="new">Nouvelle</option>
+                <option value="in_review">En examen</option>
+                <option value="interviewed">Entretien réalisé</option>
+                <option value="accepted">Acceptée</option>
+                <option value="rejected">Rejetée</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group full-width">
+            <label>Notes</label>
+            <textarea [(ngModel)]="selectedCandidature.notes" name="notes" 
+                      [readonly]="modalMode === 'view'" rows="4" 
+                      placeholder="Notes sur le candidat..."></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer" *ngIf="modalMode !== 'view'">
+        <button class="btn btn-secondary" (click)="closeModal()">Annuler</button>
+        <button class="btn btn-primary" (click)="saveCandidature()">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+</div>

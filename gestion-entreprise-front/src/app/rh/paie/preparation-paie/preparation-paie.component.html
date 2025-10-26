@@ -1,0 +1,299 @@
+<div class="preparation-paie-container">
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>assignment</mat-icon>
+        Préparation de la Paie
+      </mat-card-title>
+      <mat-card-subtitle>Gestion et préparation des éléments de paie</mat-card-subtitle>
+    </mat-card-header>
+  </mat-card>
+
+  <!-- Filtres -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Période</mat-label>
+          <mat-select [(value)]="selectedPeriod" (selectionChange)="onFilterChange()">
+            <mat-option *ngFor="let period of periods" [value]="period.value">
+              {{period.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Département</mat-label>
+          <mat-select [(value)]="selectedDepartment" (selectionChange)="onFilterChange()">
+            <mat-option value="">Tous les départements</mat-option>
+            <mat-option *ngFor="let dept of departments" [value]="dept.id">
+              {{dept.nom}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Employé</mat-label>
+          <mat-select [(value)]="selectedEmployee" (selectionChange)="onFilterChange()">
+            <mat-option value="">Tous les employés</mat-option>
+            <mat-option *ngFor="let emp of employees" [value]="emp.id">
+              {{emp.prenom}} {{emp.nom}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Statut</mat-label>
+          <mat-select [(value)]="selectedStatus" (selectionChange)="onFilterChange()">
+            <mat-option value="">Tous les statuts</mat-option>
+            <mat-option value="en_attente">En attente</mat-option>
+            <mat-option value="en_cours">En cours</mat-option>
+            <mat-option value="termine">Terminé</mat-option>
+            <mat-option value="valide">Validé</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" (click)="resetFilters()">
+          <mat-icon>refresh</mat-icon>
+          Réinitialiser
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Statistiques -->
+  <div class="stats-row">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <mat-icon class="stat-icon employees">people</mat-icon>
+          <div class="stat-info">
+            <div class="stat-value">{{statistics.totalEmployees}}</div>
+            <div class="stat-label">Employés Total</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <mat-icon class="stat-icon preparation">assignment_turned_in</mat-icon>
+          <div class="stat-info">
+            <div class="stat-value">{{statistics.preparationStatus.termine}}/{{statistics.totalEmployees}}</div>
+            <div class="stat-label">Préparation Terminée</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <mat-icon class="stat-icon hours">schedule</mat-icon>
+          <div class="stat-info">
+            <div class="stat-value">{{statistics.totalHours}}</div>
+            <div class="stat-label">Heures Total</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <mat-icon class="stat-icon validation">verified</mat-icon>
+          <div class="stat-info">
+            <div class="stat-value">{{statistics.preparationStatus.valide}}</div>
+            <div class="stat-label">Validées</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Étapes de préparation -->
+  <mat-card class="steps-card">
+    <mat-card-header>
+      <mat-card-title>Étapes de Préparation</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="steps-container">
+        <div class="step" [class.completed]="preparationSteps.presenceImport" [class.active]="currentStep === 'presenceImport'">
+          <mat-icon>file_download</mat-icon>
+          <span>Import Présences</span>
+          <mat-icon class="check-icon" *ngIf="preparationSteps.presenceImport">check_circle</mat-icon>
+        </div>
+        <div class="step-connector" [class.completed]="preparationSteps.presenceImport"></div>
+        
+        <div class="step" [class.completed]="preparationSteps.variableElements" [class.active]="currentStep === 'variableElements'">
+          <mat-icon>add_circle</mat-icon>
+          <span>Éléments Variables</span>
+          <mat-icon class="check-icon" *ngIf="preparationSteps.variableElements">check_circle</mat-icon>
+        </div>
+        <div class="step-connector" [class.completed]="preparationSteps.variableElements"></div>
+        
+        <div class="step" [class.completed]="preparationSteps.calculations" [class.active]="currentStep === 'calculations'">
+          <mat-icon>calculate</mat-icon>
+          <span>Calculs</span>
+          <mat-icon class="check-icon" *ngIf="preparationSteps.calculations">check_circle</mat-icon>
+        </div>
+        <div class="step-connector" [class.completed]="preparationSteps.calculations"></div>
+        
+        <div class="step" [class.completed]="preparationSteps.validation" [class.active]="currentStep === 'validation'">
+          <mat-icon>verified</mat-icon>
+          <span>Validation</span>
+          <mat-icon class="check-icon" *ngIf="preparationSteps.validation">check_circle</mat-icon>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Actions rapides -->
+  <mat-card class="actions-card">
+    <mat-card-header>
+      <mat-card-title>Actions Rapides</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="actions-row">
+        <button mat-raised-button color="primary" (click)="importPresences()" [disabled]="loading">
+          <mat-icon>file_download</mat-icon>
+          Importer Présences
+        </button>
+        
+        <button mat-raised-button color="accent" (click)="calculateAllPayroll()" [disabled]="loading">
+          <mat-icon>calculate</mat-icon>
+          Calculer Tout
+        </button>
+        
+        <button mat-raised-button color="warn" (click)="validateAllPayroll()" [disabled]="loading">
+          <mat-icon>verified</mat-icon>
+          Valider Tout
+        </button>
+        
+        <button mat-stroked-button (click)="resetPreparation()" [disabled]="loading">
+          <mat-icon>refresh</mat-icon>
+          Réinitialiser
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Tableau des données -->
+  <mat-card class="table-card">
+    <mat-card-header>
+      <mat-card-title>Liste de Préparation</mat-card-title>
+      <div class="header-actions">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Rechercher</mat-label>
+          <input matInput [(ngModel)]="searchTerm" (input)="onSearch()" placeholder="Nom, prénom...">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+      </div>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <div class="table-container" *ngIf="!loading; else loadingTemplate">
+        <table mat-table [dataSource]="dataSource" matSort class="preparation-table">
+          <!-- Colonne Employé -->
+          <ng-container matColumnDef="employe">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Employé</th>
+            <td mat-cell *matCellDef="let element">
+              <div class="employee-info">
+                <div class="employee-name">{{element.employe.prenom}} {{element.employe.nom}}</div>
+                <div class="employee-details">{{element.employe.poste}} - {{element.employe.departement}}</div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Période -->
+          <ng-container matColumnDef="periode">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Période</th>
+            <td mat-cell *matCellDef="let element">{{element.periode}}</td>
+          </ng-container>
+
+          <!-- Colonne Heures -->
+          <ng-container matColumnDef="heures">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Heures</th>
+            <td mat-cell *matCellDef="let element">
+              <div class="hours-info">
+                <div>Normales: {{element.heuresNormales}}h</div>
+                <div>Supplémentaires: {{element.heuresSupplementaires}}h</div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Éléments Variables -->
+          <ng-container matColumnDef="elementsVariables">
+            <th mat-header-cell *matHeaderCellDef>Éléments Variables</th>
+            <td mat-cell *matCellDef="let element">
+              <mat-chip-listbox>
+                <mat-chip *ngFor="let elem of element.elementsVariables" [color]="elem.type === 'prime' ? 'primary' : 'warn'">
+                  {{elem.libelle}}: {{elem.montant | currency:'EUR':'symbol':'1.2-2'}}
+                </mat-chip>
+              </mat-chip-listbox>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Statut -->
+          <ng-container matColumnDef="statut">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
+            <td mat-cell *matCellDef="let element">
+              <mat-chip [color]="getStatusColor(element.statut)" selected>
+                {{getStatusLabel(element.statut)}}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Actions -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-icon-button [matMenuTriggerFor]="menu" [disabled]="loading">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="calculateIndividualPayroll(element.id)">
+                  <mat-icon>calculate</mat-icon>
+                  <span>Calculer</span>
+                </button>
+                <button mat-menu-item (click)="validateIndividualPayroll(element.id)" [disabled]="element.statut !== 'termine'">
+                  <mat-icon>verified</mat-icon>
+                  <span>Valider</span>
+                </button>
+                <button mat-menu-item (click)="resetIndividualPreparation(element.id)">
+                  <mat-icon>refresh</mat-icon>
+                  <span>Réinitialiser</span>
+                </button>
+                <mat-divider></mat-divider>
+                <button mat-menu-item (click)="viewDetails(element)">
+                  <mat-icon>visibility</mat-icon>
+                  <span>Voir détails</span>
+                </button>
+              </mat-menu>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <!-- Pagination -->
+        <mat-paginator 
+          [pageSizeOptions]="[10, 25, 50, 100]"
+          [pageSize]="pageSize"
+          [length]="totalItems"
+          showFirstLastButtons>
+        </mat-paginator>
+      </div>
+
+      <!-- Template de chargement -->
+      <ng-template #loadingTemplate>
+        <div class="loading-container">
+          <mat-spinner diameter="50"></mat-spinner>
+          <p>Chargement des données de préparation...</p>
+        </div>
+      </ng-template>
+    </mat-card-content>
+  </mat-card>
+</div>

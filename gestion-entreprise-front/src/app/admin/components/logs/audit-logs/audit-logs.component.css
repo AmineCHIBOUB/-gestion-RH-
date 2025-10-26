@@ -1,0 +1,486 @@
+/* Variables de couleurs */
+:root {
+  --primary-color: #6366f1;
+  --secondary-color: #ec4899;
+  --success-color: #10b981;
+  --info-color: #06b6d4;
+  --purple-color: #8b5cf6;
+  --teal-color: #14b8a6;
+  --background-white: #ffffff;
+  --text-dark: #1f2937;
+  --text-light: #6b7280;
+  --border-light: #e5e7eb;
+  --shadow-light: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Container principal */
+.audit-logs-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  background-color: white;
+  min-height: 100vh;
+}
+
+/* En-tête avec dégradé coloré */
+.header {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--purple-color) 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-medium);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+  transform: rotate(45deg);
+  animation: headerShimmer 3s infinite;
+}
+
+@keyframes headerShimmer {
+  0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+.header h2 {
+  margin: 0;
+  color: white;
+  font-size: 1.75rem;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.header h2::before {
+  content: '📋';
+  font-size: 1.5rem;
+}
+
+.header button {
+  min-width: 140px;
+  height: 40px;
+  font-weight: 500;
+}
+
+.header mat-icon {
+  margin-right: 8px;
+}
+
+/* Cartes */
+.filter-card,
+.table-card {
+  margin-bottom: 24px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-light);
+  background: var(--background-white);
+  border: 1px solid var(--border-light);
+}
+
+.filter-card mat-card-header {
+  padding-bottom: 16px;
+}
+
+.filter-card mat-card-title {
+  color: #333;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+/* Ligne de filtres */
+.filter-row {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.filter-row mat-form-field {
+  flex: 1;
+  min-width: 200px;
+}
+
+.filter-row button {
+  height: 56px;
+  min-width: 120px;
+  margin-bottom: 1.25em;
+}
+
+/* Champ de recherche */
+.search-field {
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 20px;
+}
+
+.search-field mat-icon {
+  color: #666;
+}
+
+/* Container du tableau */
+.table-container {
+  position: relative;
+  min-height: 200px;
+  overflow-x: auto;
+  background: white;
+  border-radius: 8px;
+  box-shadow: var(--shadow-light);
+  border: 1px solid var(--border-light);
+}
+
+/* Tableau avec fond blanc */
+table {
+  width: 100%;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* En-têtes du tableau avec style coloré sur fond blanc */
+th {
+  background: white;
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  background-image: linear-gradient(135deg, var(--primary-color), var(--purple-color));
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 1rem;
+  border-bottom: 2px solid var(--border-light);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+th:hover {
+  background-image: linear-gradient(135deg, var(--info-color), var(--teal-color));
+  transform: translateY(-1px);
+}
+
+th::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+th:hover::before {
+  left: 100%;
+}
+
+/* Cellules du tableau sur fond blanc */
+td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-light);
+  font-size: 0.95em;
+  background: white;
+  vertical-align: middle;
+}
+
+/* Lignes du tableau avec effet hover coloré */
+tr:hover {
+  background: linear-gradient(135deg, #f8faff 0%, #f0f9ff 100%);
+  transition: all 0.3s ease;
+}
+
+/* Colonnes spécifiques */
+.mat-column-timestamp {
+  min-width: 150px;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+}
+
+.mat-column-user {
+  min-width: 120px;
+  font-weight: 500;
+}
+
+.mat-column-action {
+  min-width: 100px;
+  text-align: center;
+}
+
+.mat-column-resource {
+  min-width: 120px;
+  font-weight: 500;
+  color: #1976d2;
+}
+
+.mat-column-details {
+  min-width: 200px;
+  max-width: 300px;
+  word-wrap: break-word;
+  font-size: 13px;
+  color: #666;
+}
+
+.mat-column-ipAddress {
+  min-width: 120px;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  color: #666;
+}
+
+/* Chips pour les actions */
+mat-chip {
+  font-size: 11px;
+  font-weight: 600;
+  min-height: 24px;
+  border-radius: 12px;
+  text-transform: uppercase;
+}
+
+/* Couleurs des chips selon l'action */
+mat-chip[color="primary"] {
+  background-color: #2196f3 !important;
+  color: white !important;
+}
+
+mat-chip[color="accent"] {
+  background-color: #ff9800 !important;
+  color: white !important;
+}
+
+mat-chip[color="warn"] {
+  background-color: #f44336 !important;
+  color: white !important;
+}
+
+mat-chip[color="success"] {
+  background-color: #4caf50 !important;
+  color: white !important;
+}
+
+/* Pagination */
+mat-paginator {
+  border-top: 1px solid #e0e0e0;
+  background-color: #fafafa;
+}
+
+/* Container de chargement */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.loading-container mat-spinner {
+  margin-bottom: 16px;
+}
+
+.loading-container p {
+  margin: 0;
+  color: #666;
+  font-size: 16px;
+}
+
+/* États vides */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+}
+
+.empty-state mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+  color: #ccc;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+  .audit-logs-container {
+    padding: 16px;
+  }
+  
+  .filter-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-row mat-form-field {
+    min-width: unset;
+  }
+  
+  .filter-row button {
+    margin-bottom: 0;
+    margin-top: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+  
+  .header button {
+    width: 100%;
+  }
+  
+  .search-field {
+    max-width: unset;
+  }
+  
+  /* Tableau responsive */
+  .table-container {
+    font-size: 14px;
+  }
+  
+  th, td {
+    padding: 12px 8px;
+  }
+  
+  .mat-column-details {
+    max-width: 150px;
+  }
+}
+
+@media (max-width: 600px) {
+  .audit-logs-container {
+    padding: 12px;
+  }
+  
+  /* Masquer certaines colonnes sur mobile */
+  .mat-column-ipAddress,
+  .mat-column-details {
+    display: none;
+  }
+  
+  th, td {
+    padding: 8px 4px;
+    font-size: 12px;
+  }
+  
+  mat-chip {
+    font-size: 10px;
+    min-height: 20px;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.audit-logs-container {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.filter-card,
+.table-card {
+  animation: fadeIn 0.4s ease-out;
+}
+
+tr {
+  transition: background-color 0.2s ease;
+}
+
+/* Amélioration des focus states */
+button:focus-visible,
+input:focus-visible,
+mat-select:focus-visible {
+  outline: 2px solid #1976d2;
+  outline-offset: 2px;
+}
+
+/* Styles pour les tooltips */
+.mat-mdc-tooltip {
+  font-size: 12px;
+  max-width: 300px;
+}
+
+/* Amélioration de l'accessibilité */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Styles pour les dates */
+.timestamp-cell {
+  white-space: nowrap;
+}
+
+/* Amélioration des cartes */
+mat-card {
+  transition: box-shadow 0.3s ease;
+}
+
+mat-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Styles pour les formulaires */
+mat-form-field {
+  font-size: 14px;
+}
+
+mat-form-field .mat-mdc-form-field-subscript-wrapper {
+  margin-top: 4px;
+}
+
+/* Amélioration des boutons */
+button[mat-raised-button] {
+  transition: all 0.2s ease;
+}
+
+button[mat-raised-button]:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Styles pour les icônes */
+mat-icon {
+  vertical-align: middle;
+}
+
+/* Amélioration du contraste */
+.high-contrast {
+  filter: contrast(1.2);
+}

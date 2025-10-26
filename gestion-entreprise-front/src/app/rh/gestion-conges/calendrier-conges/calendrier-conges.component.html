@@ -1,0 +1,135 @@
+<div class="calendrier-conges-container">
+  <mat-card class="calendar-card">
+    <mat-card-header>
+      <mat-card-title>Calendrier des Congés</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="calendar-content">
+        <!-- Contenu du calendrier -->
+        <p>Calendrier des congés à implémenter</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Filtres -->
+  <mat-card class="filters-card">
+    <mat-card-header>
+      <mat-card-title>Filtres</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="filters-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Département</mat-label>
+          <mat-select [(value)]="filters.departement" (selectionChange)="onFiltersChange()">
+            <mat-option value="">Tous les départements</mat-option>
+            <mat-option *ngFor="let dept of departements" [value]="dept">
+              {{ dept }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Statut</mat-label>
+          <mat-select [(value)]="filters.statut" (selectionChange)="onFiltersChange()">
+            <mat-option value="approuve">Approuvé</mat-option>
+            <mat-option value="en_attente">En attente</mat-option>
+            <mat-option value="refuse">Refusé</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" (click)="exportCalendrier()">
+          <mat-icon>download</mat-icon>
+          Exporter
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Navigation du calendrier -->
+  <mat-card class="calendar-nav-card">
+    <mat-card-content>
+      <div class="calendar-header">
+        <div class="view-controls">
+          <mat-button-toggle-group [(value)]="view" (change)="setView($event.value)">
+            <mat-button-toggle [value]="CalendarView.Month">Mois</mat-button-toggle>
+            <mat-button-toggle [value]="CalendarView.Week">Semaine</mat-button-toggle>
+            <mat-button-toggle [value]="CalendarView.Day">Jour</mat-button-toggle>
+          </mat-button-toggle-group>
+        </div>
+
+        <div class="navigation-controls">
+          <button mat-icon-button (click)="previousPeriod()">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+          <h2 class="current-date">{{ viewDate | date:'MMMM yyyy' }}</h2>
+          <button mat-icon-button (click)="nextPeriod()">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Spinner de chargement -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Chargement du calendrier...</p>
+  </div>
+
+  <!-- Calendrier -->
+  <mat-card *ngIf="view === CalendarView.Month && !loading" class="calendar-card">
+    <mwl-calendar-month-view
+      [viewDate]="viewDate"
+      [events]="events"
+      [refresh]="refresh"
+      [activeDayIsOpen]="activeDayIsOpen"
+      (dayClicked)="dayClicked($event)"
+      (eventClicked)="eventClicked($event.event)">
+    </mwl-calendar-month-view>
+  </mat-card>
+
+  <mat-card *ngIf="view === CalendarView.Week && !loading" class="calendar-card">
+    <mwl-calendar-week-view
+      [viewDate]="viewDate"
+      [events]="events"
+      [refresh]="refresh"
+      (eventClicked)="eventClicked($event.event)">
+    </mwl-calendar-week-view>
+  </mat-card>
+
+  <mat-card *ngIf="view === CalendarView.Day && !loading" class="calendar-card">
+    <mwl-calendar-day-view
+      [viewDate]="viewDate"
+      [events]="events"
+      [refresh]="refresh"
+      (eventClicked)="eventClicked($event.event)">
+    </mwl-calendar-day-view>
+  </mat-card>
+
+  <!-- Statistiques -->
+  <mat-card class="stats-card">
+    <mat-card-header>
+      <mat-card-title>Statistiques</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-label">Total congés</span>
+          <span class="stat-value">{{ getStatistiques().total }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Approuvés</span>
+          <span class="stat-value approved">{{ getStatistiques().approuves }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">En attente</span>
+          <span class="stat-value pending">{{ getStatistiques().enAttente }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Refusés</span>
+          <span class="stat-value rejected">{{ getStatistiques().refuses }}</span>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

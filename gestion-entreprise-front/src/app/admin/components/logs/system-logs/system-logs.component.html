@@ -1,0 +1,110 @@
+<div class="system-logs-container">
+  <div class="header">
+    <h2>Logs Système</h2>
+    <button mat-raised-button color="primary" (click)="exportLogs()">
+      <mat-icon>download</mat-icon>
+      Exporter
+    </button>
+  </div>
+
+  <mat-card class="filter-card">
+    <mat-card-header>
+      <mat-card-title>Filtres</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="filterForm" (ngSubmit)="onFilterChange()">
+        <div class="filter-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Date de début</mat-label>
+            <input matInput [matDatepicker]="startPicker" formControlName="dateFrom">
+            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+            <mat-datepicker #startPicker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Date de fin</mat-label>
+            <input matInput [matDatepicker]="endPicker" formControlName="dateTo">
+            <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+            <mat-datepicker #endPicker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Niveau</mat-label>
+            <mat-select formControlName="level">
+              <mat-option value="">Tous</mat-option>
+              <mat-option value="ERROR">Erreur</mat-option>
+              <mat-option value="WARNING">Avertissement</mat-option>
+              <mat-option value="INFO">Information</mat-option>
+              <mat-option value="DEBUG">Debug</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Service</mat-label>
+            <input matInput formControlName="service">
+          </mat-form-field>
+
+          <button mat-raised-button color="accent" type="submit">
+            <mat-icon>search</mat-icon>
+            Filtrer
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="table-card">
+    <mat-card-content>
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Rechercher</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Rechercher dans les logs...">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <div class="table-container" *ngIf="!loading">
+        <table mat-table [dataSource]="dataSource" matSort>
+          <ng-container matColumnDef="timestamp">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Date/Heure</th>
+            <td mat-cell *matCellDef="let log">{{log.timestamp | date:'dd/MM/yyyy HH:mm:ss'}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="level">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Niveau</th>
+            <td mat-cell *matCellDef="let log">
+              <mat-chip [color]="getLevelColor(log.level)" selected>{{log.level}}</mat-chip>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="service">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Service</th>
+            <td mat-cell *matCellDef="let log">{{log.service}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="message">
+            <th mat-header-cell *matHeaderCellDef>Message</th>
+            <td mat-cell *matCellDef="let log">{{log.message}}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="details">
+            <th mat-header-cell *matHeaderCellDef>Détails</th>
+            <td mat-cell *matCellDef="let log">
+              <button mat-icon-button *ngIf="log.details" [matTooltip]="log.details">
+                <mat-icon>info</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" showFirstLastButtons></mat-paginator>
+      </div>
+
+      <div class="loading-container" *ngIf="loading">
+        <mat-spinner></mat-spinner>
+        <p>Chargement des logs système...</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

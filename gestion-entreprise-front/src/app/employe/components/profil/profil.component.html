@@ -1,0 +1,122 @@
+<div class="profil-container">
+  <div class="header">
+    <h1>Mon Profil</h1>
+
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Chargement du profil...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <mat-icon color="warn">error</mat-icon>
+    <p>{{ error }}</p>
+    <button mat-button color="primary" (click)="onRefresh()">
+      <mat-icon>refresh</mat-icon>
+      Réessayer
+    </button>
+  </div>
+
+  <!-- Profile Content -->
+  <div *ngIf="profil && !loading && !error" class="profil-content">
+    <!-- Informations Personnelles -->
+    <mat-card class="info-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>person</mat-icon>
+          Informations Personnelles
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Nom complet :</label>
+            <span>{{ profil.nom }} {{ profil.prenom }}</span>
+          </div>
+          <div class="info-item">
+            <label>Email :</label>
+            <span>{{ profil.email }}</span>
+          </div>
+          <div class="info-item">
+            <label>Téléphone :</label>
+            <span>{{ profil.telephone || 'Non renseigné' }}</span>
+          </div>
+          <div class="info-item">
+            <label>Date de naissance :</label>
+            <span>{{ profil.dateNaissance | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="info-item">
+            <label>Adresse :</label>
+            <span>{{ profil.adresse || 'Non renseignée' }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Informations Professionnelles -->
+    <mat-card class="info-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>work</mat-icon>
+          Informations Professionnelles
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Poste :</label>
+            <span>{{ profil.poste }}</span>
+          </div>
+          <div class="info-item">
+            <label>Département :</label>
+            <span>{{ profil.departement }}</span>
+          </div>
+          <div class="info-item">
+            <label>Date d'embauche :</label>
+            <span>{{ profil.dateEmbauche | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="info-item">
+            <label>Salaire :</label>
+            <span>{{ profil.salaire | currency:'EUR':'symbol':'1.2-2' }}</span>
+          </div>
+          <div class="info-item">
+            <label>Statut :</label>
+            <mat-chip 
+              [class]="'status-' + profil.statut.toLowerCase()">
+              {{ profil.statut }}
+            </mat-chip>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Informations de Contact d'Urgence -->
+    <mat-card class="info-card" *ngIf="profil.contactUrgence">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>emergency</mat-icon>
+          Contact d'Urgence
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Nom :</label>
+            <span>{{ profil.contactUrgence.nom }}</span>
+          </div>
+          <div class="info-item">
+            <label>Relation :</label>
+            <span>{{ profil.contactUrgence.relation }}</span>
+          </div>
+          <div class="info-item">
+            <label>Téléphone :</label>
+            <span>{{ profil.contactUrgence.telephone }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

@@ -1,0 +1,635 @@
+/* ===== CONTENEUR PRINCIPAL ===== */
+.gestion-postes-container {
+  padding: 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* ===== CARTES GÉNÉRALES ===== */
+.header-card,
+.form-card,
+.filters-card,
+.actions-card,
+.table-card {
+  margin-bottom: 24px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.header-card:hover,
+.form-card:hover,
+.filters-card:hover,
+.actions-card:hover,
+.table-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* ===== EN-TÊTE ===== */
+.header-card {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+  border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+.header-card mat-card-header {
+  padding: 24px;
+}
+
+.header-card mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 28px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header-card mat-card-title mat-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: #667eea;
+}
+
+.header-card mat-card-subtitle {
+  font-size: 16px;
+  color: #718096;
+  margin-top: 8px;
+  font-weight: 400;
+}
+
+/* ===== FORMULAIRE ===== */
+.form-card {
+  background: rgba(255, 255, 255, 0.98);
+}
+
+.form-card mat-card-header {
+  padding: 24px 24px 0 24px;
+}
+
+.form-card mat-card-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.form-card mat-card-content {
+  padding: 0 24px 24px 24px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.form-row mat-form-field {
+  width: 100%;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.form-actions button {
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-weight: 500;
+  text-transform: none;
+  min-width: 120px;
+  transition: all 0.3s ease;
+}
+
+.form-actions button[color="primary"] {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+}
+
+.form-actions button[color="primary"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+}
+
+.form-actions button[mat-stroked-button] {
+  border: 2px solid #e2e8f0;
+  color: #4a5568;
+}
+
+.form-actions button[mat-stroked-button]:hover {
+  background: #f7fafc;
+  border-color: #cbd5e0;
+  transform: translateY(-1px);
+}
+
+/* ===== FILTRES ===== */
+.filters-card mat-card-content {
+  padding: 24px;
+}
+
+.filters-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  align-items: end;
+}
+
+.filters-row mat-form-field {
+  width: 100%;
+}
+
+.filters-row button {
+  height: 56px;
+  border-radius: 12px;
+  font-weight: 500;
+  text-transform: none;
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  color: white;
+  border: none;
+  transition: all 0.3s ease;
+  min-width: 140px;
+}
+
+.filters-row button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(79, 172, 254, 0.4);
+}
+
+/* ===== ACTIONS ===== */
+.actions-card mat-card-content {
+  padding: 24px;
+}
+
+.actions-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.actions-row button {
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-weight: 500;
+  text-transform: none;
+  transition: all 0.3s ease;
+}
+
+.actions-row button[color="primary"] {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+}
+
+.actions-row button[color="primary"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+}
+
+.actions-row button[mat-stroked-button] {
+  border: 2px solid #e2e8f0;
+  color: #4a5568;
+}
+
+.actions-row button[mat-stroked-button]:hover {
+  background: #f7fafc;
+  border-color: #cbd5e0;
+  transform: translateY(-1px);
+}
+
+/* ===== TABLEAU ===== */
+.table-card mat-card-header {
+  padding: 24px 24px 0 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.table-card mat-card-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+}
+
+.search-field {
+  width: 300px;
+}
+
+.table-card mat-card-content {
+  padding: 0 24px 24px 24px;
+}
+
+.table-container {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.postes-table {
+  width: 100%;
+  background: white;
+}
+
+.postes-table th {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 16px;
+  border: none;
+}
+
+.postes-table td {
+  padding: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  font-size: 14px;
+  color: #2d3748;
+}
+
+.postes-table tr:hover {
+  background: rgba(102, 126, 234, 0.05);
+  transition: background-color 0.3s ease;
+}
+
+/* ===== CONTENU DES CELLULES ===== */
+.job-title {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.job-title .title {
+  font-weight: 600;
+  font-size: 16px;
+  color: #2d3748;
+}
+
+.job-title .department {
+  font-size: 12px;
+  color: #718096;
+  font-weight: 400;
+}
+
+.salary-range {
+  font-weight: 500;
+  color: #38a169;
+  background: rgba(56, 161, 105, 0.1);
+  padding: 4px 8px;
+  border-radius: 6px;
+  display: inline-block;
+  font-size: 13px;
+}
+
+.deadline {
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 6px;
+  display: inline-block;
+  font-size: 13px;
+  background: rgba(79, 172, 254, 0.1);
+  color: #4facfe;
+}
+
+.deadline.expired {
+  background: rgba(245, 101, 101, 0.1);
+  color: #f56565;
+}
+
+/* ===== CHIPS ET BADGES ===== */
+mat-chip {
+  font-weight: 500;
+  font-size: 12px;
+  border-radius: 20px;
+  padding: 8px 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Chips pour types de contrat */
+mat-chip[color="primary"] {
+  background: linear-gradient(135deg, #667eea, #764ba2) !important;
+  color: white !important;
+}
+
+mat-chip[color="accent"] {
+  background: linear-gradient(135deg, #4facfe, #00f2fe) !important;
+  color: white !important;
+}
+
+mat-chip[color="warn"] {
+  background: linear-gradient(135deg, #ff9a9e, #fecfef) !important;
+  color: white !important;
+}
+
+/* Chips pour statuts */
+mat-chip.status-actif {
+  background: linear-gradient(135deg, #a8edea, #fed6e3) !important;
+  color: #2d3748 !important;
+}
+
+mat-chip.status-suspendu {
+  background: linear-gradient(135deg, #ffecd2, #fcb69f) !important;
+  color: #2d3748 !important;
+}
+
+mat-chip.status-expire {
+  background: linear-gradient(135deg, #ff9a9e, #fecfef) !important;
+  color: white !important;
+}
+
+/* ===== MENU D'ACTIONS ===== */
+.mat-menu-panel {
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.mat-menu-item {
+  padding: 12px 16px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.mat-menu-item:hover {
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.mat-menu-item mat-icon {
+  margin-right: 12px;
+  color: #4a5568;
+}
+
+.delete-action {
+  color: #e53e3e;
+}
+
+.delete-action mat-icon {
+  color: #e53e3e;
+}
+
+.delete-action:hover {
+  background: rgba(229, 62, 62, 0.1);
+}
+
+/* ===== PAGINATION ===== */
+mat-paginator {
+  background: transparent;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 0 0 12px 12px;
+  padding: 16px;
+}
+
+/* ===== ÉTAT DE CHARGEMENT ===== */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.loading-container mat-spinner {
+  margin-bottom: 20px;
+}
+
+.loading-container p {
+  color: #718096;
+  font-size: 16px;
+  margin: 0;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .gestion-postes-container {
+    padding: 16px;
+  }
+  
+  .header-card mat-card-title {
+    font-size: 24px;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .filters-row {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .actions-row {
+    flex-direction: column;
+  }
+  
+  .actions-row button {
+    width: 100%;
+  }
+  
+  .table-card mat-card-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+  
+  .search-field {
+    width: 100%;
+  }
+  
+  .job-title .title {
+    font-size: 14px;
+  }
+  
+  .salary-range,
+  .deadline {
+    font-size: 11px;
+    padding: 2px 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .gestion-postes-container {
+    padding: 12px;
+  }
+  
+  .header-card mat-card-title {
+    font-size: 20px;
+  }
+  
+  .header-card mat-card-title mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .form-actions button {
+    width: 100%;
+  }
+}
+
+/* ===== THÈME SOMBRE (AUTO) ===== */
+@media (prefers-color-scheme: dark) {
+  .gestion-postes-container {
+    background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+  }
+  
+  .header-card,
+  .form-card,
+  .filters-card,
+  .actions-card,
+  .table-card {
+    background: rgba(45, 55, 72, 0.95);
+    color: #e2e8f0;
+  }
+  
+  .header-card mat-card-title,
+  .form-card mat-card-title,
+  .table-card mat-card-title {
+    color: #e2e8f0;
+  }
+  
+  .header-card mat-card-subtitle {
+    color: #a0aec0;
+  }
+  
+  .postes-table {
+    background: rgba(45, 55, 72, 0.8);
+  }
+  
+  .postes-table td {
+    color: #e2e8f0;
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .postes-table tr:hover {
+    background: rgba(102, 126, 234, 0.1);
+  }
+  
+  .job-title .title {
+    color: #e2e8f0;
+  }
+  
+  .job-title .department {
+    color: #a0aec0;
+  }
+  
+  .loading-container p {
+    color: #a0aec0;
+  }
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.gestion-postes-container > * {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.gestion-postes-container > *:nth-child(1) { animation-delay: 0.1s; }
+.gestion-postes-container > *:nth-child(2) { animation-delay: 0.2s; }
+.gestion-postes-container > *:nth-child(3) { animation-delay: 0.3s; }
+.gestion-postes-container > *:nth-child(4) { animation-delay: 0.4s; }
+.gestion-postes-container > *:nth-child(5) { animation-delay: 0.5s; }
+
+/* ===== SCROLLBAR PERSONNALISÉE ===== */
+.table-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.table-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #5a67d8, #6b46c1);
+}
+
+/* ===== ACCESSIBILITÉ ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus visible pour l'accessibilité */
+button:focus-visible,
+.mat-menu-item:focus-visible {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* ===== ÉTATS DÉSACTIVÉS ===== */
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+button:disabled:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* ===== FORM FIELDS PERSONNALISÉS ===== */
+.mat-form-field-appearance-outline .mat-form-field-outline {
+  border-radius: 12px;
+}
+
+.mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+  border-color: #667eea;
+}
+
+.mat-form-field-appearance-outline .mat-form-field-label {
+  color: #4a5568;
+}
+
+.mat-form-field-appearance-outline.mat-focused .mat-form-field-label {
+  color: #667eea;
+}

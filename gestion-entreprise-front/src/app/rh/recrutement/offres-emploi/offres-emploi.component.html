@@ -1,0 +1,485 @@
+<div class="offres-emploi-container">
+  <!-- En-tête -->
+  <div class="header">
+    <h1>Gestion des Offres d'Emploi</h1>
+    <div class="header-actions">
+      <button mat-raised-button color="primary" (click)="openForm()">
+        <mat-icon>add</mat-icon>
+        Nouvelle Offre
+      </button>
+      <button mat-stroked-button (click)="exportOffres()">
+        <mat-icon>download</mat-icon>
+        Exporter
+      </button>
+    </div>
+  </div>
+
+  <!-- Statistiques -->
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <mat-icon class="stat-icon primary">work</mat-icon>
+          <div class="stat-info">
+            <h3>{{ stats.totalOffres }}</h3>
+            <p>Total Offres</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <mat-icon class="stat-icon success">check_circle</mat-icon>
+          <div class="stat-info">
+            <h3>{{ stats.offresActives }}</h3>
+            <p>Offres Actives</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <mat-icon class="stat-icon warning">pause_circle</mat-icon>
+          <div class="stat-info">
+            <h3>{{ stats.offresSuspendues }}</h3>
+            <p>Offres Suspendues</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <mat-icon class="stat-icon error">cancel</mat-icon>
+          <div class="stat-info">
+            <h3>{{ stats.offresFermees }}</h3>
+            <p>Offres Fermées</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <mat-icon class="stat-icon info">people</mat-icon>
+          <div class="stat-info">
+            <h3>{{ stats.totalCandidatures }}</h3>
+            <p>Total Candidatures</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <mat-icon class="stat-icon accent">trending_up</mat-icon>
+          <div class="stat-info">
+            <h3>{{ stats.moyenneCandidaturesParOffre }}</h3>
+            <p>Moy. Candidatures/Offre</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Filtres -->
+  <mat-card class="filters-card">
+    <mat-card-header>
+      <mat-card-title>Filtres</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="searchForm" class="filters-form">
+        <div class="filters-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Recherche</mat-label>
+            <input matInput formControlName="searchTerm" placeholder="Titre, description...">
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Département</mat-label>
+            <mat-select formControlName="departement">
+              <mat-option value="">Tous</mat-option>
+              <mat-option *ngFor="let dept of departements" [value]="dept">
+                {{ dept }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Type de Contrat</mat-label>
+            <mat-select formControlName="typeContrat">
+              <mat-option value="">Tous</mat-option>
+              <mat-option *ngFor="let type of typesContrat" [value]="type">
+                {{ type }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Statut</mat-label>
+            <mat-select formControlName="statut">
+              <mat-option value="">Tous</mat-option>
+              <mat-option *ngFor="let statut of statutsOffre" [value]="statut">
+                {{ statut | titlecase }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Niveau d'Expérience</mat-label>
+            <mat-select formControlName="niveauExperience">
+              <mat-option value="">Tous</mat-option>
+              <mat-option *ngFor="let niveau of niveauxExperience" [value]="niveau">
+                {{ niveau }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Type d'Emploi</mat-label>
+            <mat-select formControlName="typeEmploi">
+              <mat-option value="">Tous</mat-option>
+              <mat-option *ngFor="let type of typesEmploi" [value]="type">
+                {{ type | titlecase }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <button mat-stroked-button type="button" (click)="clearFilters()">
+            <mat-icon>clear</mat-icon>
+            Effacer
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Tableau des offres -->
+  <mat-card class="table-card">
+    <mat-card-header>
+      <mat-card-title>Liste des Offres ({{ totalItems }})</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="table-container">
+        <table mat-table [dataSource]="getPaginatedOffres()" matSort (matSortChange)="onSort($event)" class="offres-table">
+          <!-- Colonne Titre -->
+          <ng-container matColumnDef="titre">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Titre</th>
+            <td mat-cell *matCellDef="let offre">
+              <div class="titre-cell">
+                <strong>{{ offre.titre }}</strong>
+                <div class="subtitle">{{ offre.lieu }}</div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Département -->
+          <ng-container matColumnDef="departement">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Département</th>
+            <td mat-cell *matCellDef="let offre">
+              <mat-chip-set>
+                <mat-chip>{{ offre.departement }}</mat-chip>
+              </mat-chip-set>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Type de Contrat -->
+          <ng-container matColumnDef="typeContrat">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Contrat</th>
+            <td mat-cell *matCellDef="let offre">
+              <div class="contract-info">
+                <div>{{ offre.typeContrat }}</div>
+                <div class="subtitle">{{ offre.typeEmploi }}</div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Statut -->
+          <ng-container matColumnDef="statut">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
+            <td mat-cell *matCellDef="let offre">
+              <mat-chip [color]="getStatutColor(offre.statut)" selected>
+                <mat-icon matChipAvatar>{{ getStatutIcon(offre.statut) }}</mat-icon>
+                {{ offre.statut | titlecase }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Candidatures -->
+          <ng-container matColumnDef="nombreCandidatures">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Candidatures</th>
+            <td mat-cell *matCellDef="let offre">
+              <div class="candidatures-cell">
+                <mat-icon>people</mat-icon>
+                <span>{{ offre.nombreCandidatures }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Date de Publication -->
+          <ng-container matColumnDef="datePublication">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Publication</th>
+            <td mat-cell *matCellDef="let offre">
+              {{ offre.datePublication | date:'dd/MM/yyyy' }}
+            </td>
+          </ng-container>
+
+          <!-- Colonne Date Limite -->
+          <ng-container matColumnDef="dateLimite">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Date Limite</th>
+            <td mat-cell *matCellDef="let offre">
+              <div class="date-limite" [class.expired]="isOffreExpired(offre.dateLimite)">
+                {{ offre.dateLimite | date:'dd/MM/yyyy' }}
+                <mat-icon *ngIf="isOffreExpired(offre.dateLimite)" class="warning-icon">warning</mat-icon>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Actions -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let offre">
+              <div class="actions-cell">
+                <button mat-icon-button [matMenuTriggerFor]="actionMenu" [matMenuTriggerData]="{offre: offre}">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <mat-paginator
+        [length]="totalItems"
+        [pageSize]="pageSize"
+        [pageIndex]="pageIndex"
+        [pageSizeOptions]="[5, 10, 25, 50]"
+        (page)="onPageChange($event)"
+        showFirstLastButtons>
+      </mat-paginator>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Menu d'actions -->
+  <mat-menu #actionMenu="matMenu">
+    <ng-template matMenuContent let-offre="offre">
+      <button mat-menu-item (click)="openForm(offre)">
+        <mat-icon>edit</mat-icon>
+        <span>Modifier</span>
+      </button>
+      <button mat-menu-item (click)="duplicateOffre(offre.id)">
+        <mat-icon>content_copy</mat-icon>
+        <span>Dupliquer</span>
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="changeStatut(offre.id, 'active')" [disabled]="offre.statut === 'active'">
+        <mat-icon>check_circle</mat-icon>
+        <span>Activer</span>
+      </button>
+      <button mat-menu-item (click)="changeStatut(offre.id, 'suspendue')" [disabled]="offre.statut === 'suspendue'">
+        <mat-icon>pause_circle</mat-icon>
+        <span>Suspendre</span>
+      </button>
+      <button mat-menu-item (click)="changeStatut(offre.id, 'fermee')" [disabled]="offre.statut === 'fermee'">
+        <mat-icon>cancel</mat-icon>
+        <span>Fermer</span>
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="deleteOffre(offre.id)" class="delete-action">
+        <mat-icon>delete</mat-icon>
+        <span>Supprimer</span>
+      </button>
+    </ng-template>
+  </mat-menu>
+
+  <!-- Formulaire d'ajout/modification -->
+  <div class="form-overlay" *ngIf="showForm" (click)="closeForm()">
+    <div class="form-container" (click)="$event.stopPropagation()">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>
+            {{ isEditing ? 'Modifier l\'offre' : 'Nouvelle offre' }}
+          </mat-card-title>
+          <button mat-icon-button (click)="closeForm()" class="close-button">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="offreForm" (ngSubmit)="onSubmit()" class="offre-form">
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Titre du poste *</mat-label>
+                <input matInput formControlName="titre" required>
+                <mat-error *ngIf="offreForm.get('titre')?.hasError('required')">
+                  Le titre est requis
+                </mat-error>
+                <mat-error *ngIf="offreForm.get('titre')?.hasError('minlength')">
+                  Le titre doit contenir au moins 3 caractères
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Département *</mat-label>
+                <mat-select formControlName="departement" required>
+                  <mat-option *ngFor="let dept of departements" [value]="dept">
+                    {{ dept }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="offreForm.get('departement')?.hasError('required')">
+                  Le département est requis
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Type de contrat *</mat-label>
+                <mat-select formControlName="typeContrat" required>
+                  <mat-option *ngFor="let type of typesContrat" [value]="type">
+                    {{ type }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="offreForm.get('typeContrat')?.hasError('required')">
+                  Le type de contrat est requis
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Type d'emploi *</mat-label>
+                <mat-select formControlName="typeEmploi" required>
+                  <mat-option *ngFor="let type of typesEmploi" [value]="type">
+                    {{ type | titlecase }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="offreForm.get('typeEmploi')?.hasError('required')">
+                  Le type d'emploi est requis
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Niveau d'expérience *</mat-label>
+                <mat-select formControlName="niveauExperience" required>
+                  <mat-option *ngFor="let niveau of niveauxExperience" [value]="niveau">
+                    {{ niveau }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="offreForm.get('niveauExperience')?.hasError('required')">
+                  Le niveau d'expérience est requis
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Niveau d'étude *</mat-label>
+                <mat-select formControlName="niveauEtude" required>
+                  <mat-option *ngFor="let niveau of niveauxEtude" [value]="niveau">
+                    {{ niveau }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="offreForm.get('niveauEtude')?.hasError('required')">
+                  Le niveau d'étude est requis
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Salaire minimum *</mat-label>
+                <input matInput type="number" formControlName="salaireMin" required>
+                <span matSuffix>€</span>
+                <mat-error *ngIf="offreForm.get('salaireMin')?.hasError('required')">
+                  Le salaire minimum est requis
+                </mat-error>
+                <mat-error *ngIf="offreForm.get('salaireMin')?.hasError('min')">
+                  Le salaire doit être positif
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Salaire maximum *</mat-label>
+                <input matInput type="number" formControlName="salaireMax" required>
+                <span matSuffix>€</span>
+                <mat-error *ngIf="offreForm.get('salaireMax')?.hasError('required')">
+                  Le salaire maximum est requis
+                </mat-error>
+                <mat-error *ngIf="offreForm.get('salaireMax')?.hasError('min')">
+                  Le salaire doit être positif
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Lieu *</mat-label>
+                <input matInput formControlName="lieu" required>
+                <mat-error *ngIf="offreForm.get('lieu')?.hasError('required')">
+                  Le lieu est requis
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Date limite *</mat-label>
+                <input matInput [matDatepicker]="picker" formControlName="dateLimite" required>
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+                <mat-error *ngIf="offreForm.get('dateLimite')?.hasError('required')">
+                  La date limite est requise
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Responsable *</mat-label>
+              <input matInput formControlName="responsable" required>
+              <mat-error *ngIf="offreForm.get('responsable')?.hasError('required')">
+                Le responsable est requis
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Description *</mat-label>
+              <textarea matInput formControlName="description" rows="4" required></textarea>
+              <mat-error *ngIf="offreForm.get('description')?.hasError('required')">
+                La description est requise
+              </mat-error>
+              <mat-error *ngIf="offreForm.get('description')?.hasError('minlength')">
+                La description doit contenir au moins 10 caractères
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Compétences requises</mat-label>
+              <textarea matInput formControlName="competencesRequises" rows="2" 
+                        placeholder="Séparez les compétences par des virgules"></textarea>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Avantages</mat-label>
+              <textarea matInput formControlName="avantages" rows="2" 
+                        placeholder="Séparez les avantages par des virgules"></textarea>
+            </mat-form-field>
+          </form>
+        </mat-card-content>
+        <mat-card-actions align="end">
+          <button mat-button type="button" (click)="closeForm()">Annuler</button>
+          <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!offreForm.valid">
+            {{ isEditing ? 'Modifier' : 'Créer' }}
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+</div>

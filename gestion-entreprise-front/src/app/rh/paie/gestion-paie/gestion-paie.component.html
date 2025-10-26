@@ -1,0 +1,265 @@
+<div class="gestion-paie-container">
+  <!-- En-tête -->
+  <div class="header">
+    <h2><i class="fas fa-money-check-alt"></i> Gestion de la Paie</h2>
+    <div class="header-actions">
+      <button mat-raised-button color="primary" (click)="calculerToutesLesPaies()">
+        <i class="fas fa-calculator"></i> Calculer Toutes les Paies
+      </button>
+      <button mat-raised-button color="accent" (click)="exporterDonnees()">
+        <i class="fas fa-download"></i> Exporter
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtres -->
+  <mat-card class="filters-card">
+    <mat-card-header>
+      <mat-card-title>Filtres</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="filters-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Employé</mat-label>
+          <mat-select [(value)]="filtres.employe" (selectionChange)="appliquerFiltres()">
+            <mat-option value="">Tous les employés</mat-option>
+            <mat-option *ngFor="let employe of employes" [value]="employe.id">
+              {{employe.prenom}} {{employe.nom}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Mois</mat-label>
+          <mat-select [(value)]="filtres.mois" (selectionChange)="appliquerFiltres()">
+            <mat-option value="">Tous les mois</mat-option>
+            <mat-option *ngFor="let mois of moisOptions" [value]="mois.value">
+              {{mois.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Année</mat-label>
+          <mat-select [(value)]="filtres.annee" (selectionChange)="appliquerFiltres()">
+            <mat-option value="">Toutes les années</mat-option>
+            <mat-option *ngFor="let annee of anneesOptions" [value]="annee">
+              {{annee}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Type</mat-label>
+          <mat-select [(value)]="filtres.type" (selectionChange)="appliquerFiltres()">
+            <mat-option value="">Tous les types</mat-option>
+            <mat-option value="salaire_base">Salaire de base</mat-option>
+            <mat-option value="heures_sup">Heures supplémentaires</mat-option>
+            <mat-option value="prime">Prime</mat-option>
+            <mat-option value="deduction">Déduction</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Statut</mat-label>
+          <mat-select [(value)]="filtres.statut" (selectionChange)="appliquerFiltres()">
+            <mat-option value="">Tous les statuts</mat-option>
+            <mat-option value="brouillon">Brouillon</mat-option>
+            <mat-option value="calcule">Calculé</mat-option>
+            <mat-option value="valide">Validé</mat-option>
+            <mat-option value="paye">Payé</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-icon-button (click)="reinitialiserFiltres()" matTooltip="Réinitialiser les filtres">
+          <i class="fas fa-undo"></i>
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Statistiques -->
+  <div class="stats-row">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i class="fas fa-euro-sign"></i>
+          </div>
+          <div class="stat-info">
+            <h3>{{statistiques.montantTotal | currency:'EUR':'symbol':'1.2-2'}}</h3>
+            <p>Montant Total</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="stat-info">
+            <h3>{{statistiques.nombreEmployes}}</h3>
+            <p>Employés</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div class="stat-info">
+            <h3>{{statistiques.paiesValidees}}</h3>
+            <p>Paies Validées</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="stat-info">
+            <h3>{{statistiques.paiesEnAttente}}</h3>
+            <p>En Attente</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Tableau des éléments de paie -->
+  <mat-card class="table-card">
+    <mat-card-header>
+      <mat-card-title>Éléments de Paie</mat-card-title>
+      <div class="table-actions">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Rechercher</mat-label>
+          <input matInput [(ngModel)]="termesRecherche" (input)="rechercherElements()" placeholder="Nom, prénom...">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+      </div>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="table-container" *ngIf="!chargement; else loadingTemplate">
+        <table mat-table [dataSource]="dataSource" matSort class="elements-table">
+          <!-- Colonne Employé -->
+          <ng-container matColumnDef="employe">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Employé</th>
+            <td mat-cell *matCellDef="let element">
+              <div class="employe-info">
+                <strong>{{element.employe.prenom}} {{element.employe.nom}}</strong>
+                <small>{{element.employe.poste}}</small>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Période -->
+          <ng-container matColumnDef="periode">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Période</th>
+            <td mat-cell *matCellDef="let element">
+              {{element.mois}}/{{element.annee}}
+            </td>
+          </ng-container>
+
+          <!-- Colonne Type -->
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+            <td mat-cell *matCellDef="let element">
+              <mat-chip [ngClass]="'type-' + element.type">{{getTypeLabel(element.type)}}</mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Montant -->
+          <ng-container matColumnDef="montant">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Montant</th>
+            <td mat-cell *matCellDef="let element">
+              <span [ngClass]="{'montant-positif': element.montant > 0, 'montant-negatif': element.montant < 0}">
+                {{element.montant | currency:'EUR':'symbol':'1.2-2'}}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Statut -->
+          <ng-container matColumnDef="statut">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
+            <td mat-cell *matCellDef="let element">
+              <mat-chip [ngClass]="'statut-' + element.statut">{{getStatutLabel(element.statut)}}</mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Actions -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let element">
+              <div class="actions-buttons">
+                <button mat-icon-button (click)="calculerPaie(element)" 
+                        matTooltip="Calculer" 
+                        [disabled]="element.statut === 'paye'">
+                  <i class="fas fa-calculator"></i>
+                </button>
+                <button mat-icon-button (click)="validerPaie(element)" 
+                        matTooltip="Valider" 
+                        [disabled]="element.statut !== 'calcule'">
+                  <i class="fas fa-check"></i>
+                </button>
+                <button mat-icon-button (click)="genererBulletin(element)" 
+                        matTooltip="Générer bulletin" 
+                        [disabled]="element.statut === 'brouillon'">
+                  <i class="fas fa-file-pdf"></i>
+                </button>
+                <button mat-icon-button [matMenuTriggerFor]="menuActions">
+                  <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <mat-menu #menuActions="matMenu">
+                  <button mat-menu-item (click)="modifierElement(element)">
+                    <i class="fas fa-edit"></i> Modifier
+                  </button>
+                  <button mat-menu-item (click)="dupliquerElement(element)">
+                    <i class="fas fa-copy"></i> Dupliquer
+                  </button>
+                  <button mat-menu-item (click)="supprimerElement(element)" 
+                          [disabled]="element.statut === 'paye'">
+                    <i class="fas fa-trash"></i> Supprimer
+                  </button>
+                </mat-menu>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="colonnesAffichees"></tr>
+          <tr mat-row *matRowDef="let row; columns: colonnesAffichees;"></tr>
+        </table>
+
+        <!-- Message si aucune donnée -->
+        <div class="no-data" *ngIf="dataSource.data.length === 0">
+          <i class="fas fa-inbox"></i>
+          <p>Aucun élément de paie trouvé</p>
+        </div>
+      </div>
+
+      <!-- Template de chargement -->
+      <ng-template #loadingTemplate>
+        <div class="loading-container">
+          <mat-spinner></mat-spinner>
+          <p>Chargement des éléments de paie...</p>
+        </div>
+      </ng-template>
+
+      <!-- Pagination -->
+      <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" 
+                     [pageSize]="25" 
+                     showFirstLastButtons>
+      </mat-paginator>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,0 +1,301 @@
+/* Variables CSS pour les couleurs */
+:root {
+  --primary-color: #6366f1;
+  --secondary-color: #ec4899;
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --error-color: #ef4444;
+  --info-color: #06b6d4;
+  --background-white: #ffffff;
+  --text-dark: #1f2937;
+  --text-light: #6b7280;
+  --border-light: #e5e7eb;
+  --shadow-light: rgba(0, 0, 0, 0.1);
+  --shadow-medium: rgba(0, 0, 0, 0.15);
+}
+
+/* Container principal */
+.liste-employes {
+  padding: 24px;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  min-height: 100vh;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* En-tête */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(99, 102, 241, 0.3);
+}
+
+.header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.header-actions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.header-actions button {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.header-actions button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Carte de filtres */
+.filter-card {
+  margin-bottom: 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px var(--shadow-light);
+  overflow: hidden;
+}
+
+.filter-card mat-card-header {
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  padding: 20px 24px;
+}
+
+.filter-card mat-card-title {
+  color: var(--text-dark);
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+.filter-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  align-items: end;
+  padding: 24px;
+}
+
+.filter-actions {
+  display: flex;
+  gap: 12px;
+  grid-column: 1 / -1;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+/* Carte du tableau */
+.table-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 20px var(--shadow-light);
+  overflow: hidden;
+}
+
+.table-container {
+  position: relative;
+  overflow-x: auto;
+}
+
+/* Tableau */
+.employes-table {
+  width: 100%;
+  background: white;
+}
+
+.employes-table th {
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  color: var(--text-dark);
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 16px;
+  border-bottom: 2px solid var(--border-light);
+}
+
+.employes-table td {
+  padding: 16px;
+  border-bottom: 1px solid var(--border-light);
+  vertical-align: middle;
+}
+
+.employes-table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.employes-table tbody tr:hover {
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  transform: scale(1.01);
+  box-shadow: 0 2px 8px var(--shadow-light);
+}
+
+/* Chips de statut */
+mat-chip {
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+mat-chip[color="primary"] {
+  background: rgba(16, 185, 129, 0.1) !important;
+  color: var(--success-color) !important;
+}
+
+mat-chip[color="warn"] {
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: var(--error-color) !important;
+}
+
+mat-chip[color="accent"] {
+  background: rgba(245, 158, 11, 0.1) !important;
+  color: var(--warning-color) !important;
+}
+
+/* Menu d'actions */
+.delete-action {
+  color: var(--error-color) !important;
+}
+
+.delete-action mat-icon {
+  color: var(--error-color) !important;
+}
+
+/* États vides et de chargement */
+.no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  color: var(--text-light);
+}
+
+.no-data mat-icon {
+  font-size: 4rem;
+  width: 4rem;
+  height: 4rem;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.no-data p {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 48px;
+}
+
+/* Paginateur */
+mat-paginator {
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  border-top: 1px solid var(--border-light);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .liste-employes {
+    padding: 16px;
+  }
+  
+  .header {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+  
+  .header-actions {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .filter-form {
+    grid-template-columns: 1fr;
+  }
+  
+  .filter-actions {
+    grid-column: 1;
+    justify-content: stretch;
+  }
+  
+  .filter-actions button {
+    flex: 1;
+  }
+  
+  .table-container {
+    overflow-x: scroll;
+  }
+  
+  .employes-table {
+    min-width: 600px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .header-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .header-actions button {
+    width: 100%;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.filter-card,
+.table-card {
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* Améliorations des boutons */
+button[mat-raised-button],
+button[mat-stroked-button] {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button[mat-raised-button]:hover,
+button[mat-stroked-button]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow-medium);
+}
+
+/* Améliorations des champs de formulaire */
+mat-form-field {
+  width: 100%;
+}
+
+mat-form-field .mat-mdc-form-field-focus-overlay {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  opacity: 0.1;
+}

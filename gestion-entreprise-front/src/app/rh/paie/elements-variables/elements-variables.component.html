@@ -1,0 +1,300 @@
+<div class="elements-variables-container">
+  <div class="header">
+    <h2>Éléments Variables de Paie</h2>
+    <div class="actions">
+      <button mat-raised-button color="primary" (click)="ajouterElement()">
+        <mat-icon>add</mat-icon>
+        Ajouter un élément
+      </button>
+      <button mat-stroked-button (click)="exporterElements()" [disabled]="isLoading">
+        <mat-icon>download</mat-icon>
+        Exporter
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtres -->
+  <div class="filters-card">
+    <form [formGroup]="filtresForm">
+      <div class="filters-row">
+        <div class="filter-field">
+          <mat-form-field appearance="outline">
+            <mat-label>Employé</mat-label>
+            <mat-select formControlName="employe">
+              <mat-option value="">Tous les employés</mat-option>
+              <mat-option *ngFor="let employe of employes" [value]="employe.id">
+                {{ employe.prenom }} {{ employe.nom }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        
+        <div class="filter-field">
+          <mat-form-field appearance="outline">
+            <mat-label>Type d'élément</mat-label>
+            <mat-select formControlName="type">
+              <mat-option value="">Tous les types</mat-option>
+              <mat-option *ngFor="let type of typesElements" [value]="type.value">
+                {{ type.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        
+        <div class="filter-field">
+          <mat-form-field appearance="outline">
+            <mat-label>Période</mat-label>
+            <mat-select formControlName="periode">
+              <mat-option value="">Toutes les périodes</mat-option>
+              <mat-option *ngFor="let periode of periodesDisponibles" [value]="periode">
+                {{ formatPeriode(periode) }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        
+        <div class="filter-field">
+          <mat-form-field appearance="outline">
+            <mat-label>Statut</mat-label>
+            <mat-select formControlName="statut">
+              <mat-option value="">Tous les statuts</mat-option>
+              <mat-option value="actif">Actif</mat-option>
+              <mat-option value="inactif">Inactif</mat-option>
+              <mat-option value="traite">Traité</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        
+        <div class="filter-actions">
+          <button mat-icon-button type="button" (click)="resetFiltres()" matTooltip="Réinitialiser">
+            <mat-icon>refresh</mat-icon>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Tableau -->
+  <div class="table-card">
+    <div class="table-header">
+      <span class="table-title">Liste des éléments variables</span>
+    </div>
+    
+    <div class="table-container">
+      <table mat-table [dataSource]="dataSource" matSort class="elements-table">
+        <!-- Colonne Employé -->
+        <ng-container matColumnDef="employe">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Employé</th>
+          <td mat-cell *matCellDef="let element">
+            <div class="employe-info">
+              <span class="employe-nom">{{ getEmployeNom(element.employeId) }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Type -->
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="type-badge" [class]="element.type">
+              {{ getTypeLabel(element.type) }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Libellé -->
+        <ng-container matColumnDef="libelle">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Libellé</th>
+          <td mat-cell *matCellDef="let element">
+            <div class="libelle-info">
+              <span class="libelle-nom">{{ element.libelle }}</span>
+              <span class="libelle-description" *ngIf="element.description">
+                {{ element.description }}
+              </span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Montant -->
+        <ng-container matColumnDef="montant">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Montant</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="montant" [class.negatif]="element.montant < 0">
+              {{ formatMontant(element.montant) }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Période -->
+        <ng-container matColumnDef="periode">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Période</th>
+          <td mat-cell *matCellDef="let element">
+            {{ formatPeriode(element.periode) }}
+          </td>
+        </ng-container>
+
+        <!-- Colonne Statut -->
+        <ng-container matColumnDef="statut">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="status-badge" [class]="getStatutBadgeClass(element.statut)">
+              {{ element.statut }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let element">
+            <div class="actions-menu">
+              <button mat-icon-button [matMenuTriggerFor]="menu" [matMenuTriggerData]="{element: element}">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <ng-template matMenuContent let-element="element">
+                  <button mat-menu-item (click)="modifierElement(element)">
+                    <mat-icon>edit</mat-icon>
+                    Modifier
+                  </button>
+                  <button mat-menu-item (click)="dupliquerElement(element)">
+                    <mat-icon>content_copy</mat-icon>
+                    Dupliquer
+                  </button>
+                  <mat-divider></mat-divider>
+                  <button mat-menu-item (click)="supprimerElement(element)" class="delete-item">
+                    <mat-icon>delete</mat-icon>
+                    Supprimer
+                  </button>
+                </ng-template>
+              </mat-menu>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" 
+                   [pageSize]="25"
+                   showFirstLastButtons>
+    </mat-paginator>
+  </div>
+
+  <!-- Indicateur de chargement -->
+  <div class="loading-container" *ngIf="isLoading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+</div>
+
+<!-- Dialog pour ajouter/modifier un élément -->
+<ng-template #elementDialog>
+  <div class="dialog-container">
+    <h2 mat-dialog-title>{{ dialogMode === 'add' ? 'Ajouter' : 'Modifier' }} un élément variable</h2>
+    
+    <mat-dialog-content>
+      <form [formGroup]="elementForm">
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Employé</mat-label>
+            <mat-select formControlName="employeId">
+              <mat-option *ngFor="let employe of employes" [value]="employe.id">
+                {{ employe.prenom }} {{ employe.nom }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="elementForm.get('employeId')?.hasError('required')">
+              L'employé est requis
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field half-width">
+            <mat-form-field appearance="outline">
+              <mat-label>Type d'élément</mat-label>
+              <mat-select formControlName="type">
+                <mat-option *ngFor="let type of typesElements" [value]="type.value">
+                  {{ type.label }}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="elementForm.get('type')?.hasError('required')">
+                Le type est requis
+              </mat-error>
+            </mat-form-field>
+          </div>
+          
+          <div class="form-field half-width">
+            <mat-form-field appearance="outline">
+              <mat-label>Période</mat-label>
+              <mat-select formControlName="periode">
+                <mat-option *ngFor="let periode of periodesDisponibles" [value]="periode">
+                  {{ formatPeriode(periode) }}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="elementForm.get('periode')?.hasError('required')">
+                La période est requise
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field half-width">
+            <mat-form-field appearance="outline">
+              <mat-label>Libellé</mat-label>
+              <input matInput formControlName="libelle" placeholder="Nom de l'élément">
+              <mat-error *ngIf="elementForm.get('libelle')?.hasError('required')">
+                Le libellé est requis
+              </mat-error>
+            </mat-form-field>
+          </div>
+          
+          <div class="form-field half-width">
+            <mat-form-field appearance="outline">
+              <mat-label>Montant</mat-label>
+              <input matInput type="number" formControlName="montant" placeholder="0.00">
+              <span matSuffix>€</span>
+              <mat-error *ngIf="elementForm.get('montant')?.hasError('required')">
+                Le montant est requis
+              </mat-error>
+              <mat-error *ngIf="elementForm.get('montant')?.hasError('min')">
+                Le montant doit être positif
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Description</mat-label>
+            <textarea matInput formControlName="description" rows="3" 
+                      placeholder="Description de l'élément (optionnel)"></textarea>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <div class="checkbox-group">
+            <mat-checkbox formControlName="recurrent">
+              Élément récurrent
+            </mat-checkbox>
+            <mat-checkbox formControlName="imposable">
+              Imposable
+            </mat-checkbox>
+          </div>
+        </div>
+      </form>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close>Annuler</button>
+      <button mat-raised-button color="primary" 
+              [disabled]="!elementForm.valid"
+              [mat-dialog-close]="true">
+        {{ dialogMode === 'add' ? 'Ajouter' : 'Modifier' }}
+      </button>
+    </mat-dialog-actions>
+  </div>
+</ng-template>

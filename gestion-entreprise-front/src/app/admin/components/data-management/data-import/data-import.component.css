@@ -1,0 +1,435 @@
+/* Variables de couleurs */
+:root {
+  --primary-color: #6366f1;
+  --secondary-color: #ec4899;
+  --success-color: #10b981;
+  --info-color: #06b6d4;
+  --purple-color: #8b5cf6;
+  --teal-color: #14b8a6;
+  --background-white: #ffffff;
+  --text-dark: #1f2937;
+  --text-light: #6b7280;
+  --border-light: #e5e7eb;
+  --shadow-light: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Container principal avec fond blanc */
+.data-import-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white;
+  min-height: 100vh;
+}
+
+/* En-tête avec dégradé coloré */
+.header {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--purple-color) 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-medium);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Actions de l'en-tête */
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.header-actions button {
+  border-radius: 25px;
+  padding: 8px 20px;
+  font-weight: 500;
+  text-transform: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.header-actions button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.header-actions button mat-icon {
+  margin-right: 8px;
+}
+
+/* Cartes avec fond blanc */
+.import-card,
+.progress-card {
+  background: var(--background-white);
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: var(--shadow-light);
+  margin-bottom: 2rem;
+  border: 1px solid var(--border-light);
+}
+
+/* Titres de sections avec gradient coloré */
+.options-section h3 {
+  margin: 0 0 16px 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, var(--secondary-color) 0%, var(--info-color) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  align-items: flex-start;
+}
+
+.half-width {
+  flex: 1;
+  min-width: 250px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+/* Informations fichier avec fond blanc */
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--background-white);
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  color: var(--text-light);
+  font-size: 14px;
+  box-shadow: var(--shadow-light);
+}
+
+.file-info mat-icon {
+  color: var(--primary-color);
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* Section options */
+.options-section {
+  margin: 24px 0;
+}
+
+/* Actions avec boutons colorés */
+.actions {
+  display: flex;
+  justify-content: center;
+  padding-top: 24px;
+}
+
+.actions button {
+  min-width: 200px;
+  height: 48px;
+  font-size: 16px;
+  border-radius: 25px;
+  font-weight: 500;
+  text-transform: none;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--purple-color) 100%);
+  color: white;
+  border: none;
+}
+
+.actions button:not([disabled]):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+}
+
+.actions button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Section progression */
+.progress-section {
+  padding: 16px 0;
+}
+
+.progress-text {
+  text-align: center;
+  margin-top: 12px;
+  font-weight: 500;
+  color: var(--text-light);
+}
+
+/* Section résultats */
+.result-section {
+  padding: 16px 0;
+}
+
+.result-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.result-header.success {
+  background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+  color: var(--success-color);
+}
+
+.result-header.error {
+  background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+  color: #f44336;
+}
+
+.result-header h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.result-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: var(--background-white);
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-light);
+}
+
+.stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat .label {
+  font-weight: 500;
+  color: var(--text-light);
+}
+
+.stat .value {
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.stat .value.success {
+  color: var(--success-color);
+}
+
+.stat .value.error {
+  color: #f44336;
+}
+
+.stat .value.warning {
+  color: #ff9800;
+}
+
+/* Détails des erreurs */
+.error-details {
+  margin-top: 24px;
+  padding: 16px;
+  background: var(--background-white);
+  border-radius: 8px;
+  border-left: 4px solid #ff9800;
+  box-shadow: var(--shadow-light);
+}
+
+.error-details h4 {
+  margin: 0 0 16px 0;
+  color: #ff9800;
+  font-size: 16px;
+}
+
+.error-details mat-list {
+  padding: 0;
+}
+
+.error-details mat-list-item {
+  height: auto;
+  min-height: 48px;
+  padding: 8px 0;
+}
+
+.more-errors {
+  margin-top: 12px;
+  font-style: italic;
+  color: var(--text-light);
+  text-align: center;
+}
+
+/* Overlay de chargement */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Options mat-select avec icônes */
+.mat-mdc-option .mat-icon {
+  margin-right: 12px;
+  vertical-align: middle;
+}
+
+/* Styling des champs de fichier */
+input[type="file"] {
+  display: none;
+}
+
+/* Styling de la barre de progression */
+mat-progress-bar {
+  height: 8px;
+  border-radius: 4px;
+}
+
+/* Diviseurs */
+mat-divider {
+  margin: 24px 0;
+}
+
+/* Cases à cocher */
+mat-checkbox {
+  margin: 8px 0;
+}
+
+/* Indices et erreurs des champs de formulaire */
+mat-hint {
+  font-size: 12px;
+  color: var(--text-light);
+}
+
+mat-error {
+  font-size: 12px;
+}
+
+/* Zone de glisser-déposer */
+.drop-zone {
+  border: 2px dashed var(--border-light);
+  border-radius: 8px;
+  padding: 40px;
+  text-align: center;
+  background: var(--background-white);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.drop-zone:hover {
+  border-color: var(--primary-color);
+  background: linear-gradient(135deg, #f0f8ff 0%, #e3f2fd 100%);
+}
+
+.drop-zone.dragover {
+  border-color: var(--primary-color);
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+}
+
+.drop-zone mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: var(--text-light);
+  margin-bottom: 16px;
+}
+
+/* Design responsive */
+@media (max-width: 768px) {
+  .data-import-container {
+    padding: 16px;
+  }
+  
+  .header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+  
+  .form-row {
+    flex-direction: column;
+  }
+  
+  .half-width {
+    min-width: unset;
+  }
+  
+  .result-stats {
+    gap: 8px;
+  }
+  
+  .stat {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .error-details mat-list-item {
+    padding: 12px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .actions button {
+    min-width: unset;
+    width: 100%;
+  }
+  
+  .file-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+/* Animation d'apparition */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.progress-card,
+.result-section {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Spinner dans le bouton */
+.actions button mat-spinner {
+  margin-right: 8px;
+}
+
+/* Icônes des éléments de liste */
+mat-list-item mat-icon[matListIcon] {
+  color: #f44336;
+}

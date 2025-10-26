@@ -1,0 +1,424 @@
+/* Variables CSS pour les couleurs dégradées */
+:root {
+  --primary-color: #6366f1;
+  --secondary-color: #ec4899;
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --error-color: #ef4444;
+  --info-color: #06b6d4;
+  --purple-color: #8b5cf6;
+  --teal-color: #14b8a6;
+  --background-white: #ffffff;
+  --text-dark: #1f2937;
+  --text-light: #6b7280;
+  --border-light: #e5e7eb;
+  --shadow-light: rgba(0, 0, 0, 0.1);
+  --shadow-medium: rgba(0, 0, 0, 0.15);
+}
+
+/* Container principal avec arrière-plan dégradé */
+.pointage-container {
+  padding: 24px;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  min-height: 100vh;
+  font-family: 'Roboto', sans-serif;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* Section de bienvenue avec gradient */
+.welcome-section {
+  background: linear-gradient(135deg, #6366f1, #ec4899);
+  color: white;
+  padding: 32px;
+  border-radius: 16px;
+  margin-bottom: 32px;
+  box-shadow: 0 8px 32px rgba(99, 102, 241, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.welcome-section::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  animation: shimmer 3s linear infinite;
+}
+
+.welcome-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.profile-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-avatar mat-icon {
+  font-size: 32px;
+  color: white;
+}
+
+.welcome-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 8px 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.welcome-subtitle {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+}
+
+/* Cartes avec style moderne */
+.filter-card,
+.table-card,
+.stats-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px var(--shadow-light);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.filter-card::before,
+.table-card::before,
+.stats-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #6366f1, #ec4899, #06b6d4, #10b981);
+}
+
+.filter-card:hover,
+.table-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px var(--shadow-medium);
+}
+
+.filter-card mat-card-header,
+.table-card mat-card-header {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  padding: 24px;
+}
+
+.filter-card mat-card-title,
+.table-card mat-card-title {
+  color: var(--text-dark);
+  font-weight: 600;
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.filter-card mat-card-subtitle,
+.table-card mat-card-subtitle {
+  color: var(--text-light);
+  font-weight: 500;
+  margin: 4px 0 0 0;
+}
+
+.filter-card mat-card-content,
+.table-card mat-card-content {
+  padding: 24px !important;
+}
+
+/* Stats Card */
+.stats-card {
+  margin-bottom: 32px;
+}
+
+.stats-card mat-card-content {
+  padding: 32px !important;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.stats-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.stat-info h3 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #6366f1, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 8px 0;
+  line-height: 1;
+}
+
+.stat-info p {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin: 0;
+}
+
+.stat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #6366f1, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Date Selection */
+.date-selection {
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.date-field {
+  min-width: 250px;
+  flex: 1;
+}
+
+.load-button {
+  height: 56px;
+  min-width: 180px;
+  font-weight: 600;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  transition: all 0.3s ease;
+}
+
+.load-button:hover:not([disabled]) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+}
+
+.load-button mat-icon {
+  margin-right: 8px;
+}
+
+/* Table Container */
+.table-container {
+  overflow-x: auto;
+  border-radius: 12px;
+  background: white;
+  border: 1px solid var(--border-light);
+  margin: 20px 0;
+}
+
+.pointage-table {
+  width: 100%;
+  min-width: 900px;
+  background-color: white;
+}
+
+.pointage-table th {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  color: var(--text-dark);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 16px;
+}
+
+.pointage-table td {
+  padding: 16px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+/* Employee Info */
+.employee-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.employee-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #ec4899);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.employee-avatar mat-icon {
+  font-size: 20px;
+}
+
+.employee-details strong {
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+/* Form Fields */
+.time-field {
+  width: 140px;
+}
+
+.status-field {
+  width: 160px;
+}
+
+.time-field mat-form-field,
+.status-field mat-form-field {
+  margin-bottom: 0;
+}
+
+/* Submit Section */
+.submit-section {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+  padding: 24px 0;
+  border-top: 1px solid var(--border-light);
+}
+
+.submit-button {
+  min-width: 250px;
+  height: 56px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  transition: all 0.3s ease;
+}
+
+.submit-button:hover:not([disabled]) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+}
+
+.submit-button mat-icon {
+  margin-right: 8px;
+}
+
+/* Animations */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .pointage-container {
+    padding: 20px;
+  }
+  
+  .welcome-section {
+    padding: 24px;
+  }
+  
+  .welcome-title {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .pointage-container {
+    padding: 16px;
+  }
+  
+  .welcome-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 16px;
+  }
+  
+  .date-selection {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .date-field {
+    min-width: unset;
+  }
+  
+  .load-button {
+    min-width: unset;
+  }
+  
+  .table-container {
+    margin: 16px -16px;
+  }
+  
+  .time-field,
+  .status-field {
+    width: 120px;
+  }
+  
+  .submit-button {
+    min-width: unset;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .welcome-title {
+    font-size: 1.5rem;
+  }
+  
+  .welcome-subtitle {
+    font-size: 1rem;
+  }
+  
+  .time-field,
+  .status-field {
+    width: 100px;
+  }
+}
+
+/* Material Design Overrides */
+:host ::ng-deep .mat-mdc-card {
+  border-radius: 16px;
+}
+
+:host ::ng-deep .mat-mdc-raised-button {
+  border-radius: 12px;
+}
+
+:host ::ng-deep .mat-mdc-form-field {
+  margin-bottom: 0;
+}
+
+:host ::ng-deep .mat-mdc-form-field .mat-mdc-text-field-wrapper {
+  border-radius: 8px;
+}
+
+/* Success and Error Snackbar Styles */
+::ng-deep .success-snackbar {
+  background-color: var(--success-color) !important;
+  color: white !important;
+}
+
+::ng-deep .error-snackbar {
+  background-color: var(--error-color) !important;
+  color: white !important;
+}

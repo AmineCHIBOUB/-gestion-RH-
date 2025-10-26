@@ -1,0 +1,152 @@
+<div class="documents-container">
+  <div class="header">
+    <h2>Documents et Ressources</h2>
+    <div class="header-filters">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Rechercher</mat-label>
+        <input matInput 
+               [(ngModel)]="searchTerm" 
+               (input)="onSearchChange()"
+               placeholder="Nom du document...">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="type-selector">
+        <mat-label>Type</mat-label>
+        <mat-select [(value)]="selectedType" (selectionChange)="onTypeChange()">
+          <mat-option *ngFor="let type of typeOptions" [value]="type.value">
+            {{ type.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <!-- Statistiques -->
+  <mat-card class="stats-card" *ngIf="documentStats">
+    <mat-card-header>
+      <mat-card-title>Statistiques</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="label">Total documents</span>
+          <span class="value">{{ documentStats.totalDocuments }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="label">Documents lus</span>
+          <span class="value">{{ documentStats.documentsLus }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="label">Non lus</span>
+          <span class="value unread">{{ documentStats.documentsNonLus }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="label">Nouveaux ce mois</span>
+          <span class="value">{{ documentStats.nouveauxCeMois }}</span>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- État de chargement -->
+  <div class="loading-container" *ngIf="isLoading">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Chargement des documents...</p>
+  </div>
+
+  <!-- État d'erreur -->
+  <mat-card class="error-card" *ngIf="error && !isLoading">
+    <mat-card-content>
+      <div class="error-content">
+        <mat-icon color="warn">error</mat-icon>
+        <p>{{ error }}</p>
+        <button mat-raised-button color="primary" (click)="retry()">
+          Réessayer
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Liste des documents -->
+  <mat-card class="documents-card" *ngIf="!isLoading && !error">
+    <mat-card-header>
+      <mat-card-title>Documents disponibles</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="table-container">
+        <table mat-table [dataSource]="dataSource" class="documents-table">
+          <!-- Colonne Nom -->
+          <ng-container matColumnDef="nom">
+            <th mat-header-cell *matHeaderCellDef>Document</th>
+            <td mat-cell *matCellDef="let document">
+              <div class="document-info">
+                <div class="document-name">
+                  <mat-icon class="file-icon">description</mat-icon>
+                  <span [class.unread]="!document.lu">{{ document.nom }}</span>
+                  <mat-chip *ngIf="!document.lu" color="accent" selected class="new-chip">
+                    Nouveau
+                  </mat-chip>
+                </div>
+                <div class="document-description" *ngIf="document.description">
+                  {{ document.description }}
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Type -->
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef>Type</th>
+            <td mat-cell *matCellDef="let document">
+              <mat-chip [color]="getTypeColor(document.type)" selected>
+                {{ getTypeLabel(document.type) }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Taille -->
+          <ng-container matColumnDef="taille">
+            <th mat-header-cell *matHeaderCellDef>Taille</th>
+            <td mat-cell *matCellDef="let document">
+              {{ formatFileSize(document.taille) }}
+            </td>
+          </ng-container>
+
+          <!-- Colonne Date de création -->
+          <ng-container matColumnDef="dateCreation">
+            <th mat-header-cell *matHeaderCellDef>Ajouté le</th>
+            <td mat-cell *matCellDef="let document">
+              {{ document.dateCreation | date:'dd/MM/yyyy' }}
+            </td>
+          </ng-container>
+
+          <!-- Colonne Actions -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let document">
+              <button mat-icon-button 
+                      matTooltip="Voir le document"
+                      (click)="viewDocument(document)">
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button mat-icon-button 
+                      matTooltip="Télécharger"
+                      (click)="downloadDocument(document)">
+                <mat-icon>download</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <!-- Message si aucun document -->
+        <div class="no-data" *ngIf="dataSource.data.length === 0 && !isLoading">
+          <mat-icon>folder_open</mat-icon>
+          <p>Aucun document trouvé</p>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

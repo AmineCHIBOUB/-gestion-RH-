@@ -1,0 +1,172 @@
+<div class="data-import-container">
+  <!-- En-tête avec gradient coloré -->
+  <div class="header">
+    <h2>Import de Données</h2>
+    <div class="header-actions">
+      <button mat-raised-button (click)="resetImport()" [disabled]="importing">
+        <mat-icon>refresh</mat-icon>
+        Réinitialiser
+      </button>
+    </div>
+  </div>
+
+  <mat-card class="import-card">
+    <mat-card-header>
+      <mat-card-title>Configuration de l'Import</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="importForm" (ngSubmit)="startImport()">
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Type de données</mat-label>
+            <mat-select formControlName="importType" (selectionChange)="onImportTypeChange()">
+              <mat-option *ngFor="let type of importTypes" [value]="type.value">
+                <mat-icon>{{ type.icon }}</mat-icon>
+                {{ type.label }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="importForm.get('importType')?.hasError('required')">
+              Le type d'import est requis
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Format de fichier</mat-label>
+            <mat-select formControlName="format">
+              <mat-option *ngFor="let format of importFormats" [value]="format.value">
+                <mat-icon>{{ format.icon }}</mat-icon>
+                {{ format.label }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="importForm.get('format')?.hasError('required')">
+              Le format est requis
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Fichier à importer</mat-label>
+            <input matInput readonly [value]="selectedFile?.name || 'Aucun fichier sélectionné'">
+            <button mat-icon-button matSuffix type="button" (click)="fileInput.click()">
+              <mat-icon>attach_file</mat-icon>
+            </button>
+            <input #fileInput type="file" hidden (change)="onFileSelected($event)" [accept]="getAcceptedFileTypes()">
+            <mat-error *ngIf="importForm.get('file')?.hasError('required')">
+              Un fichier est requis
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row" *ngIf="selectedFile">
+          <div class="file-info">
+            <mat-icon>info</mat-icon>
+            <span>{{ selectedFile.name }} ({{ formatFileSize(selectedFile.size) }})</span>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="options-section">
+          <h3>Options d'Import</h3>
+          
+          <div class="form-row">
+            <mat-checkbox formControlName="hasHeaders">Le fichier contient des en-têtes</mat-checkbox>
+          </div>
+
+          <div class="form-row">
+            <mat-checkbox formControlName="validateData">Valider les données avant import</mat-checkbox>
+          </div>
+
+          <div class="form-row">
+            <mat-checkbox formControlName="skipDuplicates">Ignorer les doublons</mat-checkbox>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Action en cas d'erreur</mat-label>
+              <mat-select formControlName="errorHandling">
+                <mat-option value="skip">Ignorer et continuer</mat-option>
+                <mat-option value="stop">Arrêter l'import</mat-option>
+                <mat-option value="log">Logger et continuer</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Taille de lot</mat-label>
+              <input matInput type="number" formControlName="batchSize" min="1" max="1000">
+              <mat-hint>Nombre d'enregistrements à traiter par lot</mat-hint>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="actions">
+          <button mat-raised-button color="primary" type="submit" [disabled]="!importForm.valid || importing">
+            <mat-icon *ngIf="!importing">upload</mat-icon>
+            <mat-spinner *ngIf="importing" diameter="20"></mat-spinner>
+            {{ importing ? 'Import en cours...' : 'Démarrer l\'Import' }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Progress Section -->
+  <mat-card *ngIf="importing || importResult" class="progress-card">
+    <mat-card-header>
+      <mat-card-title>Progression de l'Import</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div *ngIf="importing" class="progress-section">
+        <mat-progress-bar mode="determinate" [value]="importProgress"></mat-progress-bar>
+        <p class="progress-text">{{ importProgress }}% - Import en cours...</p>
+      </div>
+
+      <div *ngIf="importResult" class="result-section">
+        <div class="result-header" [ngClass]="{'success': importResult.success, 'error': !importResult.success}">
+          <mat-icon>{{ importResult.success ? 'check_circle' : 'error' }}</mat-icon>
+          <h3>{{ importResult.success ? 'Import Réussi' : 'Erreur d\'Import' }}</h3>
+        </div>
+
+        <div class="result-stats" *ngIf="importResult.success">
+          <div class="stat">
+            <span class="label">Total traité:</span>
+            <span class="value">{{ importResult.totalRecords }}</span>
+          </div>
+          <div class="stat">
+            <span class="label">Importé avec succès:</span>
+            <span class="value success">{{ importResult.successCount }}</span>
+          </div>
+          <div class="stat" *ngIf="importResult.errorCount > 0">
+            <span class="label">Erreurs:</span>
+            <span class="value error">{{ importResult.errorCount }}</span>
+          </div>
+          <div class="stat" *ngIf="importResult.skippedCount > 0">
+            <span class="label">Ignorés:</span>
+            <span class="value warning">{{ importResult.skippedCount }}</span>
+          </div>
+        </div>
+
+        <div class="error-details" *ngIf="importResult.errors && importResult.errors.length > 0">
+          <h4>Détails des erreurs:</h4>
+          <mat-list>
+            <mat-list-item *ngFor="let error of importResult.errors.slice(0, 10)">
+              <mat-icon matListIcon color="warn">error</mat-icon>
+              <div matLine>Ligne {{ error.row }}: {{ error.message }}</div>
+            </mat-list-item>
+          </mat-list>
+          <p *ngIf="importResult.errors.length > 10" class="more-errors">
+            ... et {{ importResult.errors.length - 10 }} autres erreurs
+          </p>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Loading Overlay -->
+  <div *ngIf="importing" class="loading-overlay">
+    <mat-spinner></mat-spinner>
+  </div>
+</div>

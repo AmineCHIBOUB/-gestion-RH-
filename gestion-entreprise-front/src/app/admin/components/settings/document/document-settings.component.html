@@ -1,0 +1,235 @@
+<div class="document-settings-container">
+  <div class="header">
+    <h2>Paramètres des Documents</h2>
+    <div class="header-actions">
+      <button mat-stroked-button (click)="testStoragePath()" [disabled]="saving">
+        <mat-icon>folder_open</mat-icon>
+        Tester le chemin
+      </button>
+      <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!settingsForm.valid || saving">
+        <mat-icon>save</mat-icon>
+        Sauvegarder
+      </button>
+    </div>
+  </div>
+
+  <form [formGroup]="settingsForm" (ngSubmit)="onSubmit()" *ngIf="!loading">
+    <mat-tab-group>
+      <!-- Onglet Stockage -->
+      <mat-tab label="Stockage">
+        <div class="tab-content">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>Configuration du stockage</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Taille max par fichier (MB)</mat-label>
+                  <input matInput type="number" formControlName="maxFileSize">
+                  <mat-error *ngIf="settingsForm.get('maxFileSize')?.hasError('required')">
+                    La taille maximum est requise
+                  </mat-error>
+                  <mat-error *ngIf="settingsForm.get('maxFileSize')?.hasError('min') || settingsForm.get('maxFileSize')?.hasError('max')">
+                    Entre 1 et 100 MB
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Chemin de stockage</mat-label>
+                  <input matInput formControlName="storagePath">
+                  <mat-error *ngIf="settingsForm.get('storagePath')?.hasError('required')">
+                    Le chemin de stockage est requis
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Formats autorisés</mat-label>
+                  <mat-select formControlName="allowedFormats" multiple>
+                    <mat-option *ngFor="let format of allowedFormats" [value]="format.value">
+                      {{ format.label }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="settingsForm.get('allowedFormats')?.hasError('required')">
+                    Au moins un format doit être sélectionné
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-slide-toggle formControlName="enableCompression" (change)="onCompressionToggle()">
+                  Activer la compression
+                </mat-slide-toggle>
+              </div>
+
+              <div class="form-row" *ngIf="settingsForm.get('enableCompression')?.value">
+                <mat-form-field appearance="outline">
+                  <mat-label>Qualité de compression (%)</mat-label>
+                  <input matInput type="number" formControlName="compressionQuality">
+                  <mat-hint>Plus élevé = meilleure qualité, fichier plus gros</mat-hint>
+                  <mat-error *ngIf="settingsForm.get('compressionQuality')?.hasError('min') || settingsForm.get('compressionQuality')?.hasError('max')">
+                    Entre 10 et 100%
+                  </mat-error>
+                </mat-form-field>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+      <!-- Onglet Sécurité -->
+      <mat-tab label="Sécurité">
+        <div class="tab-content">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>Paramètres de sécurité</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="form-row">
+                <mat-slide-toggle formControlName="enableEncryption">
+                  Chiffrement des fichiers
+                </mat-slide-toggle>
+              </div>
+
+              <div class="form-row">
+                <mat-slide-toggle formControlName="requireAuthentication">
+                  Authentification requise
+                </mat-slide-toggle>
+              </div>
+
+              <div class="form-row">
+                <mat-slide-toggle formControlName="enableVersioning" (change)="onVersioningToggle()">
+                  Gestion des versions
+                </mat-slide-toggle>
+              </div>
+
+              <div class="form-row" *ngIf="settingsForm.get('enableVersioning')?.value">
+                <mat-form-field appearance="outline">
+                  <mat-label>Nombre max de versions</mat-label>
+                  <input matInput type="number" formControlName="maxVersions">
+                  <mat-error *ngIf="settingsForm.get('maxVersions')?.hasError('min') || settingsForm.get('maxVersions')?.hasError('max')">
+                    Entre 1 et 20 versions
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-slide-toggle formControlName="enableAuditLog">
+                  Journal d'audit
+                </mat-slide-toggle>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+      <!-- Onglet Rétention -->
+      <mat-tab label="Rétention">
+        <div class="tab-content">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>Politique de rétention</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Période de rétention par défaut</mat-label>
+                  <mat-select formControlName="defaultRetentionPeriod">
+                    <mat-option *ngFor="let period of retentionPeriods" [value]="period.value">
+                      {{ period.label }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="settingsForm.get('defaultRetentionPeriod')?.hasError('required')">
+                    La période de rétention est requise
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-slide-toggle formControlName="autoDeleteExpired">
+                  Suppression automatique des fichiers expirés
+                </mat-slide-toggle>
+              </div>
+
+              <div class="form-row">
+                <mat-slide-toggle formControlName="notifyBeforeExpiration" (change)="onNotificationToggle()">
+                  Notifier avant expiration
+                </mat-slide-toggle>
+              </div>
+
+              <div class="form-row" *ngIf="settingsForm.get('notifyBeforeExpiration')?.value">
+                <mat-form-field appearance="outline">
+                  <mat-label>Jours avant notification</mat-label>
+                  <input matInput type="number" formControlName="notificationDays">
+                  <mat-error *ngIf="settingsForm.get('notificationDays')?.hasError('min') || settingsForm.get('notificationDays')?.hasError('max')">
+                    Entre 1 et 365 jours
+                  </mat-error>
+                </mat-form-field>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+      <!-- Onglet Métadonnées -->
+      <mat-tab label="Métadonnées">
+        <div class="tab-content">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>Gestion des métadonnées</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="form-row">
+                <mat-slide-toggle formControlName="requireDescription">
+                  Description obligatoire
+                </mat-slide-toggle>
+              </div>
+
+              <div class="form-row">
+                <mat-slide-toggle formControlName="enableTags">
+                  Système de tags
+                </mat-slide-toggle>
+              </div>
+
+              <div class="form-row">
+                <mat-slide-toggle formControlName="enableCategories">
+                  Catégorisation
+                </mat-slide-toggle>
+              </div>
+
+              <div class="form-row">
+                <mat-slide-toggle formControlName="autoExtractMetadata">
+                  Extraction automatique des métadonnées
+                </mat-slide-toggle>
+              </div>
+
+              <div class="form-row">
+                <mat-slide-toggle formControlName="enableFullTextSearch">
+                  Recherche en texte intégral
+                </mat-slide-toggle>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </form>
+
+  <!-- Indicateur de chargement -->
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner></mat-spinner>
+    <p>Chargement des paramètres...</p>
+  </div>
+
+  <!-- Messages de succès/erreur -->
+  <div class="message-container" *ngIf="message">
+    <mat-card [ngClass]="{'success': messageType === 'success', 'error': messageType === 'error'}">
+      <mat-card-content>
+        <mat-icon>{{ messageType === 'success' ? 'check_circle' : 'error' }}</mat-icon>
+        {{ message }}
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

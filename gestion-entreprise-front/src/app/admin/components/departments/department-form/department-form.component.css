@@ -1,0 +1,163 @@
+/* Container principal du formulaire */
+.department-form-container {
+  padding: 0;
+  min-width: 400px;
+  max-width: 600px;
+}
+
+/* Titre du dialogue */
+h2[mat-dialog-title] {
+  margin: 0 0 20px 0;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #333;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 10px;
+}
+
+/* Contenu du dialogue */
+mat-dialog-content {
+  padding: 20px 0;
+  margin: 0;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+/* Lignes de formulaire */
+.form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  align-items: flex-start;
+}
+
+.form-row:last-child {
+  margin-bottom: 0;
+}
+
+/* Champs de formulaire */
+.full-width {
+  width: 100%;
+  flex: 1;
+}
+
+.half-width {
+  width: calc(50% - 8px);
+  flex: 1;
+}
+
+/* Styles pour les champs Material */
+mat-form-field {
+  font-size: 14px;
+}
+
+mat-form-field .mat-mdc-form-field-subscript-wrapper {
+  margin-top: 4px;
+}
+
+/* Textarea spécifique */
+textarea.mat-mdc-input-element {
+  resize: vertical;
+  min-height: 60px;
+}
+
+/* Actions du dialogue */
+mat-dialog-actions {
+  padding: 20px 0 0 0;
+  margin: 0;
+  border-top: 1px solid #e0e0e0;
+  gap: 12px;
+}
+
+/* Boutons */
+button[mat-button] {
+  min-width: 80px;
+  height: 36px;
+}
+
+button[mat-raised-button] {
+  min-width: 100px;
+  height: 36px;
+  font-weight: 500;
+}
+
+/* Spinner dans le bouton */
+mat-spinner {
+  margin-right: 8px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* États des boutons */
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Erreurs de validation */
+mat-error {
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* Suffixe pour le budget */
+.mat-mdc-form-field-suffix {
+  color: #666;
+  font-weight: 500;
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+  .department-form-container {
+    min-width: 300px;
+    max-width: 90vw;
+  }
+  
+  .form-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .half-width {
+    width: 100%;
+  }
+  
+  mat-dialog-actions {
+    flex-direction: column-reverse;
+  }
+  
+  mat-dialog-actions button {
+    width: 100%;
+    margin: 4px 0;
+  }
+}
+
+/* Animation pour le chargement */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.department-form-container {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Focus states améliorés */
+mat-form-field.mat-focused .mat-mdc-form-field-outline-thick {
+  border-color: #1976d2;
+}
+
+/* Hover states */
+button[mat-button]:hover:not(:disabled) {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+button[mat-raised-button]:hover:not(:disabled) {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}

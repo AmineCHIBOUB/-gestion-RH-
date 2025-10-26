@@ -1,0 +1,212 @@
+<div class="data-export-container">
+  <div class="header">
+    <h2>Export de Données</h2>
+    <button mat-raised-button color="primary" (click)="resetExport()" [disabled]="exporting">
+      <mat-icon>refresh</mat-icon>
+      Réinitialiser
+    </button>
+  </div>
+
+  <mat-card class="export-card">
+    <mat-card-header>
+      <mat-card-title>Configuration de l'Export</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="exportForm" (ngSubmit)="startExport()">
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Type de données</mat-label>
+            <mat-select formControlName="exportType" (selectionChange)="onExportTypeChange()">
+              <mat-option *ngFor="let type of exportTypes" [value]="type.value">
+                <mat-icon>{{ type.icon }}</mat-icon>
+                {{ type.label }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="exportForm.get('exportType')?.hasError('required')">
+              Le type d'export est requis
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Format de fichier</mat-label>
+            <mat-select formControlName="format">
+              <mat-option *ngFor="let format of exportFormats" [value]="format.value">
+                <mat-icon>{{ format.icon }}</mat-icon>
+                {{ format.label }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="exportForm.get('format')?.hasError('required')">
+              Le format est requis
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Field Selection -->
+        <div class="fields-section" *ngIf="exportForm.get('exportType')?.value">
+          <h3>Sélection des champs</h3>
+          <div class="field-actions">
+            <button mat-button type="button" (click)="selectAllFields()">Tout sélectionner</button>
+            <button mat-button type="button" (click)="deselectAllFields()">Tout désélectionner</button>
+          </div>
+          <div class="fields-grid">
+            <mat-checkbox 
+              *ngFor="let field of availableFields[exportForm.get('exportType')?.value]" 
+              [checked]="isFieldSelected(field)"
+              (change)="toggleFieldSelection(field)">
+              {{ field }}
+            </mat-checkbox>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Filters -->
+        <div class="filters-section">
+          <h3>Filtres</h3>
+          <div class="form-row">
+            <!-- Remplacer les lignes 58-67 -->
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Date de début</mat-label>
+                <input matInput [matDatepicker]="startPicker" formControlName="dateStart">
+                <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                <mat-datepicker #startPicker></mat-datepicker>
+              </mat-form-field>
+            
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Date de fin</mat-label>
+                <input matInput [matDatepicker]="endPicker" formControlName="dateEnd">
+                <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                <mat-datepicker #endPicker></mat-datepicker>
+              </mat-form-field>
+            </div>
+            
+            <!-- Remplacer les lignes 69-95 -->
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="third-width">
+                <mat-label>Statut</mat-label>
+                <mat-select formControlName="status">
+                  <mat-option value="">Tous</mat-option>
+                  <mat-option value="active">Actif</mat-option>
+                  <mat-option value="inactive">Inactif</mat-option>
+                  <mat-option value="pending">En attente</mat-option>
+                </mat-select>
+              </mat-form-field>
+            
+              <mat-form-field appearance="outline" class="third-width">
+                <mat-label>Département</mat-label>
+                <mat-select formControlName="department">
+                  <mat-option value="">Tous</mat-option>
+                  <mat-option value="hr">RH</mat-option>
+                  <mat-option value="it">IT</mat-option>
+                  <mat-option value="finance">Finance</mat-option>
+                </mat-select>
+              </mat-form-field>
+            
+              <mat-form-field appearance="outline" class="third-width">
+                <mat-label>Rôle</mat-label>
+                <mat-select formControlName="role">
+                  <mat-option value="">Tous</mat-option>
+                  <mat-option value="admin">Admin</mat-option>
+                  <mat-option value="user">Utilisateur</mat-option>
+                  <mat-option value="manager">Manager</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Options -->
+        <div class="options-section">
+          <h3>Options d'Export</h3>
+          
+          <div class="form-row">
+            <mat-checkbox formControlName="includeHeaders">Inclure les en-têtes</mat-checkbox>
+          </div>
+
+          <div class="form-row">
+            <mat-checkbox formControlName="compression">Compresser le fichier</mat-checkbox>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Mot de passe (optionnel)</mat-label>
+              <input matInput type="password" formControlName="password">
+              <mat-hint>Pour protéger le fichier exporté</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Nombre max d'enregistrements</mat-label>
+              <input matInput type="number" formControlName="maxRecords" min="1" max="100000">
+              <mat-error *ngIf="exportForm.get('maxRecords')?.hasError('min')">
+                Minimum 1 enregistrement
+              </mat-error>
+              <mat-error *ngIf="exportForm.get('maxRecords')?.hasError('max')">
+                Maximum 100,000 enregistrements
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="actions">
+          <button mat-raised-button color="primary" type="submit" [disabled]="!exportForm.valid || exporting">
+            <mat-icon *ngIf="!exporting">download</mat-icon>
+            <mat-spinner *ngIf="exporting" diameter="20"></mat-spinner>
+            {{ exporting ? 'Export en cours...' : 'Démarrer l\'Export' }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Progress Section -->
+  <mat-card *ngIf="exporting || exportResult" class="progress-card">
+    <mat-card-header>
+      <mat-card-title>Progression de l'Export</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div *ngIf="exporting" class="progress-section">
+        <mat-progress-bar mode="determinate" [value]="exportProgress"></mat-progress-bar>
+        <p class="progress-text">{{ exportProgress }}% - Export en cours...</p>
+      </div>
+
+      <div *ngIf="exportResult" class="result-section">
+        <div class="result-header" [ngClass]="{'success': exportResult.success, 'error': !exportResult.success}">
+          <mat-icon>{{ exportResult.success ? 'check_circle' : 'error' }}</mat-icon>
+          <h3>{{ exportResult.success ? 'Export Réussi' : 'Erreur d\'Export' }}</h3>
+        </div>
+
+        <div class="result-stats" *ngIf="exportResult.success">
+          <div class="stat">
+            <span class="label">Enregistrements exportés:</span>
+            <span class="value success">{{ exportResult.recordCount }}</span>
+          </div>
+          <div class="stat">
+            <span class="label">Taille du fichier:</span>
+            <span class="value">{{ exportResult.fileSize }}</span>
+          </div>
+          <div class="stat">
+            <span class="label">Format:</span>
+            <span class="value">{{ exportResult.format?.toUpperCase() }}</span>
+          </div>
+        </div>
+
+        <div class="download-section" *ngIf="exportResult.success && exportResult.downloadUrl">
+          <button mat-raised-button color="accent" (click)="downloadFile(exportResult.downloadUrl, exportResult.filename || 'export')">
+            <mat-icon>download</mat-icon>
+            Télécharger le fichier
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Loading Overlay -->
+  <div *ngIf="exporting" class="loading-overlay">
+    <mat-spinner></mat-spinner>
+  </div>
+</div>

@@ -1,0 +1,182 @@
+<div class="historique-conges-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Historique des Congés</mat-card-title>
+      <mat-card-subtitle>Consultation de l'historique des demandes de congés</mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <!-- Filtres -->
+      <div class="filters-section">
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Filtres de recherche</mat-panel-title>
+          </mat-expansion-panel-header>
+          
+          <div class="filters-grid">
+            <mat-form-field>
+              <mat-label>Employé</mat-label>
+              <input matInput [(ngModel)]="filters.employe" placeholder="Nom ou prénom">
+            </mat-form-field>
+            
+            <mat-form-field>
+              <mat-label>Date début</mat-label>
+              <input matInput [matDatepicker]="pickerDebut" [(ngModel)]="filters.dateDebut">
+              <mat-datepicker-toggle matSuffix [for]="pickerDebut"></mat-datepicker-toggle>
+              <mat-datepicker #pickerDebut></mat-datepicker>
+            </mat-form-field>
+            
+            <mat-form-field>
+              <mat-label>Date fin</mat-label>
+              <input matInput [matDatepicker]="pickerFin" [(ngModel)]="filters.dateFin">
+              <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
+              <mat-datepicker #pickerFin></mat-datepicker>
+            </mat-form-field>
+            
+            <mat-form-field>
+              <mat-label>Statut</mat-label>
+              <mat-select [(ngModel)]="filters.statut">
+                <mat-option value="">Tous</mat-option>
+                <mat-option *ngFor="let statut of statutOptions" [value]="statut">
+                  {{statut}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            
+            <mat-form-field>
+              <mat-label>Type de congé</mat-label>
+              <input matInput [(ngModel)]="filters.typeConge" placeholder="Type de congé">
+            </mat-form-field>
+          </div>
+          
+          <div class="filter-actions">
+            <button mat-raised-button color="primary" (click)="applyFilters()">
+              <mat-icon>search</mat-icon>
+              Rechercher
+            </button>
+            <button mat-button (click)="clearFilters()">
+              <mat-icon>clear</mat-icon>
+              Effacer
+            </button>
+            <button mat-raised-button color="accent" (click)="exportHistorique()">
+              <mat-icon>download</mat-icon>
+              Exporter
+            </button>
+          </div>
+        </mat-expansion-panel>
+      </div>
+      
+      <!-- Tableau -->
+      <div class="table-container">
+        <mat-table [dataSource]="filteredConges" matSort (matSortChange)="sortData($event)" class="mat-elevation-2">
+          <!-- Colonne Employé -->
+          <ng-container matColumnDef="employe">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Employé</mat-header-cell>
+            <mat-cell *matCellDef="let conge">
+              <div class="employee-info">
+                <strong>{{conge.employe.nom}} {{conge.employe.prenom}}</strong>
+                <small>{{conge.employe.poste}}</small>
+              </div>
+            </mat-cell>
+          </ng-container>
+          
+          <!-- Colonne Type -->
+          <ng-container matColumnDef="typeConge">
+            <mat-header-cell *matHeaderCellDef>Type</mat-header-cell>
+            <mat-cell *matCellDef="let conge">{{conge.typeConge}}</mat-cell>
+          </ng-container>
+          
+          <!-- Colonne Date début -->
+          <ng-container matColumnDef="dateDebut">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Date début</mat-header-cell>
+            <mat-cell *matCellDef="let conge">{{conge.dateDebut | date:'dd/MM/yyyy'}}</mat-cell>
+          </ng-container>
+          
+          <!-- Colonne Date fin -->
+          <ng-container matColumnDef="dateFin">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Date fin</mat-header-cell>
+            <mat-cell *matCellDef="let conge">{{conge.dateFin | date:'dd/MM/yyyy'}}</mat-cell>
+          </ng-container>
+          
+          <!-- Colonne Nombre de jours -->
+          <ng-container matColumnDef="nbJours">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Nb jours</mat-header-cell>
+            <mat-cell *matCellDef="let conge">{{conge.nbJours}}</mat-cell>
+          </ng-container>
+          
+          <!-- Colonne Statut -->
+          <ng-container matColumnDef="statut">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Statut</mat-header-cell>
+            <mat-cell *matCellDef="let conge">
+              <mat-chip [color]="getStatutColor(conge.statut)" selected>
+                {{conge.statut}}
+              </mat-chip>
+            </mat-cell>
+          </ng-container>
+          
+          <!-- Colonne Date validation -->
+          <ng-container matColumnDef="dateValidation">
+            <mat-header-cell *matHeaderCellDef>Date validation</mat-header-cell>
+            <mat-cell *matCellDef="let conge">
+              {{conge.dateValidation ? (conge.dateValidation | date:'dd/MM/yyyy HH:mm') : '-'}}
+            </mat-cell>
+          </ng-container>
+          
+          <!-- Colonne Validé par -->
+          <ng-container matColumnDef="validePar">
+            <mat-header-cell *matHeaderCellDef>Validé par</mat-header-cell>
+            <mat-cell *matCellDef="let conge">
+              {{conge.validePar ? (conge.validePar.nom + ' ' + conge.validePar.prenom) : '-'}}
+            </mat-cell>
+          </ng-container>
+          
+          <!-- Colonne Actions -->
+          <ng-container matColumnDef="actions">
+            <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+            <mat-cell *matCellDef="let conge">
+              <button mat-icon-button [matMenuTriggerFor]="menu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item>
+                  <mat-icon>visibility</mat-icon>
+                  <span>Voir détails</span>
+                </button>
+                <button mat-menu-item>
+                  <mat-icon>print</mat-icon>
+                  <span>Imprimer</span>
+                </button>
+              </mat-menu>
+            </mat-cell>
+          </ng-container>
+          
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        </mat-table>
+        
+        <!-- Pagination -->
+        <mat-paginator
+          [length]="totalItems"
+          [pageSize]="pageSize"
+          [pageIndex]="pageIndex"
+          [pageSizeOptions]="[5, 10, 25, 50]"
+          (page)="onPageChange($event)"
+          showFirstLastButtons>
+        </mat-paginator>
+      </div>
+      
+      <!-- Loading -->
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner></mat-spinner>
+        <p>Chargement de l'historique...</p>
+      </div>
+      
+      <!-- Aucun résultat -->
+      <div *ngIf="!loading && filteredConges.length === 0" class="no-data">
+        <mat-icon>history</mat-icon>
+        <h3>Aucun historique trouvé</h3>
+        <p>Aucune demande de congé ne correspond aux critères de recherche.</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

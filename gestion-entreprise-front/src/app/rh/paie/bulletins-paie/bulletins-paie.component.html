@@ -1,0 +1,254 @@
+<div class="bulletins-paie-container">
+  <!-- En-tête -->
+  <div class="header">
+    <h2><i class="fas fa-file-invoice"></i> Bulletins de Paie</h2>
+    <div class="header-actions">
+      <button mat-raised-button color="primary" (click)="genererTousLesBulletins()">
+        <i class="fas fa-magic"></i> Générer Tous
+      </button>
+      <button mat-raised-button color="accent" (click)="exporterDonnees()">
+        <i class="fas fa-download"></i> Exporter
+      </button>
+    </div>
+  </div>
+
+  <!-- Statistiques -->
+  <div class="stats-row">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i class="fas fa-file-alt"></i>
+          </div>
+          <div class="stat-info">
+            <h3>{{statistiques.totalBulletins}}</h3>
+            <p>Total Bulletins</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div class="stat-info">
+            <h3>{{statistiques.bulletinsGeneres}}</h3>
+            <p>Générés</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i class="fas fa-paper-plane"></i>
+          </div>
+          <div class="stat-info">
+            <h3>{{statistiques.bulletinsEnvoyes}}</h3>
+            <p>Envoyés</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i class="fas fa-euro-sign"></i>
+          </div>
+          <div class="stat-info">
+            <h3>{{statistiques.montantTotalNet | currency:'EUR':'symbol':'1.2-2'}}</h3>
+            <p>Montant Net Total</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Filtres -->
+  <mat-card class="filters-card">
+    <mat-card-header>
+      <mat-card-title>Filtres</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="filters-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Employé</mat-label>
+          <mat-select [(value)]="filtres.employe" (selectionChange)="appliquerFiltres()">
+            <mat-option value="">Tous les employés</mat-option>
+            <mat-option *ngFor="let employe of employes" [value]="employe.id">
+              {{employe.prenom}} {{employe.nom}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Mois</mat-label>
+          <mat-select [(value)]="filtres.mois" (selectionChange)="appliquerFiltres()">
+            <mat-option value="">Tous les mois</mat-option>
+            <mat-option *ngFor="let mois of moisOptions" [value]="mois.value">
+              {{mois.label}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Année</mat-label>
+          <mat-select [(value)]="filtres.annee" (selectionChange)="appliquerFiltres()">
+            <mat-option value="">Toutes les années</mat-option>
+            <mat-option *ngFor="let annee of anneesOptions" [value]="annee">
+              {{annee}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Statut</mat-label>
+          <mat-select [(value)]="filtres.statut" (selectionChange)="appliquerFiltres()">
+            <mat-option value="">Tous les statuts</mat-option>
+            <mat-option value="brouillon">Brouillon</mat-option>
+            <mat-option value="genere">Généré</mat-option>
+            <mat-option value="envoye">Envoyé</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-icon-button (click)="reinitialiserFiltres()" matTooltip="Réinitialiser les filtres">
+          <i class="fas fa-undo"></i>
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Tableau des bulletins -->
+  <mat-card class="table-card">
+    <mat-card-header>
+      <mat-card-title>Bulletins de Paie</mat-card-title>
+      <div class="table-actions">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Rechercher</mat-label>
+          <input matInput [(ngModel)]="termesRecherche" (input)="rechercherBulletins()" placeholder="Nom, prénom...">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+      </div>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="table-container" *ngIf="!chargement; else loadingTemplate">
+        <table mat-table [dataSource]="dataSource" matSort class="bulletins-table">
+          <!-- Colonne Employé -->
+          <ng-container matColumnDef="employe">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Employé</th>
+            <td mat-cell *matCellDef="let bulletin">
+              <div class="employe-info">
+                <strong>{{bulletin.employe.prenom}} {{bulletin.employe.nom}}</strong>
+                <small>{{bulletin.employe.poste}}</small>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Période -->
+          <ng-container matColumnDef="periode">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Période</th>
+            <td mat-cell *matCellDef="let bulletin">
+              {{bulletin.mois}}/{{bulletin.annee}}
+            </td>
+          </ng-container>
+
+          <!-- Colonne Salaire Brut -->
+          <ng-container matColumnDef="salaireBrut">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Salaire Brut</th>
+            <td mat-cell *matCellDef="let bulletin">
+              <span class="montant-brut">{{bulletin.salaireBrut | currency:'EUR':'symbol':'1.2-2'}}</span>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Salaire Net -->
+          <ng-container matColumnDef="salaireNet">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Salaire Net</th>
+            <td mat-cell *matCellDef="let bulletin">
+              <span class="montant-net">{{bulletin.salaireNet | currency:'EUR':'symbol':'1.2-2'}}</span>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Statut -->
+          <ng-container matColumnDef="statut">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
+            <td mat-cell *matCellDef="let bulletin">
+              <mat-chip [ngClass]="'statut-' + bulletin.statut">{{getStatutLabel(bulletin.statut)}}</mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Date de génération -->
+          <ng-container matColumnDef="dateGeneration">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Date Génération</th>
+            <td mat-cell *matCellDef="let bulletin">
+              <span *ngIf="bulletin.dateGeneration">{{bulletin.dateGeneration | date:'dd/MM/yyyy HH:mm'}}</span>
+              <span *ngIf="!bulletin.dateGeneration" class="text-muted">-</span>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Actions -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let bulletin">
+              <div class="actions-buttons">
+                <button mat-icon-button (click)="genererBulletin(bulletin)" 
+                        matTooltip="Générer" 
+                        [disabled]="bulletin.statut !== 'brouillon'">
+                  <i class="fas fa-magic"></i>
+                </button>
+                <button mat-icon-button (click)="telechargerBulletin(bulletin)" 
+                        matTooltip="Télécharger" 
+                        [disabled]="bulletin.statut === 'brouillon'">
+                  <i class="fas fa-download"></i>
+                </button>
+                <button mat-icon-button (click)="envoyerBulletin(bulletin)" 
+                        matTooltip="Envoyer" 
+                        [disabled]="bulletin.statut !== 'genere'">
+                  <i class="fas fa-paper-plane"></i>
+                </button>
+                <button mat-icon-button [matMenuTriggerFor]="menuActions">
+                  <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <mat-menu #menuActions="matMenu">
+                  <button mat-menu-item (click)="supprimerBulletin(bulletin)" 
+                          [disabled]="bulletin.statut === 'envoye'">
+                    <i class="fas fa-trash"></i> Supprimer
+                  </button>
+                </mat-menu>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="colonnesAffichees"></tr>
+          <tr mat-row *matRowDef="let row; columns: colonnesAffichees;"></tr>
+        </table>
+
+        <!-- Message si aucune donnée -->
+        <div class="no-data" *ngIf="dataSource.data.length === 0">
+          <i class="fas fa-inbox"></i>
+          <p>Aucun bulletin de paie trouvé</p>
+        </div>
+      </div>
+
+      <!-- Template de chargement -->
+      <ng-template #loadingTemplate>
+        <div class="loading-container">
+          <mat-spinner></mat-spinner>
+          <p>Chargement des bulletins de paie...</p>
+        </div>
+      </ng-template>
+
+      <!-- Pagination -->
+      <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" 
+                     [pageSize]="25" 
+                     showFirstLastButtons>
+      </mat-paginator>
+    </mat-card-content>
+  </mat-card>
+</div>

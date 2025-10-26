@@ -1,0 +1,109 @@
+<div class="dashboard-container">
+  <!-- Section d'en-tête avec bienvenue -->
+  <div class="header-section">
+    <mat-card class="welcome-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>waving_hand</mat-icon>
+          Bienvenue, {{ profil?.prenom || 'Utilisateur' }} {{ profil?.nom || '' }}
+        </mat-card-title>
+        <mat-card-subtitle>
+          {{ profil?.poste || 'Employé' }} - {{ profil?.departement || 'Département' }}
+        </mat-card-subtitle>
+      </mat-card-header>
+    </mat-card>
+  </div>
+
+  <!-- Contenu principal toujours visible -->
+  <div class="content-section">
+    <!-- Section Accès rapide -->
+    <div class="access-section">
+      <h2 class="section-title">
+        <mat-icon>dashboard</mat-icon>
+        Accès rapide
+      </h2>
+      <div class="menu-grid">
+        <mat-card 
+          *ngFor="let item of menuItems" 
+          class="menu-card" 
+          (click)="navigateTo(item.route)"
+          [class.has-badge]="item.badge != null && item.badge > 0">
+          <mat-card-content>
+            <div class="menu-icon">
+              <mat-icon [matBadge]="item.badge || 0" [matBadgeHidden]="item.badge == null || item.badge === 0" matBadgeColor="warn">
+                {{ item.icon }}
+              </mat-icon>
+            </div>
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.description }}</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+
+
+
+    <!-- Section statistiques rapides en bas -->
+    <div class="stats-section">
+      <h2 class="section-title">
+        <mat-icon>analytics</mat-icon>
+        Mes statistiques
+      </h2>
+      <div class="stats-grid">
+        <mat-card class="stat-card">
+          <mat-card-content>
+            <div class="stat-content">
+              <mat-icon>event_available</mat-icon>
+              <div class="stat-info">
+                <h3>{{ statistiques.congesRestants || 0 }}</h3>
+                <p>Jours de congés restants</p>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stat-card">
+          <mat-card-content>
+            <div class="stat-content">
+              <mat-icon>schedule</mat-icon>
+              <div class="stat-info">
+                <h3>{{ statistiques.heuresTravaillees || 0 }}h</h3>
+                <p>Heures travaillées ce mois</p>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stat-card">
+          <mat-card-content>
+            <div class="stat-content">
+              <mat-icon>description</mat-icon>
+              <div class="stat-info">
+                <h3>{{ statistiques.documentsNonLus || 0 }}</h3>
+                <p>Documents non lus</p>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stat-card">
+          <mat-card-content>
+            <div class="stat-content">
+              <mat-icon>notifications</mat-icon>
+              <div class="stat-info">
+                <h3>{{ statistiques.annoncesNonLues || 0 }}</h3>
+                <p>Annonces non lues</p>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+
+  <!-- Indicateur de chargement seulement pour les données en cours -->
+  <div class="loading-overlay" *ngIf="loading">
+    <mat-spinner></mat-spinner>
+    <p>Chargement des données...</p>
+  </div>
+</div>

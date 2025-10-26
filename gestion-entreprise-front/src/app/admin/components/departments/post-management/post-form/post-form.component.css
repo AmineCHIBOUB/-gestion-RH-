@@ -1,0 +1,25 @@
+.post-form-container {
+  min-width: 500px;
+  max-width: 600px;
+}
+
+.form-row {
+  margin-bottom: 1rem;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.form-columns {
+  display: flex;
+  gap: 1rem;
+}
+
+.form-columns mat-form-field {
+  flex: 1;
+}
+
+mat-dialog-actions {
+  padding: 1rem 0;
+}

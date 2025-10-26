@@ -1,0 +1,242 @@
+<div class="feuilles-temps-container">
+  <!-- En-tête -->
+  <div class="header">
+    <h2>Feuilles de Temps</h2>
+    <div class="header-actions">
+      <button mat-raised-button color="primary" (click)="openForm()">
+        <mat-icon>add</mat-icon>
+        Nouvelle Feuille
+      </button>
+      <button mat-button (click)="exportFeuilles()">
+        <mat-icon>download</mat-icon>
+        Exporter
+      </button>
+    </div>
+  </div>
+
+  <!-- Statistiques -->
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-value">{{ stats.totalFeuilles }}</div>
+        <div class="stat-label">Total Feuilles</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card pending">
+      <mat-card-content>
+        <div class="stat-value">{{ stats.feuillesEnAttente }}</div>
+        <div class="stat-label">En Attente</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card validated">
+      <mat-card-content>
+        <div class="stat-value">{{ stats.feuillesValidees }}</div>
+        <div class="stat-label">Validées</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card rejected">
+      <mat-card-content>
+        <div class="stat-value">{{ stats.feuillesRejetees }}</div>
+        <div class="stat-label">Rejetées</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-value">{{ stats.totalHeures }}h</div>
+        <div class="stat-label">Total Heures</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-value">{{ stats.moyenneHeuresParJour }}h</div>
+        <div class="stat-label">Moyenne/Jour</div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Filtres -->
+  <mat-card class="filters-card">
+    <mat-card-header>
+      <mat-card-title>Filtres</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="filterForm" class="filters-form">
+        <div class="filter-row">
+          <mat-form-field>
+            <mat-label>Date début</mat-label>
+            <input matInput type="date" formControlName="dateDebut">
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Date fin</mat-label>
+            <input matInput type="date" formControlName="dateFin">
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Employé</mat-label>
+            <input matInput formControlName="employe" placeholder="Nom ou prénom">
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Statut</mat-label>
+            <mat-select formControlName="statut">
+              <mat-option value="">Tous</mat-option>
+              <mat-option *ngFor="let statut of statuts" [value]="statut.value">
+                {{ statut.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Période</mat-label>
+            <input matInput type="month" formControlName="periode">
+          </mat-form-field>
+        </div>
+
+        <div class="filter-actions">
+          <button mat-button type="button" (click)="applyFilters()">
+            <mat-icon>search</mat-icon>
+            Filtrer
+          </button>
+          <button mat-button type="button" (click)="resetFilters()">
+            <mat-icon>clear</mat-icon>
+            Réinitialiser
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Tableau des feuilles de temps -->
+  <mat-card class="table-card">
+    <mat-card-content>
+      <div class="table-container">
+        <table mat-table [dataSource]="getPaginatedData()" class="feuilles-table">
+          <!-- Colonne Employé -->
+          <ng-container matColumnDef="employe">
+            <th mat-header-cell *matHeaderCellDef>Employé</th>
+            <td mat-cell *matCellDef="let feuille">
+              <div class="employee-info">
+                <div class="employee-name">
+                  {{ feuille.employe.prenom }} {{ feuille.employe.nom }}
+                </div>
+                <div class="employee-matricule">{{ feuille.employe.matricule }}</div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Période -->
+          <ng-container matColumnDef="periode">
+            <th mat-header-cell *matHeaderCellDef>Période</th>
+            <td mat-cell *matCellDef="let feuille">
+              <div class="periode-info">
+                <div>{{ feuille.dateDebut | date:'dd/MM/yyyy' }} - {{ feuille.dateFin | date:'dd/MM/yyyy' }}</div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Total Heures -->
+          <ng-container matColumnDef="totalHeures">
+            <th mat-header-cell *matHeaderCellDef>Total Heures</th>
+            <td mat-cell *matCellDef="let feuille">
+              <div class="hours-info total">
+                {{ feuille.totalHeures }}h
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Heures Normales -->
+          <ng-container matColumnDef="heuresNormales">
+            <th mat-header-cell *matHeaderCellDef>H. Normales</th>
+            <td mat-cell *matCellDef="let feuille">
+              <div class="hours-info normal">
+                {{ feuille.heuresNormales }}h
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Heures Supplémentaires -->
+          <ng-container matColumnDef="heuresSupplementaires">
+            <th mat-header-cell *matHeaderCellDef>H. Sup.</th>
+            <td mat-cell *matCellDef="let feuille">
+              <div class="hours-info overtime">
+                {{ feuille.heuresSupplementaires }}h
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Statut -->
+          <ng-container matColumnDef="statut">
+            <th mat-header-cell *matHeaderCellDef>Statut</th>
+            <td mat-cell *matCellDef="let feuille">
+              <mat-chip [style.background-color]="getStatutColor(feuille.statut)" class="status-chip">
+                {{ getStatutLabel(feuille.statut) }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Date création -->
+          <ng-container matColumnDef="dateCreation">
+            <th mat-header-cell *matHeaderCellDef>Date création</th>
+            <td mat-cell *matCellDef="let feuille">
+              {{ feuille.dateCreation | date:'dd/MM/yyyy HH:mm' }}
+            </td>
+          </ng-container>
+
+          <!-- Colonne Actions -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let feuille">
+              <div class="actions">
+                <button mat-icon-button (click)="openForm(feuille)" matTooltip="Modifier">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button 
+                  mat-icon-button 
+                  color="primary" 
+                  (click)="validerFeuille(feuille)" 
+                  matTooltip="Valider"
+                  *ngIf="feuille.statut === 'soumise'">
+                  <mat-icon>check</mat-icon>
+                </button>
+                <button 
+                  mat-icon-button 
+                  color="warn" 
+                  (click)="rejeterFeuille(feuille)" 
+                  matTooltip="Rejeter"
+                  *ngIf="feuille.statut === 'soumise'">
+                  <mat-icon>close</mat-icon>
+                </button>
+                <button mat-icon-button (click)="deleteFeuille(feuille)" matTooltip="Supprimer">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <mat-paginator
+        [length]="totalItems"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[5, 10, 25, 50]"
+        (page)="onPageChange($event)"
+        showFirstLastButtons>
+      </mat-paginator>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Indicateur de chargement -->
+  <div class="loading-overlay" *ngIf="isLoading">
+    <mat-spinner></mat-spinner>
+  </div>
+</div>

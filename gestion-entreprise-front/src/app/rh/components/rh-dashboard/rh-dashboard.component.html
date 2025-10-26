@@ -1,0 +1,113 @@
+<div class="rh-dashboard">
+  <div class="dashboard-header">
+    <h1>Tableau de Bord RH</h1>
+    <p>Vue d'ensemble des ressources humaines</p>
+  </div>
+
+  <div class="stats-grid" *ngIf="!loading">
+    <mat-card class="stat-card employes">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-number">{{ statistiques.totalEmployes }}</div>
+          <div class="stat-label">Employés Total</div>
+          <div class="stat-sublabel">{{ statistiques.employesActifs }} actifs</div>
+        </div>
+        <mat-icon>people</mat-icon>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card conges">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-number">{{ statistiques.demandesCongesEnAttente }}</div>
+          <div class="stat-label">Congés en Attente</div>
+          <div class="stat-sublabel">À valider</div>
+        </div>
+        <mat-icon>event_available</mat-icon>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card presences">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-number">{{ statistiques.pointagesAujourdhui }}</div>
+          <div class="stat-label">Présences Aujourd'hui</div>
+          <div class="stat-sublabel">Enregistrées</div>
+        </div>
+        <mat-icon>access_time</mat-icon>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card paie">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-number">{{ statistiques.bulletinsPaieGeneres }}</div>
+          <div class="stat-label">Bulletins de Paie</div>
+          <div class="stat-sublabel">Ce mois</div>
+        </div>
+        <mat-icon>receipt</mat-icon>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="dashboard-content" *ngIf="!loading">
+    <div class="left-column">
+      <!-- Actions rapides -->
+      <mat-card class="quick-actions-card">
+        <mat-card-header>
+          <mat-card-title>Actions Rapides</mat-card-title>
+          <mat-card-subtitle>Accès direct aux fonctionnalités principales</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="quick-actions-grid">
+            <mat-card class="action-card" (click)="naviguerVers('/rh/employes')">
+              <mat-card-content>
+                <mat-icon>person_add</mat-icon>
+                <div class="action-content">
+                  <h3>Employé</h3>
+                  <p>Voir la liste des employés</p>
+                </div>
+              </mat-card-content>
+            </mat-card>
+            <mat-card class="action-card" (click)="naviguerVers('/rh/conges/validation')">
+              <mat-card-content>
+                <mat-icon>event_available</mat-icon>
+                <div class="action-content">
+                  <h3>Valider Congés</h3>
+                  <p>Valider les demandes de congés</p>
+                </div>
+              </mat-card-content>
+            </mat-card>
+
+            <!-- Change this line -->
+            <mat-card class="action-card" (click)="naviguerVers('/rh/gestion-paie/calcul-paie')">
+              <mat-card-content>
+                <mat-icon>receipt_long</mat-icon>
+                <div class="action-content">
+                  <h3>Gestion Bulletins</h3>
+                  <p>Gérer et générer les bulletins de paie</p>
+                </div>
+              </mat-card-content>
+            </mat-card>
+            <mat-card class="action-card" (click)="naviguerVers('/rh/pointage')">
+              <mat-card-content>
+                <mat-icon>access_time</mat-icon>
+                <div class="action-content">
+                  <h3>Pointage</h3>
+                  <p>Gérer le pointage quotidien des employés</p>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+
+  </div>
+
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner></mat-spinner>
+    <p>Chargement des données...</p>
+  </div>
+</div>

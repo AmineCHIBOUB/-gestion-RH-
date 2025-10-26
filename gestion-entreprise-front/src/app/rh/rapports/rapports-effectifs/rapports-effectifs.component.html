@@ -1,0 +1,311 @@
+<div class="rapports-effectifs-container">
+  <!-- Header -->
+  <div class="header">
+    <h2><i class="fas fa-users"></i> Rapports des Effectifs</h2>
+    <p>Analyse et suivi des effectifs de l'entreprise</p>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="stats-grid">
+    <div class="stat-card total">
+      <div class="stat-icon">
+        <i class="fas fa-users"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.totalEmployees }}</h3>
+        <p>Total Employés</p>
+      </div>
+    </div>
+
+    <div class="stat-card active">
+      <div class="stat-icon">
+        <i class="fas fa-user-check"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.activeEmployees }}</h3>
+        <p>Employés Actifs</p>
+      </div>
+    </div>
+
+    <div class="stat-card inactive">
+      <div class="stat-icon">
+        <i class="fas fa-user-times"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.inactiveEmployees }}</h3>
+        <p>Employés Inactifs</p>
+      </div>
+    </div>
+
+    <div class="stat-card new">
+      <div class="stat-icon">
+        <i class="fas fa-user-plus"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.newEmployees }}</h3>
+        <p>Nouveaux Employés</p>
+      </div>
+    </div>
+
+    <div class="stat-card departing">
+      <div class="stat-icon">
+        <i class="fas fa-user-minus"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.departingEmployees }}</h3>
+        <p>Employés Partants</p>
+      </div>
+    </div>
+
+    <div class="stat-card turnover">
+      <div class="stat-icon">
+        <i class="fas fa-exchange-alt"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.turnoverRate }}%</h3>
+        <p>Taux de Rotation</p>
+      </div>
+    </div>
+
+    <div class="stat-card seniority">
+      <div class="stat-icon">
+        <i class="fas fa-calendar-alt"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.averageSeniority }}</h3>
+        <p>Ancienneté Moyenne</p>
+      </div>
+    </div>
+
+    <div class="stat-card contracts">
+      <div class="stat-icon">
+        <i class="fas fa-file-contract"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.contractTypes }}</h3>
+        <p>Types de Contrats</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="filters-grid">
+      <div class="filter-group">
+        <label>Date de début</label>
+        <input type="date" [(ngModel)]="filters.startDate" (change)="applyFilters()">
+      </div>
+
+      <div class="filter-group">
+        <label>Date de fin</label>
+        <input type="date" [(ngModel)]="filters.endDate" (change)="applyFilters()">
+      </div>
+
+      <div class="filter-group">
+        <label>Département</label>
+        <select [(ngModel)]="filters.department" (change)="applyFilters()">
+          <option value="">Tous les départements</option>
+          <option *ngFor="let dept of departments" [value]="dept.id">{{ dept.name }}</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Statut</label>
+        <select [(ngModel)]="filters.status" (change)="applyFilters()">
+          <option value="">Tous les statuts</option>
+          <option value="active">Actif</option>
+          <option value="inactive">Inactif</option>
+          <option value="suspended">Suspendu</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Type de contrat</label>
+        <select [(ngModel)]="filters.contractType" (change)="applyFilters()">
+          <option value="">Tous les contrats</option>
+          <option value="CDI">CDI</option>
+          <option value="CDD">CDD</option>
+          <option value="stage">Stage</option>
+          <option value="freelance">Freelance</option>
+        </select>
+      </div>
+
+      <div class="filter-actions">
+        <button class="btn btn-secondary" (click)="resetFilters()">
+          <i class="fas fa-undo"></i> Réinitialiser
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="charts-section">
+    <div class="charts-grid">
+      <!-- Evolution Chart -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3><i class="fas fa-chart-line"></i> Évolution des Effectifs</h3>
+        </div>
+        <div class="chart-container">
+          <canvas #evolutionChart></canvas>
+        </div>
+      </div>
+
+      <!-- Departments Chart -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3><i class="fas fa-chart-pie"></i> Répartition par Département</h3>
+        </div>
+        <div class="chart-container">
+          <canvas #departmentsChart></canvas>
+        </div>
+      </div>
+
+      <!-- Contracts Chart -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3><i class="fas fa-chart-bar"></i> Types de Contrats</h3>
+        </div>
+        <div class="chart-container">
+          <canvas #contractsChart></canvas>
+        </div>
+      </div>
+
+      <!-- Age Distribution Chart -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3><i class="fas fa-chart-area"></i> Répartition par Âge</h3>
+        </div>
+        <div class="chart-container">
+          <canvas #ageChart></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export Actions -->
+  <div class="export-actions">
+    <button class="btn btn-primary" (click)="exportToPDF()">
+      <i class="fas fa-file-pdf"></i> Exporter PDF
+    </button>
+    <button class="btn btn-success" (click)="exportToExcel()">
+      <i class="fas fa-file-excel"></i> Exporter Excel
+    </button>
+    <button class="btn btn-info" (click)="printReport()">
+      <i class="fas fa-print"></i> Imprimer
+    </button>
+  </div>
+
+  <!-- Detailed Table -->
+  <div class="table-section">
+    <div class="table-header">
+      <h3><i class="fas fa-table"></i> Détails des Effectifs</h3>
+      <div class="table-actions">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" placeholder="Rechercher..." [(ngModel)]="searchTerm" (input)="filterData()">
+        </div>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th (click)="sortData('employee')" class="sortable">
+              Employé
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'employee' && sortDirection === 'asc'"
+                 [class.fa-sort-down]="sortField === 'employee' && sortDirection === 'desc'"></i>
+            </th>
+            <th (click)="sortData('department')" class="sortable">
+              Département
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'department' && sortDirection === 'asc'"
+                 [class.fa-sort-down]="sortField === 'department' && sortDirection === 'desc'"></i>
+            </th>
+            <th (click)="sortData('position')" class="sortable">
+              Poste
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'position' && sortDirection === 'asc'"
+                 [class.fa-sort-down]="sortField === 'position' && sortDirection === 'desc'"></i>
+            </th>
+            <th (click)="sortData('contractType')" class="sortable">
+              Type Contrat
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'contractType' && sortDirection === 'asc'"
+                 [class.fa-sort-down]="sortField === 'contractType' && sortDirection === 'desc'"></i>
+            </th>
+            <th (click)="sortData('startDate')" class="sortable">
+              Date d'Embauche
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'startDate' && sortDirection === 'asc'"
+                 [class.fa-sort-down]="sortField === 'startDate' && sortDirection === 'desc'"></i>
+            </th>
+            <th (click)="sortData('seniority')" class="sortable">
+              Ancienneté
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'seniority' && sortDirection === 'asc'"
+                 [class.fa-sort-down]="sortField === 'seniority' && sortDirection === 'desc'"></i>
+            </th>
+            <th (click)="sortData('age')" class="sortable">
+              Âge
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'age' && sortDirection === 'asc'"
+                 [class.fa-sort-down]="sortField === 'age' && sortDirection === 'desc'"></i>
+            </th>
+            <th (click)="sortData('status')" class="sortable">
+              Statut
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'status' && sortDirection === 'asc'"
+                 [class.fa-sort-down]="sortField === 'status' && sortDirection === 'desc'"></i>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let employee of paginatedData" class="table-row">
+            <td>
+              <div class="employee-info">
+                <div class="employee-avatar">
+                  <img [src]="employee.avatar || 'assets/default-avatar.png'" [alt]="employee.name">
+                </div>
+                <div class="employee-details">
+                  <strong>{{ employee.name }}</strong>
+                  <small>{{ employee.email }}</small>
+                </div>
+              </div>
+            </td>
+            <td>{{ employee.department }}</td>
+            <td>{{ employee.position }}</td>
+            <td>
+              <span class="contract-badge" [class]="'contract-' + employee.contractType.toLowerCase()">
+                {{ employee.contractType }}
+              </span>
+            </td>
+            <td>{{ employee.startDate | date:'dd/MM/yyyy' }}</td>
+            <td>{{ employee.seniority }}</td>
+            <td>{{ employee.age }} ans</td>
+            <td>
+              <span class="status-badge" [class]="'status-' + employee.status">
+                {{ getStatusLabel(employee.status) }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-container" *ngIf="totalPages > 1">
+      <div class="pagination-info">
+        Affichage de {{ (currentPage - 1) * pageSize + 1 }} à {{ Math.min(currentPage * pageSize, filteredData.length) }} sur {{ filteredData.length }} entrées
+      </div>
+      <div class="pagination">
+        <button class="btn btn-sm" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button *ngFor="let page of getPageNumbers()" 
+                class="btn btn-sm" 
+                [class.active]="page === currentPage"
+                (click)="goToPage(page)">
+          {{ page }}
+        </button>
+        <button class="btn btn-sm" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

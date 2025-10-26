@@ -1,0 +1,335 @@
+<div class="payroll-settings-container">
+  <div class="header">
+    <h2>Paramètres de Paie</h2>
+    <div class="header-actions">
+      <button mat-stroked-button (click)="calculateNetSalary()" [disabled]="saving">
+        <mat-icon>calculate</mat-icon>
+        Calculer exemple
+      </button>
+      <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!settingsForm.valid || saving">
+        <mat-icon>save</mat-icon>
+        Sauvegarder
+      </button>
+    </div>
+  </div>
+
+  <form [formGroup]="settingsForm" (ngSubmit)="onSubmit()" *ngIf="!loading">
+    <mat-tab-group>
+      <!-- Onglet Fréquence et Calendrier -->
+      <mat-tab label="Calendrier">
+        <div class="tab-content">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>Fréquence et calendrier de paie</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Fréquence de paie</mat-label>
+                  <mat-select formControlName="payrollFrequency">
+                    <mat-option value="weekly">Hebdomadaire</mat-option>
+                    <mat-option value="biweekly">Bi-hebdomadaire</mat-option>
+                    <mat-option value="monthly">Mensuelle</mat-option>
+                    <mat-option value="quarterly">Trimestrielle</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Jour de paie du mois</mat-label>
+                  <input matInput type="number" formControlName="payrollDay" min="1" max="31">
+                  <mat-error *ngIf="settingsForm.get('payrollDay')?.hasError('required')">
+                    Le jour de paie est requis
+                  </mat-error>
+                  <mat-error *ngIf="settingsForm.get('payrollDay')?.hasError('min') || settingsForm.get('payrollDay')?.hasError('max')">
+                    Le jour doit être entre 1 et 31
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Jours de congés par an</mat-label>
+                  <input matInput type="number" formControlName="vacationDaysPerYear">
+                  <mat-error *ngIf="settingsForm.get('vacationDaysPerYear')?.hasError('required')">
+                    Le nombre de jours de congés est requis
+                  </mat-error>
+                  <mat-error *ngIf="settingsForm.get('vacationDaysPerYear')?.hasError('min') || settingsForm.get('vacationDaysPerYear')?.hasError('max')">
+                    Entre 20 et 40 jours
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Jours de maladie par an</mat-label>
+                  <input matInput type="number" formControlName="sickLeaveDaysPerYear">
+                  <mat-error *ngIf="settingsForm.get('sickLeaveDaysPerYear')?.hasError('required')">
+                    Le nombre de jours de maladie est requis
+                  </mat-error>
+                  <mat-error *ngIf="settingsForm.get('sickLeaveDaysPerYear')?.hasError('min') || settingsForm.get('sickLeaveDaysPerYear')?.hasError('max')">
+                    Entre 30 et 365 jours
+                  </mat-error>
+                </mat-form-field>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+      <!-- Onglet Taux et Majorations -->
+      <mat-tab label="Taux">
+        <div class="tab-content">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>Taux de majorations</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Taux heures supplémentaires</mat-label>
+                  <input matInput type="number" step="0.1" formControlName="overtimeRate">
+                  <mat-hint>Multiplicateur (ex: 1.5 = +50%)</mat-hint>
+                  <mat-error *ngIf="settingsForm.get('overtimeRate')?.hasError('required')">
+                    Le taux est requis
+                  </mat-error>
+                  <mat-error *ngIf="settingsForm.get('overtimeRate')?.hasError('min') || settingsForm.get('overtimeRate')?.hasError('max')">
+                    Entre 1 et 3
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Taux weekend</mat-label>
+                  <input matInput type="number" step="0.1" formControlName="weekendRate">
+                  <mat-hint>Multiplicateur (ex: 2 = +100%)</mat-hint>
+                  <mat-error *ngIf="settingsForm.get('weekendRate')?.hasError('required')">
+                    Le taux est requis
+                  </mat-error>
+                  <mat-error *ngIf="settingsForm.get('weekendRate')?.hasError('min') || settingsForm.get('weekendRate')?.hasError('max')">
+                    Entre 1 et 3
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Taux jours fériés</mat-label>
+                  <input matInput type="number" step="0.1" formControlName="holidayRate">
+                  <mat-hint>Multiplicateur (ex: 2.5 = +150%)</mat-hint>
+                  <mat-error *ngIf="settingsForm.get('holidayRate')?.hasError('required')">
+                    Le taux est requis
+                  </mat-error>
+                  <mat-error *ngIf="settingsForm.get('holidayRate')?.hasError('min') || settingsForm.get('holidayRate')?.hasError('max')">
+                    Entre 1 et 4
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Heures sup. max par semaine</mat-label>
+                  <input matInput type="number" formControlName="maximumOvertimeHours">
+                  <mat-error *ngIf="settingsForm.get('maximumOvertimeHours')?.hasError('required')">
+                    Le nombre d'heures est requis
+                  </mat-error>
+                  <mat-error *ngIf="settingsForm.get('maximumOvertimeHours')?.hasError('min') || settingsForm.get('maximumOvertimeHours')?.hasError('max')">
+                    Entre 35 et 60 heures
+                  </mat-error>
+                </mat-form-field>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+      <!-- Onglet Charges et Taxes -->
+      <mat-tab label="Charges">
+        <div class="tab-content">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>Taux de charges et taxes</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Sécurité sociale (%)</mat-label>
+                  <input matInput type="number" step="0.01" formControlName="socialSecurityRate">
+                  <mat-hint>Taux en décimal (ex: 0.23 = 23%)</mat-hint>
+                  <mat-error *ngIf="settingsForm.get('socialSecurityRate')?.hasError('required')">
+                    Le taux est requis
+                  </mat-error>
+                  <mat-error *ngIf="settingsForm.get('socialSecurityRate')?.hasError('min') || settingsForm.get('socialSecurityRate')?.hasError('max')">
+                    Entre 0 et 100%
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Impôt sur le revenu (%)</mat-label>
+                  <input matInput type="number" step="0.01" formControlName="incomeTaxRate">
+                  <mat-hint>Taux en décimal (ex: 0.14 = 14%)</mat-hint>
+                  <mat-error *ngIf="settingsForm.get('incomeTaxRate')?.hasError('required')">
+                    Le taux est requis
+                  </mat-error>
+                  <mat-error *ngIf="settingsForm.get('incomeTaxRate')?.hasError('min') || settingsForm.get('incomeTaxRate')?.hasError('max')">
+                    Entre 0 et 100%
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Assurance maladie (%)</mat-label>
+                  <input matInput type="number" step="0.01" formControlName="healthInsuranceRate">
+                  <mat-hint>Taux en décimal (ex: 0.08 = 8%)</mat-hint>
+                  <mat-error *ngIf="settingsForm.get('healthInsuranceRate')?.hasError('required')">
+                    Le taux est requis
+                  </mat-error>
+                  <mat-error *ngIf="settingsForm.get('healthInsuranceRate')?.hasError('min') || settingsForm.get('healthInsuranceRate')?.hasError('max')">
+                    Entre 0 et 100%
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Assurance chômage (%)</mat-label>
+                  <input matInput type="number" step="0.01" formControlName="unemploymentInsuranceRate">
+                  <mat-hint>Taux en décimal (ex: 0.04 = 4%)</mat-hint>
+                  <mat-error *ngIf="settingsForm.get('unemploymentInsuranceRate')?.hasError('required')">
+                    Le taux est requis
+                  </mat-error>
+                  <mat-error *ngIf="settingsForm.get('unemploymentInsuranceRate')?.hasError('min') || settingsForm.get('unemploymentInsuranceRate')?.hasError('max')">
+                    Entre 0 et 100%
+                  </mat-error>
+                </mat-form-field>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+      <!-- Onglet Avantages -->
+      <mat-tab label="Avantages">
+        <div class="tab-content">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>Avantages et primes</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Prime transport (€)</mat-label>
+                  <input matInput type="number" step="0.01" formControlName="transportAllowance">
+                  <mat-hint>Montant mensuel</mat-hint>
+                  <mat-error *ngIf="settingsForm.get('transportAllowance')?.hasError('required')">
+                    Le montant est requis
+                  </mat-error>
+                  <mat-error *ngIf="settingsForm.get('transportAllowance')?.hasError('min')">
+                    Le montant doit être positif
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Prime repas (€)</mat-label>
+                  <input matInput type="number" step="0.01" formControlName="mealAllowance">
+                  <mat-hint>Montant par jour travaillé</mat-hint>
+                  <mat-error *ngIf="settingsForm.get('mealAllowance')?.hasError('required')">
+                    Le montant est requis
+                  </mat-error>
+                  <mat-error *ngIf="settingsForm.get('mealAllowance')?.hasError('min')">
+                    Le montant doit être positif
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Prime ancienneté (%)</mat-label>
+                  <input matInput type="number" step="0.01" formControlName="seniorityBonusRate">
+                  <mat-hint>Pourcentage par année d'ancienneté</mat-hint>
+                  <mat-error *ngIf="settingsForm.get('seniorityBonusRate')?.hasError('required')">
+                    Le taux est requis
+                  </mat-error>
+                  <mat-error *ngIf="settingsForm.get('seniorityBonusRate')?.hasError('min') || settingsForm.get('seniorityBonusRate')?.hasError('max')">
+                    Entre 0 et 10%
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Prime performance max (%)</mat-label>
+                  <input matInput type="number" step="0.01" formControlName="performanceBonusMaxRate">
+                  <mat-hint>Pourcentage maximum du salaire de base</mat-hint>
+                  <mat-error *ngIf="settingsForm.get('performanceBonusMaxRate')?.hasError('required')">
+                    Le taux est requis
+                  </mat-error>
+                  <mat-error *ngIf="settingsForm.get('performanceBonusMaxRate')?.hasError('min') || settingsForm.get('performanceBonusMaxRate')?.hasError('max')">
+                    Entre 0 et 50%
+                  </mat-error>
+                </mat-form-field>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </form>
+
+  <!-- Calculateur de salaire net -->
+  <mat-card class="salary-calculator" *ngIf="showCalculator">
+    <mat-card-header>
+      <mat-card-title>Calculateur de salaire net</mat-card-title>
+      <button mat-icon-button (click)="showCalculator = false">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="calculator-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Salaire brut (€)</mat-label>
+          <input matInput type="number" [(ngModel)]="calculatorData.grossSalary" (input)="calculateNetSalary()">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Heures supplémentaires</mat-label>
+          <input matInput type="number" [(ngModel)]="calculatorData.overtimeHours" (input)="calculateNetSalary()">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Prime transport (€)</mat-label>
+          <input matInput type="number" [(ngModel)]="calculatorData.transportBonus" (input)="calculateNetSalary()">
+        </mat-form-field>
+      </div>
+
+      <div class="calculation-result" *ngIf="calculatorData.netSalary">
+        <h3>Résultat du calcul</h3>
+        <div class="result-grid">
+          <div class="result-item">
+            <span class="label">Salaire brut:</span>
+            <span class="value">{{ calculatorData.grossSalary | currency:'EUR':'symbol':'1.2-2' }}</span>
+          </div>
+          <div class="result-item">
+            <span class="label">Charges sociales:</span>
+            <span class="value">{{ calculatorData.socialCharges | currency:'EUR':'symbol':'1.2-2' }}</span>
+          </div>
+          <div class="result-item">
+            <span class="label">Impôt sur le revenu:</span>
+            <span class="value">{{ calculatorData.incomeTax | currency:'EUR':'symbol':'1.2-2' }}</span>
+          </div>
+          <div class="result-item highlight">
+            <span class="label">Salaire net:</span>
+            <span class="value">{{ calculatorData.netSalary | currency:'EUR':'symbol':'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Indicateur de chargement -->
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner></mat-spinner>
+    <p>Chargement des paramètres...</p>
+  </div>
+
+  <!-- Messages de succès/erreur -->
+  <div class="message-container" *ngIf="message">
+    <mat-card [ngClass]="{'success': messageType === 'success', 'error': messageType === 'error'}">
+      <mat-card-content>
+        <mat-icon>{{ messageType === 'success' ? 'check_circle' : 'error' }}</mat-icon>
+        {{ message }}
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

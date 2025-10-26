@@ -1,0 +1,494 @@
+<div class="fiche-paie-container">
+  <!-- En-tête -->
+  <div class="header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="page-title">
+          <mat-icon>receipt_long</mat-icon>
+          Gestion des Fiches de Paie
+        </h1>
+        <p class="page-subtitle">Gérez et suivez les fiches de paie de vos employés</p>
+      </div>
+      <div class="header-actions">
+        <button mat-raised-button color="primary" (click)="openForm()" class="action-btn">
+          <mat-icon>add</mat-icon>
+          Nouvelle Fiche
+        </button>
+        <button mat-stroked-button (click)="exporterDonnees()" class="export-btn">
+          <mat-icon>download</mat-icon>
+          Exporter
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistiques -->
+  <div class="stats-grid">
+    <div class="stat-card total">
+      <div class="stat-icon">
+        <mat-icon>receipt_long</mat-icon>
+      </div>
+      <div class="stat-content">
+        <div class="stat-value">{{ statistiques.totalFiches }}</div>
+        <div class="stat-label">Total Fiches</div>
+      </div>
+    </div>
+
+    <div class="stat-card validated">
+      <div class="stat-icon">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <div class="stat-content">
+        <div class="stat-value">{{ statistiques.fichesValidees }}</div>
+        <div class="stat-label">Validées</div>
+      </div>
+    </div>
+
+    <div class="stat-card draft">
+      <div class="stat-icon">
+        <mat-icon>edit</mat-icon>
+      </div>
+      <div class="stat-content">
+        <div class="stat-value">{{ statistiques.fichesBrouillon }}</div>
+        <div class="stat-label">Brouillons</div>
+      </div>
+    </div>
+
+    <div class="stat-card sent">
+      <div class="stat-icon">
+        <mat-icon>send</mat-icon>
+      </div>
+      <div class="stat-content">
+        <div class="stat-value">{{ statistiques.fichesEnvoyees }}</div>
+        <div class="stat-label">Envoyées</div>
+      </div>
+    </div>
+
+    <div class="stat-card salary">
+      <div class="stat-icon">
+        <mat-icon>euro</mat-icon>
+      </div>
+      <div class="stat-content">
+        <div class="stat-value">{{ formatCurrency(statistiques.masseSalarialeTotale) }}</div>
+        <div class="stat-label">Masse Salariale</div>
+      </div>
+    </div>
+
+    <div class="stat-card average">
+      <div class="stat-icon">
+        <mat-icon>trending_up</mat-icon>
+      </div>
+      <div class="stat-content">
+        <div class="stat-value">{{ formatCurrency(statistiques.moyenneSalaire) }}</div>
+        <div class="stat-label">Salaire Moyen</div>
+      </div>
+    </div>
+
+    <div class="stat-card contributions">
+      <div class="stat-icon">
+        <mat-icon>account_balance</mat-icon>
+      </div>
+      <div class="stat-content">
+        <div class="stat-value">{{ formatCurrency(statistiques.totalCotisations) }}</div>
+        <div class="stat-label">Total Cotisations</div>
+      </div>
+    </div>
+
+    <div class="stat-card evolution">
+      <div class="stat-icon">
+        <mat-icon [class.positive]="statistiques.evolutionMensuelle > 0" [class.negative]="statistiques.evolutionMensuelle < 0">
+          {{ statistiques.evolutionMensuelle > 0 ? 'trending_up' : 'trending_down' }}
+        </mat-icon>
+      </div>
+      <div class="stat-content">
+        <div class="stat-value" [class.positive]="statistiques.evolutionMensuelle > 0" [class.negative]="statistiques.evolutionMensuelle < 0">
+          {{ statistiques.evolutionMensuelle > 0 ? '+' : '' }}{{ statistiques.evolutionMensuelle.toFixed(1) }}%
+        </div>
+        <div class="stat-label">Évolution</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtres -->
+  <div class="filters-section">
+    <div class="filters-header">
+      <h3>Filtres</h3>
+      <button mat-button (click)="effacerFiltres()" class="clear-filters-btn">
+        <mat-icon>clear</mat-icon>
+        Effacer les filtres
+      </button>
+    </div>
+    
+    <div class="filters-grid">
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Rechercher</mat-label>
+        <input matInput [(ngModel)]="filtres.recherche" (input)="appliquerFiltres()" placeholder="Nom, prénom, matricule...">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Département</mat-label>
+        <mat-select [(ngModel)]="filtres.departement" (selectionChange)="appliquerFiltres()">
+          <mat-option value="">Tous</mat-option>
+          <mat-option *ngFor="let dept of departements" [value]="dept">{{ dept }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Statut</mat-label>
+        <mat-select [(ngModel)]="filtres.statut" (selectionChange)="appliquerFiltres()">
+          <mat-option value="">Tous</mat-option>
+          <mat-option *ngFor="let statut of statuts" [value]="statut">
+            {{ statut | titlecase }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Période</mat-label>
+        <mat-select [(ngModel)]="filtres.periode" (selectionChange)="appliquerFiltres()">
+          <mat-option value="">Toutes</mat-option>
+          <mat-option *ngFor="let periode of periodes" [value]="periode">{{ periode }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Date début</mat-label>
+        <input matInput type="date" [(ngModel)]="filtres.dateDebut" (change)="appliquerFiltres()">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Date fin</mat-label>
+        <input matInput type="date" [(ngModel)]="filtres.dateFin" (change)="appliquerFiltres()">
+      </mat-form-field>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions-section">
+    <div class="actions-left">
+      <button mat-raised-button color="primary" (click)="openForm()">
+        <mat-icon>add</mat-icon>
+        Ajouter une fiche
+      </button>
+    </div>
+    <div class="actions-right">
+      <button mat-stroked-button (click)="exporterDonnees()">
+        <mat-icon>download</mat-icon>
+        Exporter les données
+      </button>
+    </div>
+  </div>
+
+  <!-- Tableau des fiches -->
+  <div class="table-container">
+    <div class="table-header">
+      <div class="search-bar">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Rechercher dans le tableau</mat-label>
+          <input matInput [(ngModel)]="filtres.recherche" (input)="appliquerFiltres()" placeholder="Rechercher...">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table mat-table [dataSource]="fichesPaie" class="fiches-table" matSort>
+        <!-- Colonne Employé -->
+        <ng-container matColumnDef="employe">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="employeNom" class="sortable-header">
+            <div class="header-content">
+              <span>Employé</span>
+              <mat-icon class="sort-icon">sort</mat-icon>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let fiche" class="employe-cell">
+            <div class="employe-info">
+              <div class="employe-name">{{ fiche.employePrenom }} {{ fiche.employeNom }}</div>
+              <div class="employe-details">
+                <span class="matricule">{{ fiche.employeMatricule }}</span>
+                <span class="separator">•</span>
+                <span class="departement">{{ fiche.departement }}</span>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Période -->
+        <ng-container matColumnDef="periode">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="periode" class="sortable-header">
+            <div class="header-content">
+              <span>Période</span>
+              <mat-icon class="sort-icon">sort</mat-icon>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let fiche" class="periode-cell">
+            <div class="periode-info">
+              <div class="periode-text">{{ fiche.periode }}</div>
+              <div class="poste-text">{{ fiche.poste }}</div>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Salaire Brut -->
+        <ng-container matColumnDef="salaireBrut">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="salaireBrut" class="sortable-header">
+            <div class="header-content">
+              <span>Salaire Brut</span>
+              <mat-icon class="sort-icon">sort</mat-icon>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let fiche" class="salary-cell">
+            <div class="salary-info">
+              <div class="salary-amount">{{ formatCurrency(fiche.salaireBrut) }}</div>
+              <div class="salary-details">
+                <span class="hours">{{ fiche.heuresNormales }}h</span>
+                <span class="separator" *ngIf="fiche.heuresSupplementaires > 0">+</span>
+                <span class="overtime" *ngIf="fiche.heuresSupplementaires > 0">{{ fiche.heuresSupplementaires }}h sup</span>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Salaire Net -->
+        <ng-container matColumnDef="salaireNet">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="salaireNet" class="sortable-header">
+            <div class="header-content">
+              <span>Salaire Net</span>
+              <mat-icon class="sort-icon">sort</mat-icon>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let fiche" class="net-salary-cell">
+            <div class="net-salary-info">
+              <div class="net-amount">{{ formatCurrency(fiche.salaireNet) }}</div>
+              <div class="cotisations">Cotisations: {{ formatCurrency(fiche.cotisationsSalariales) }}</div>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Statut -->
+        <ng-container matColumnDef="statut">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="statut" class="sortable-header">
+            <div class="header-content">
+              <span>Statut</span>
+              <mat-icon class="sort-icon">sort</mat-icon>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let fiche" class="status-cell">
+            <div class="status-chip" [style.background-color]="getStatutColor(fiche.statut)">
+              <mat-icon class="status-icon">
+                {{ fiche.statut === 'brouillon' ? 'edit' : 
+                   fiche.statut === 'validee' ? 'check_circle' : 
+                   fiche.statut === 'envoyee' ? 'send' : 'archive' }}
+              </mat-icon>
+              <span>{{ fiche.statut | titlecase }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Date -->
+        <ng-container matColumnDef="dateGeneration">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="dateGeneration" class="sortable-header">
+            <div class="header-content">
+              <span>Date Génération</span>
+              <mat-icon class="sort-icon">sort</mat-icon>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let fiche" class="date-cell">
+            <div class="date-info">
+              <div class="date-text">{{ formatDate(fiche.dateGeneration) }}</div>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="actions-header">Actions</th>
+          <td mat-cell *matCellDef="let fiche" class="actions-cell">
+            <button mat-icon-button [matMenuTriggerFor]="actionsMenu" class="actions-btn">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #actionsMenu="matMenu" class="actions-menu">
+              <button mat-menu-item (click)="openForm(fiche)">
+                <mat-icon>edit</mat-icon>
+                <span>Modifier</span>
+              </button>
+              <button mat-menu-item (click)="dupliquerFiche(fiche)">
+                <mat-icon>content_copy</mat-icon>
+                <span>Dupliquer</span>
+              </button>
+              <button mat-menu-item (click)="genererBulletin(fiche)">
+                <mat-icon>print</mat-icon>
+                <span>Générer bulletin</span>
+              </button>
+              <mat-divider></mat-divider>
+              <button mat-menu-item (click)="changerStatut(fiche, 'validee')" *ngIf="fiche.statut === 'brouillon'">
+                <mat-icon>check_circle</mat-icon>
+                <span>Valider</span>
+              </button>
+              <button mat-menu-item (click)="envoyerFiche(fiche)" *ngIf="fiche.statut === 'validee'">
+                <mat-icon>send</mat-icon>
+                <span>Envoyer</span>
+              </button>
+              <button mat-menu-item (click)="changerStatut(fiche, 'archivee')" *ngIf="fiche.statut === 'envoyee'">
+                <mat-icon>archive</mat-icon>
+                <span>Archiver</span>
+              </button>
+              <mat-divider></mat-divider>
+              <button mat-menu-item (click)="supprimerFiche(fiche)" class="delete-action">
+                <mat-icon>delete</mat-icon>
+                <span>Supprimer</span>
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+      </table>
+
+      <!-- Message si aucune donnée -->
+      <div *ngIf="fichesPaie.length === 0 && !isLoading" class="no-data">
+        <mat-icon>receipt_long</mat-icon>
+        <h3>Aucune fiche de paie trouvée</h3>
+        <p>Commencez par créer votre première fiche de paie</p>
+        <button mat-raised-button color="primary" (click)="openForm()">
+          <mat-icon>add</mat-icon>
+          Créer une fiche
+        </button>
+      </div>
+
+      <!-- Indicateur de chargement -->
+      <div *ngIf="isLoading" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Chargement des fiches de paie...</p>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <mat-paginator 
+      [length]="totalItems" 
+      [pageSize]="pageSize" 
+      [pageSizeOptions]="[5, 10, 25, 50]"
+      (page)="changerPage($event.pageIndex + 1)"
+      showFirstLastButtons
+      class="table-paginator">
+    </mat-paginator>
+  </div>
+
+  <!-- Formulaire d'ajout/modification -->
+  <div class="form-overlay" *ngIf="showForm" (click)="closeForm()">
+    <div class="form-container" (click)="$event.stopPropagation()">
+      <div class="form-header">
+        <h2>{{ isEditing ? 'Modifier' : 'Créer' }} une fiche de paie</h2>
+        <button mat-icon-button (click)="closeForm()" class="close-btn">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <form [formGroup]="ficheForm" (ngSubmit)="onSubmit()" class="fiche-form">
+        <div class="form-grid">
+          <!-- Employé -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Employé</mat-label>
+            <mat-select formControlName="employeId" required>
+              <mat-option *ngFor="let employe of employes" [value]="employe.id">
+                {{ employe.prenom }} {{ employe.nom }} ({{ employe.matricule }})
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="ficheForm.get('employeId')?.hasError('required')">
+              L'employé est requis
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Période -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Période</mat-label>
+            <mat-select formControlName="periode" required>
+              <mat-option *ngFor="let periode of periodes" [value]="periode">
+                {{ periode }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="ficheForm.get('periode')?.hasError('required')">
+              La période est requise
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Salaire brut -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Salaire brut</mat-label>
+            <input matInput type="number" formControlName="salaireBrut" required min="0" step="0.01">
+            <span matSuffix>€</span>
+            <mat-error *ngIf="ficheForm.get('salaireBrut')?.hasError('required')">
+              Le salaire brut est requis
+            </mat-error>
+            <mat-error *ngIf="ficheForm.get('salaireBrut')?.hasError('min')">
+              Le salaire doit être positif
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Heures normales -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Heures normales</mat-label>
+            <input matInput type="number" formControlName="heuresNormales" required min="0" step="0.01">
+            <span matSuffix>h</span>
+            <mat-error *ngIf="ficheForm.get('heuresNormales')?.hasError('required')">
+              Les heures normales sont requises
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Heures supplémentaires -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Heures supplémentaires</mat-label>
+            <input matInput type="number" formControlName="heuresSupplementaires" min="0" step="0.01">
+            <span matSuffix>h</span>
+          </mat-form-field>
+
+          <!-- Primes -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Primes</mat-label>
+            <input matInput type="number" formControlName="primes" min="0" step="0.01">
+            <span matSuffix>€</span>
+          </mat-form-field>
+
+          <!-- Avantages -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Avantages en nature</mat-label>
+            <input matInput type="number" formControlName="avantages" min="0" step="0.01">
+            <span matSuffix>€</span>
+          </mat-form-field>
+
+          <!-- Retenues -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Retenues</mat-label>
+            <input matInput type="number" formControlName="retenues" min="0" step="0.01">
+            <span matSuffix>€</span>
+          </mat-form-field>
+
+          <!-- Congés payés -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Congés payés</mat-label>
+            <input matInput type="number" formControlName="congesPayes" min="0" step="0.01">
+            <span matSuffix>€</span>
+          </mat-form-field>
+        </div>
+
+        <!-- Commentaires -->
+        <mat-form-field appearance="outline" class="form-field full-width">
+          <mat-label>Commentaires</mat-label>
+          <textarea matInput formControlName="commentaires" rows="3" placeholder="Commentaires optionnels..."></textarea>
+        </mat-form-field>
+
+        <!-- Actions du formulaire -->
+        <div class="form-actions">
+          <button type="button" mat-stroked-button (click)="closeForm()" class="cancel-btn">
+            Annuler
+          </button>
+          <button type="submit" mat-raised-button color="primary" [disabled]="ficheForm.invalid" class="submit-btn">
+            {{ isEditing ? 'Modifier' : 'Créer' }} la fiche
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

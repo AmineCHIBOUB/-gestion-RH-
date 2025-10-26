@@ -1,0 +1,416 @@
+/* ===== CONTENEUR PRINCIPAL ===== */
+.calcul-paie-container {
+  padding: 24px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* ===== CARTE PRINCIPALE ===== */
+mat-card {
+  width: 100%;
+  max-width: 600px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: none;
+  overflow: hidden;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+}
+
+/* ===== EN-TÊTE DE LA CARTE ===== */
+mat-card-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 24px;
+  margin: 0;
+}
+
+mat-card-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+mat-card-title::before {
+  content: '🧮';
+  font-size: 28px;
+}
+
+/* ===== CONTENU DE LA CARTE ===== */
+mat-card-content {
+  padding: 32px;
+}
+
+/* ===== FORMULAIRE ===== */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ===== CHAMPS DE FORMULAIRE ===== */
+mat-form-field {
+  width: 100%;
+}
+
+mat-form-field .mat-mdc-form-field-wrapper {
+  padding-bottom: 0;
+}
+
+mat-form-field .mat-mdc-text-field-wrapper {
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+mat-form-field .mat-mdc-text-field-wrapper:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #e3f2fd;
+}
+
+mat-form-field.mat-focused .mat-mdc-text-field-wrapper {
+  border-color: #667eea;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2);
+}
+
+/* ===== LABELS ===== */
+mat-label {
+  color: #495057;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+/* ===== INPUTS ===== */
+input[matInput],
+mat-select {
+  font-size: 16px;
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+input[matInput]:focus {
+  outline: none;
+}
+
+/* ===== SELECT ===== */
+mat-select {
+  min-height: 48px;
+}
+
+mat-option {
+  font-size: 15px;
+  padding: 12px 16px;
+  transition: background-color 0.2s ease;
+}
+
+mat-option:hover {
+  background-color: #f8f9fa;
+}
+
+mat-option.mat-selected {
+  background-color: #667eea;
+  color: white;
+}
+
+/* ===== ACTIONS ===== */
+.actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.actions button {
+  min-width: 160px;
+  height: 48px;
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: none;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.actions button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.actions button:active {
+  transform: translateY(0);
+}
+
+.actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== RÉSULTAT ===== */
+.resultat {
+  margin-top: 32px;
+  padding: 24px;
+  background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+  border-radius: 16px;
+  border: 2px solid #c8e6c9;
+  animation: slideIn 0.5s ease-out;
+}
+
+.resultat h3 {
+  margin: 0 0 20px 0;
+  color: #2e7d32;
+  font-size: 20px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.resultat h3::before {
+  content: '📊';
+  font-size: 24px;
+}
+
+.resultat p {
+  margin: 12px 0;
+  font-size: 16px;
+  font-weight: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+  border-left: 4px solid #4caf50;
+}
+
+.resultat p:first-of-type {
+  border-left-color: #2196f3;
+}
+
+.resultat p:nth-of-type(2) {
+  border-left-color: #ff9800;
+}
+
+.resultat p:last-of-type {
+  border-left-color: #4caf50;
+  font-weight: 700;
+  font-size: 18px;
+  background: rgba(76, 175, 80, 0.1);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .calcul-paie-container {
+    padding: 16px;
+  }
+  
+  mat-card {
+    max-width: 100%;
+    margin: 0;
+  }
+  
+  mat-card-header {
+    padding: 20px;
+  }
+  
+  mat-card-title {
+    font-size: 20px;
+  }
+  
+  mat-card-content {
+    padding: 24px 20px;
+  }
+  
+  form {
+    gap: 20px;
+  }
+  
+  .actions button {
+    min-width: 140px;
+    height: 44px;
+    font-size: 15px;
+  }
+  
+  .resultat {
+    padding: 20px;
+  }
+  
+  .resultat h3 {
+    font-size: 18px;
+  }
+  
+  .resultat p {
+    font-size: 15px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .calcul-paie-container {
+    padding: 12px;
+  }
+  
+  mat-card-header {
+    padding: 16px;
+  }
+  
+  mat-card-title {
+    font-size: 18px;
+  }
+  
+  mat-card-content {
+    padding: 20px 16px;
+  }
+  
+  .actions button {
+    min-width: 120px;
+    height: 40px;
+    font-size: 14px;
+  }
+  
+  .resultat {
+    padding: 16px;
+  }
+  
+  .resultat h3 {
+    font-size: 16px;
+  }
+  
+  .resultat p {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+mat-card {
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* ===== ÉTATS DE CHARGEMENT ===== */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+
+.loading mat-spinner {
+  margin-right: 16px;
+}
+
+/* ===== MESSAGES D'ERREUR ===== */
+.mat-mdc-form-field-error {
+  color: #f44336;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* ===== ACCESSIBILITÉ ===== */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ===== FOCUS VISIBLE ===== */
+button:focus-visible,
+input:focus-visible,
+mat-select:focus-visible {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* ===== IMPRESSION ===== */
+@media print {
+  .calcul-paie-container {
+    background: white;
+    padding: 0;
+  }
+  
+  mat-card {
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+  
+  .actions {
+    display: none;
+  }
+  
+  .resultat {
+    background: white;
+    border: 1px solid #ddd;
+  }
+}
+
+/* ===== THÈME SOMBRE (OPTIONNEL) ===== */
+@media (prefers-color-scheme: dark) {
+  .calcul-paie-container {
+    background-color: #1a1a1a;
+  }
+  
+  mat-card {
+    background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+    color: #ffffff;
+  }
+  
+  mat-form-field .mat-mdc-text-field-wrapper {
+    background-color: #3d3d3d;
+  }
+  
+  input[matInput],
+  mat-select {
+    color: #ffffff;
+  }
+  
+  mat-label {
+    color: #b0b0b0;
+  }
+  
+  .resultat {
+    background: linear-gradient(135deg, #2d4a2d 0%, #1a2e1a 100%);
+    border-color: #4caf50;
+  }
+  
+  .resultat h3 {
+    color: #81c784;
+  }
+  
+  .resultat p {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+  }
+}

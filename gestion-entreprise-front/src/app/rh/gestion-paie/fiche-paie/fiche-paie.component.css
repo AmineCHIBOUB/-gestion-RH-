@@ -1,0 +1,72 @@
+.payslip-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.payslip {
+  background: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  font-family: 'Arial', sans-serif;
+}
+
+.payslip-header {
+  text-align: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #333;
+}
+
+.company-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.employee-info {
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.payslip-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.payslip-table th,
+.payslip-table td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.payslip-table th {
+  background: #f5f5f5;
+  font-weight: 600;
+}
+
+.total-row {
+  font-weight: bold;
+  background: #e3f2fd;
+}
+
+.print-button {
+  background: #2196F3;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  float: right;
+}
+
+@media print {
+  .print-button {
+    display: none;
+  }
+}

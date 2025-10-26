@@ -1,0 +1,191 @@
+<div class="conges-container">
+  <!-- Header -->
+  <div class="header">
+    <h1>Mes Congés</h1>
+    <button 
+      mat-raised-button 
+      color="primary" 
+      (click)="navigateToNewDemande()"
+      [disabled]="loading"
+      class="new-demande-button">
+      <mat-icon>add</mat-icon>
+      Nouvelle Demande
+    </button>
+  </div>
+
+  <!-- Temporarily hide the solde card -->
+  <mat-card class="solde-card" *ngIf="false">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>account_balance</mat-icon>
+        Solde des Congés {{ selectedAnnee }}
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="solde-grid">
+        <div class="solde-item">
+          <span class="solde-label">Congés Payés</span>
+          <span class="solde-value">
+            {{ soldeConges?.congesPayes?.restant || 0 }} / {{ soldeConges?.congesPayes?.total || 0 }} jours
+          </span>
+          <mat-progress-bar 
+            mode="determinate" 
+            [value]="soldeConges?.congesPayes?.total ? (soldeConges.congesPayes.utilise / soldeConges.congesPayes.total) * 100 : 0"
+            class="solde-progress">
+          </mat-progress-bar>
+        </div>
+        <div class="solde-item">
+          <span class="solde-label">RTT</span>
+          <span class="solde-value">{{ soldeConges.rtt.restant }} / {{ soldeConges.rtt.total }} jours</span>
+          <mat-progress-bar 
+            mode="determinate" 
+            [value]="(soldeConges.rtt.utilise / soldeConges.rtt.total) * 100"
+            class="solde-progress">
+          </mat-progress-bar>
+        </div>
+        <div class="solde-item">
+          <span class="solde-label">Congés Exceptionnels</span>
+          <span class="solde-value">{{ soldeConges.congesExceptionnels.utilise }} jours utilisés</span>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Filtres -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Année</mat-label>
+          <mat-select [(value)]="selectedAnnee" (selectionChange)="onAnneeChange()">
+            <mat-option *ngFor="let year of availableYears" [value]="year">
+              {{ year }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Statut</mat-label>
+          <mat-select [(value)]="selectedStatut" (selectionChange)="onStatutChange()">
+            <mat-option *ngFor="let option of statutOptions" [value]="option.value">
+              {{ option.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button 
+          mat-button 
+          color="primary" 
+          (click)="onRefresh()"
+          [disabled]="loading"
+          class="refresh-button">
+          <mat-icon>refresh</mat-icon>
+          Actualiser
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Chargement des congés...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <mat-icon color="warn">error</mat-icon>
+    <p>{{ error }}</p>
+    <button mat-button color="primary" (click)="onRefresh()">
+      <mat-icon>refresh</mat-icon>
+      Réessayer
+    </button>
+  </div>
+
+  <!-- Table -->
+  <mat-card class="table-card" *ngIf="!loading && !error">
+    <mat-card-content>
+      <div class="table-container">
+        <!-- Make sure each matColumnDef appears only ONCE -->
+        <table mat-table [dataSource]="dataSource" matSort class="conges-table">
+          <!-- Date Début - ONLY ONE DEFINITION -->
+          <ng-container matColumnDef="dateDebut">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Date Début</th>
+            <td mat-cell *matCellDef="let conge">{{ conge.date_debut | date:'dd/MM/yyyy' }}</td>
+          </ng-container>
+          
+          <!-- Date Fin - ONLY ONE DEFINITION -->
+          <ng-container matColumnDef="dateFin">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Date Fin</th>
+            <td mat-cell *matCellDef="let conge">{{ conge.date_fin | date:'dd/MM/yyyy' }}</td>
+          </ng-container>
+          
+          <!-- Type de Congé - ONLY ONE DEFINITION -->
+          <ng-container matColumnDef="typeConge">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+            <td mat-cell *matCellDef="let conge">
+              <mat-chip class="type-chip">
+                {{ getTypeCongeLabel(conge.type_conge) }}
+              </mat-chip>
+            </td>
+          </ng-container>
+          
+          <!-- Nombre de Jours - ONLY ONE DEFINITION -->
+          <ng-container matColumnDef="nbJours">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Nb Jours</th>
+            <td mat-cell *matCellDef="let conge">
+              <strong>{{ conge.nombre_jours }}</strong>
+            </td>
+          </ng-container>
+          
+          <!-- Statut - ONLY ONE DEFINITION -->
+          <ng-container matColumnDef="statut">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
+            <td mat-cell *matCellDef="let conge">
+              <mat-chip [class]="getStatutClass(conge.statut)">
+                {{ getStatutLabel(conge.statut) }}
+              </mat-chip>
+            </td>
+          </ng-container>
+          
+          <!-- Date Création - ONLY ONE DEFINITION -->
+          <ng-container matColumnDef="dateCreation">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Demandé le</th>
+            <td mat-cell *matCellDef="let conge">{{ conge.created_at | date:'dd/MM/yyyy' }}</td>
+          </ng-container>
+          
+          <!-- Actions - ONLY ONE DEFINITION -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let conge">
+              <button 
+                mat-icon-button 
+                color="warn"
+                *ngIf="canCancelConge(conge)"
+                (click)="onCancelConge(conge)"
+                matTooltip="Annuler la demande">
+                <mat-icon>cancel</mat-icon>
+              </button>
+              <span *ngIf="!canCancelConge(conge)" class="no-actions">-</span>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <!-- No Data -->
+        <div *ngIf="dataSource.data.length === 0" class="no-data">
+          <mat-icon>event_busy</mat-icon>
+          <p>Aucun congé trouvé pour les critères sélectionnés</p>
+        </div>
+      </div>
+
+      <mat-paginator 
+        [pageSizeOptions]="[10, 25, 50]"
+        [pageSize]="10"
+        showFirstLastButtons>
+      </mat-paginator>
+    </mat-card-content>
+  </mat-card>
+</div>

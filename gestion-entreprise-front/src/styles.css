@@ -1,0 +1,156 @@
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+/* Or your custom theme */
+@import './custom-theme.css';
+
+/* Ensure global styles don't override component styles */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+/* Styles pour le dashboard employé */
+:root {
+  --primary-color: #6366f1;
+  --secondary-color: #ec4899;
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --error-color: #ef4444;
+  --info-color: #06b6d4;
+  --purple-color: #8b5cf6;
+  --teal-color: #14b8a6;
+}
+
+/* Dashboard employé - Container */
+app-employe-dashboard .dashboard-container {
+  padding: 24px;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  min-height: 100vh;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Dashboard employé - Carte de bienvenue */
+app-employe-dashboard .welcome-card {
+  background: linear-gradient(135deg, #6366f1, #ec4899) !important;
+  color: white !important;
+  padding: 32px;
+  border-radius: 16px;
+  margin-bottom: 32px;
+  box-shadow: 0 8px 32px rgba(99, 102, 241, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+app-employe-dashboard .welcome-card .mat-mdc-card-header {
+  background: transparent !important;
+  color: white !important;
+}
+
+app-employe-dashboard .welcome-card .mat-mdc-card-title {
+  color: white !important;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+app-employe-dashboard .welcome-card .mat-mdc-card-subtitle {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Dashboard employé - Cartes de statistiques */
+app-employe-dashboard .stat-card {
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  position: relative;
+  background: white;
+}
+
+app-employe-dashboard .stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #6366f1, #ec4899, #06b6d4, #10b981);
+}
+
+app-employe-dashboard .stat-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+app-employe-dashboard .stat-info h3 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #6366f1, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 8px 0;
+  line-height: 1;
+}
+
+/* Dashboard employé - Cartes de navigation */
+app-employe-dashboard .nav-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+}
+
+app-employe-dashboard .nav-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #6366f1, #ec4899, #06b6d4, #10b981);
+}
+
+app-employe-dashboard .nav-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+app-employe-dashboard .nav-card .mat-mdc-card-header {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+  color: white !important;
+  padding: 24px;
+}
+
+app-employe-dashboard .nav-card .mat-mdc-card-title {
+  color: white !important;
+  font-weight: 600;
+  font-size: 20px;
+}
+
+/* Grilles */
+app-employe-dashboard .stats-grid,
+app-employe-dashboard .navigation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+/* Titres de section */
+app-employe-dashboard .navigation-section h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #6366f1, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 24px;
+  text-align: center;
+}

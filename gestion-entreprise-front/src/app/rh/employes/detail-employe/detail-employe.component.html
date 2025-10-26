@@ -1,0 +1,149 @@
+<div class="detail-employe" *ngIf="!loading">
+  <div class="header-actions">
+    <button mat-icon-button (click)="router.navigate(['/rh/employes'])">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1>Détails de l'employé</h1>
+    <div class="actions">
+      <button mat-raised-button color="primary" (click)="modifier()">
+        <mat-icon>edit</mat-icon>
+        Modifier
+      </button>
+      <button mat-raised-button color="warn" (click)="supprimer()">
+        <mat-icon>delete</mat-icon>
+        Supprimer
+      </button>
+    </div>
+  </div>
+
+  <div class="employe-content" *ngIf="employe">
+    <mat-card class="employe-header">
+      <mat-card-content>
+        <div class="employe-info">
+          <div class="avatar">
+            <mat-icon>person</mat-icon>
+          </div>
+          <div class="info">
+            <h2>{{ employe.prenom }} {{ employe.nom }}</h2>
+            <p class="poste">{{ employe.poste }}</p>
+            <p class="departement">{{ employe.departement }}</p>
+            <div class="status">
+              <mat-chip [color]="employe.statut === 'actif' ? 'primary' : 'warn'" selected>
+                {{ employe.statut }}
+              </mat-chip>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-tab-group [(selectedIndex)]="activeTab">
+      <mat-tab label="Informations personnelles">
+        <div class="tab-content">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>Informations personnelles</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="info-grid">
+                <div class="info-item">
+                  <label>Email :</label>
+                  <span>{{ employe.email }}</span>
+                </div>
+                <div class="info-item">
+                  <label>Téléphone :</label>
+                  <span>{{ employe.telephone }}</span>
+                </div>
+                <div class="info-item">
+                  <label>Date de naissance :</label>
+                  <span>{{ employe.dateNaissance | date:'dd/MM/yyyy' }} ({{ calculerAge(employe.dateNaissance) }} ans)</span>
+                </div>
+                <div class="info-item">
+                  <label>Adresse :</label>
+                  <span>{{ employe.adresse }}</span>
+                </div>
+                <div class="info-item">
+                  <label>Numéro de sécurité sociale :</label>
+                  <span>{{ employe.numeroSecuriteSociale }}</span>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Informations professionnelles">
+        <div class="tab-content">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>Informations professionnelles</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="info-grid">
+                <div class="info-item">
+                  <label>Matricule :</label>
+                  <span>{{ employe.matricule }}</span>
+                </div>
+                <div class="info-item">
+                  <label>Date d'embauche :</label>
+                  <span>{{ employe.dateEmbauche | date:'dd/MM/yyyy' }}</span>
+                </div>
+                <div class="info-item">
+                  <label>Ancienneté :</label>
+                  <span>{{ calculerAnciennete(employe.dateEmbauche) }}</span>
+                </div>
+                <div class="info-item">
+                  <label>Type de contrat :</label>
+                  <span>{{ employe.typeContrat }}</span>
+                </div>
+                <div class="info-item">
+                  <label>Salaire de base :</label>
+                  <span>{{ employe.salaireBase | currency:'EUR':'symbol':'1.2-2' }}</span>
+                </div>
+                <div class="info-item">
+                  <label>Manager :</label>
+                  <span>{{ employe.managerId ? 'Oui' : 'Non' }}</span>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Documents">
+        <div class="tab-content">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>Documents</mat-card-title>
+              <button mat-icon-button>
+                <mat-icon>add</mat-icon>
+              </button>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="documents-list" *ngIf="documents.length > 0; else noDocuments">
+                <div class="document-item" *ngFor="let document of documents">
+                  <mat-icon class="document-icon">description</mat-icon>
+                  <div class="document-info">
+                    <span class="document-name">{{ document.nom }}</span>
+                    <span class="document-date">{{ document.dateAjout | date:'dd/MM/yyyy' }}</span>
+                  </div>
+                  <button mat-icon-button (click)="telechargerDocument(document)">
+                    <mat-icon>download</mat-icon>
+                  </button>
+                </div>
+              </div>
+              <ng-template #noDocuments>
+                <p class="no-documents">Aucun document disponible</p>
+              </ng-template>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>
+
+<div class="loading-container" *ngIf="loading">
+  <mat-spinner></mat-spinner>
+  <p>Chargement des détails de l'employé...</p>
+</div>

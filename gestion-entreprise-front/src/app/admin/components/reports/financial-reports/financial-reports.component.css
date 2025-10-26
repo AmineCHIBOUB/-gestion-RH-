@@ -1,0 +1,435 @@
+/* Container principal */
+.financial-reports-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* En-tête */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--mat-divider-color);
+}
+
+.header h2 {
+  margin: 0;
+  color: var(--mat-text-color);
+  font-weight: 500;
+}
+
+.header button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header button mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* Carte de filtres */
+.filter-card {
+  margin-bottom: 20px;
+}
+
+.filter-card mat-card-header {
+  margin-bottom: 15px;
+}
+
+.filter-card mat-card-title {
+  color: var(--mat-text-color);
+  font-weight: 500;
+}
+
+.filter-row {
+  display: flex;
+  gap: 15px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.filter-row mat-form-field {
+  flex: 1;
+  min-width: 150px;
+}
+
+.filter-row button {
+  height: 56px;
+  min-width: 120px;
+}
+
+/* Contenu principal */
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Grille des statistiques */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+/* Cartes de statistiques */
+.stat-card {
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.stat-card mat-card-content {
+  padding: 24px 16px;
+}
+
+.stat-value {
+  font-size: 2.2em;
+  font-weight: 600;
+  color: var(--mat-primary-color);
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 0.9em;
+  color: var(--mat-text-secondary-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+/* Styles spécifiques pour chaque carte de statistique */
+.stat-card:nth-child(1) .stat-value {
+  color: #2196f3; /* Bleu pour budget total */
+}
+
+.stat-card:nth-child(2) .stat-value {
+  color: #ff9800; /* Orange pour dépenses */
+}
+
+.stat-card:nth-child(3) .stat-value {
+  color: #4caf50; /* Vert pour restant */
+}
+
+.stat-card:nth-child(4) .stat-value {
+  color: #9c27b0; /* Violet pour pourcentage */
+}
+
+/* Carte du graphique */
+.chart-card {
+  min-height: 400px;
+}
+
+.chart-card mat-card-header {
+  margin-bottom: 20px;
+}
+
+.chart-card mat-card-title {
+  color: var(--mat-text-color);
+  font-weight: 500;
+}
+
+/* Placeholder du graphique */
+.chart-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  background-color: var(--mat-grey-50, #fafafa);
+  border: 2px dashed var(--mat-divider-color);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.chart-placeholder p {
+  color: var(--mat-text-secondary-color);
+  font-style: italic;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Données du graphique */
+.chart-data {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.chart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background-color: var(--mat-card-background-color);
+  border-radius: 8px;
+  border: 1px solid var(--mat-divider-color);
+  transition: background-color 0.2s ease;
+}
+
+.chart-item:hover {
+  background-color: var(--mat-grey-100, #f5f5f5);
+}
+
+.chart-label {
+  font-weight: 500;
+  color: var(--mat-text-color);
+}
+
+.chart-value {
+  font-weight: 600;
+  color: var(--mat-primary-color);
+}
+
+/* Indicateur de chargement */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.loading-container mat-spinner {
+  margin-bottom: 20px;
+}
+
+.loading-container p {
+  color: var(--mat-text-secondary-color);
+  margin: 0;
+  font-size: 1.1em;
+}
+
+/* États vides */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--mat-text-secondary-color);
+}
+
+.empty-state mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .financial-reports-container {
+    padding: 15px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+  }
+  
+  .filter-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-row mat-form-field {
+    min-width: unset;
+  }
+  
+  .filter-row button {
+    height: 48px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .header button {
+    align-self: flex-end;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+  }
+  
+  .stat-card mat-card-content {
+    padding: 20px 12px;
+  }
+  
+  .stat-value {
+    font-size: 1.8em;
+  }
+  
+  .stat-label {
+    font-size: 0.8em;
+  }
+  
+  .chart-placeholder {
+    min-height: 250px;
+    padding: 15px;
+  }
+  
+  .chart-data {
+    max-width: 100%;
+  }
+  
+  .chart-item {
+    padding: 10px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .financial-reports-container {
+    padding: 10px;
+  }
+  
+  .header h2 {
+    font-size: 1.3em;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  
+  .stat-value {
+    font-size: 1.5em;
+  }
+  
+  .stat-label {
+    font-size: 0.75em;
+  }
+  
+  .chart-placeholder {
+    min-height: 200px;
+    padding: 12px;
+  }
+  
+  .chart-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.financial-reports-container {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stats-grid .stat-card {
+  animation: slideUp 0.4s ease-out;
+}
+
+.stats-grid .stat-card:nth-child(1) { animation-delay: 0.1s; }
+.stats-grid .stat-card:nth-child(2) { animation-delay: 0.2s; }
+.stats-grid .stat-card:nth-child(3) { animation-delay: 0.3s; }
+.stats-grid .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+/* Améliorations d'accessibilité */
+.stat-card:focus {
+  outline: 2px solid var(--mat-primary-color);
+  outline-offset: 2px;
+}
+
+.chart-item:focus {
+  outline: 2px solid var(--mat-primary-color);
+  outline-offset: -2px;
+}
+
+/* Amélioration de la typographie */
+.stat-value {
+  font-family: 'Roboto', 'Helvetica Neue', sans-serif;
+}
+
+/* Styles pour les devises */
+.stat-value,
+.chart-value {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Amélioration des cartes */
+.stat-card,
+.chart-card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Styles pour les filtres */
+.filter-card {
+  border-radius: 12px;
+}
+
+.filter-card mat-card-content {
+  padding-top: 0;
+}
+
+/* Amélioration des boutons */
+.header button,
+.filter-row button {
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+/* Styles pour les icônes */
+mat-icon {
+  user-select: none;
+}
+
+/* Amélioration du contraste */
+.chart-placeholder {
+  color: var(--mat-text-secondary-color);
+}
+
+/* Styles pour les transitions */
+.stat-card,
+.chart-item,
+.filter-row button {
+  transition: all 0.2s ease;
+}

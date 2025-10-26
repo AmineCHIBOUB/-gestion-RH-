@@ -1,0 +1,173 @@
+<div class="bulletins-container">
+  <!-- En-tête avec statistiques -->
+  <mat-card class="stats-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>receipt</mat-icon>
+        Mes Bulletins de Paie
+      </mat-card-title>
+      <mat-card-subtitle>
+        Consultez et téléchargez vos bulletins de paie
+      </mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <!-- Statistiques annuelles -->
+      <div class="stats-grid" *ngIf="!loading && statsAnnuelles.nombreBulletins > 0">
+        <div class="stat-item">
+          <div class="stat-value">{{ statsAnnuelles.totalBrut | currency:'EUR':'symbol':'1.2-2' }}</div>
+          <div class="stat-label">Total Brut</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">{{ statsAnnuelles.totalNet | currency:'EUR':'symbol':'1.2-2' }}</div>
+          <div class="stat-label">Total Net</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">{{ statsAnnuelles.moyenneBrut | currency:'EUR':'symbol':'1.2-2' }}</div>
+          <div class="stat-label">Moyenne Brut</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">{{ statsAnnuelles.moyenneNet | currency:'EUR':'symbol':'1.2-2' }}</div>
+          <div class="stat-label">Moyenne Net</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">{{ statsAnnuelles.nombreBulletins }}</div>
+          <div class="stat-label">Bulletins</div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Filtres -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Année</mat-label>
+          <mat-select [formControl]="anneeControl">
+            <mat-option *ngFor="let annee of annees" [value]="annee">
+              {{ annee }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matSuffix>calendar_today</mat-icon>
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Tableau des bulletins -->
+  <mat-card class="table-card">
+    <mat-card-content>
+      <!-- État de chargement -->
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Chargement des bulletins...</p>
+      </div>
+
+      <!-- État d'erreur -->
+      <div *ngIf="error && !loading" class="error-container">
+        <mat-icon>error_outline</mat-icon>
+        <h3>Erreur de chargement</h3>
+        <p>{{ error }}</p>
+        <button mat-raised-button color="primary" (click)="onRetry()">
+          <mat-icon>refresh</mat-icon>
+          Réessayer
+        </button>
+      </div>
+
+      <!-- Tableau -->
+      <div *ngIf="!loading && !error" class="table-container">
+        <table mat-table [dataSource]="dataSource" matSort class="bulletins-table">
+          <!-- Colonne Période -->
+          <ng-container matColumnDef="periode">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="mois">
+              Période
+            </th>
+            <td mat-cell *matCellDef="let bulletin">
+              <div class="periode-cell">
+                <mat-icon>calendar_month</mat-icon>
+                <span>{{ getPeriodeLabel(bulletin) }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Salaire Brut -->
+          <ng-container matColumnDef="salaireBrut">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="salaireBrut">
+              Salaire Brut
+            </th>
+            <td mat-cell *matCellDef="let bulletin">
+              <span class="amount">{{ bulletin.salaireBrut | currency:'EUR':'symbol':'1.2-2' }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Salaire Net -->
+          <ng-container matColumnDef="salaireNet">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="salaireNet">
+              Salaire Net
+            </th>
+            <td mat-cell *matCellDef="let bulletin">
+              <span class="amount net">{{ bulletin.salaireNet | currency:'EUR':'symbol':'1.2-2' }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Statut -->
+          <ng-container matColumnDef="statut">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="statut">
+              Statut
+            </th>
+            <td mat-cell *matCellDef="let bulletin">
+              <mat-chip [color]="getStatutColor(bulletin.statut)">
+                {{ getStatutLabel(bulletin.statut) }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Colonne Actions -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>
+              Actions
+            </th>
+            <td mat-cell *matCellDef="let bulletin">
+              <div class="actions-cell">
+                <button 
+                  mat-icon-button 
+                  color="primary" 
+                  (click)="voirDetails(bulletin)"
+                  matTooltip="Voir les détails">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                <button 
+                  mat-icon-button 
+                  color="accent" 
+                  (click)="telechargerBulletin(bulletin)"
+                  [disabled]="!bulletin.fichierPdf"
+                  matTooltip="Télécharger le PDF">
+                  <mat-icon>download</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <!-- État vide -->
+        <div *ngIf="dataSource.data.length === 0" class="empty-state">
+          <mat-icon>receipt_long</mat-icon>
+          <h3>Aucun bulletin trouvé</h3>
+          <p>Aucun bulletin de paie n'a été trouvé pour l'année sélectionnée.</p>
+        </div>
+
+        <!-- Pagination -->
+        <mat-paginator 
+          *ngIf="dataSource.data.length > 0"
+          [pageSizeOptions]="[5, 10, 25, 50]"
+          [pageSize]="10"
+          showFirstLastButtons>
+        </mat-paginator>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

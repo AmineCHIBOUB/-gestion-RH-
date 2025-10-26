@@ -1,0 +1,296 @@
+<div class="rapports-paie-container">
+  <!-- Header -->
+  <div class="header">
+    <h2><i class="fas fa-money-check-alt"></i> Rapports de Paie</h2>
+    <p>Analyse et suivi de la masse salariale</p>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="stats-grid">
+    <div class="stat-card total-payroll">
+      <div class="stat-icon">
+        <i class="fas fa-money-check-alt"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.totalPayroll | currency:'EUR':'symbol':'1.0-0' }}</h3>
+        <p>Masse Salariale Totale</p>
+      </div>
+    </div>
+
+    <div class="stat-card employees">
+      <div class="stat-icon">
+        <i class="fas fa-users"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.totalEmployees }}</h3>
+        <p>Employés Payés</p>
+      </div>
+    </div>
+
+    <div class="stat-card average-salary">
+      <div class="stat-icon">
+        <i class="fas fa-calculator"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.averageSalary | currency:'EUR':'symbol':'1.0-0' }}</h3>
+        <p>Salaire Moyen</p>
+      </div>
+    </div>
+
+    <div class="stat-card charges">
+      <div class="stat-icon">
+        <i class="fas fa-percentage"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.totalCharges | currency:'EUR':'symbol':'1.0-0' }}</h3>
+        <p>Total Charges</p>
+      </div>
+    </div>
+
+    <div class="stat-card net-total">
+      <div class="stat-icon">
+        <i class="fas fa-hand-holding-usd"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.totalNet | currency:'EUR':'symbol':'1.0-0' }}</h3>
+        <p>Total Net</p>
+      </div>
+    </div>
+
+    <div class="stat-card gross-total">
+      <div class="stat-icon">
+        <i class="fas fa-coins"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.totalGross | currency:'EUR':'symbol':'1.0-0' }}</h3>
+        <p>Total Brut</p>
+      </div>
+    </div>
+
+    <div class="stat-card charges-rate">
+      <div class="stat-icon">
+        <i class="fas fa-chart-pie"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.chargesRate | number:'1.1-1' }}%</h3>
+        <p>Taux de Charges</p>
+      </div>
+    </div>
+
+    <div class="stat-card payroll-cost">
+      <div class="stat-icon">
+        <i class="fas fa-receipt"></i>
+      </div>
+      <div class="stat-content">
+        <h3>{{ statistics.payrollCost | currency:'EUR':'symbol':'1.0-0' }}</h3>
+        <p>Coût Total Paie</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="filters-grid">
+      <div class="filter-group">
+        <label>Période de début</label>
+        <input type="month" [(ngModel)]="filters.startDate" (change)="applyFilters()">
+      </div>
+
+      <div class="filter-group">
+        <label>Période de fin</label>
+        <input type="month" [(ngModel)]="filters.endDate" (change)="applyFilters()">
+      </div>
+
+      <div class="filter-group">
+        <label>Département</label>
+        <select [(ngModel)]="filters.department" (change)="applyFilters()">
+          <option value="">Tous les départements</option>
+          <option *ngFor="let dept of departments" [value]="dept.name">{{ dept.name }}</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Employé</label>
+        <input type="text" placeholder="Nom de l'employé" [(ngModel)]="filters.employee" (input)="applyFilters()">
+      </div>
+
+      <div class="filter-group">
+        <label>Statut de paie</label>
+        <select [(ngModel)]="filters.payrollType" (change)="applyFilters()">
+          <option value="">Tous les statuts</option>
+          <option value="paid">Payé</option>
+          <option value="pending">En attente</option>
+          <option value="cancelled">Annulé</option>
+        </select>
+      </div>
+
+      <div class="filter-actions">
+        <button class="btn btn-secondary" (click)="resetFilters()">
+          <i class="fas fa-undo"></i> Réinitialiser
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="charts-section">
+    <div class="charts-grid">
+      <!-- Evolution Chart -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3><i class="fas fa-chart-line"></i> Évolution de la Masse Salariale</h3>
+        </div>
+        <div class="chart-container">
+          <canvas #evolutionChart></canvas>
+        </div>
+      </div>
+
+      <!-- Departments Chart -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3><i class="fas fa-chart-pie"></i> Répartition par Département</h3>
+        </div>
+        <div class="chart-container">
+          <canvas #departmentsChart></canvas>
+        </div>
+      </div>
+
+      <!-- Categories Chart -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3><i class="fas fa-chart-bar"></i> Catégories de Paie</h3>
+        </div>
+        <div class="chart-container">
+          <canvas #categoriesChart></canvas>
+        </div>
+      </div>
+
+      <!-- Charges Chart -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3><i class="fas fa-chart-pie"></i> Répartition des Charges</h3>
+        </div>
+        <div class="chart-container">
+          <canvas #chargesChart></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export Actions -->
+  <div class="export-actions">
+    <button class="btn btn-primary" (click)="exportToPDF()">
+      <i class="fas fa-file-pdf"></i> Exporter PDF
+    </button>
+    <button class="btn btn-success" (click)="exportToExcel()">
+      <i class="fas fa-file-excel"></i> Exporter Excel
+    </button>
+    <button class="btn btn-info" (click)="printReport()">
+      <i class="fas fa-print"></i> Imprimer
+    </button>
+  </div>
+
+  <!-- Detailed Table -->
+  <div class="table-section">
+    <div class="table-header">
+      <h3><i class="fas fa-table"></i> Détails des Paies</h3>
+      <div class="table-actions">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" placeholder="Rechercher..." [(ngModel)]="searchTerm" (input)="filterData()">
+        </div>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th (click)="sortData('employee')" class="sortable">
+              Employé
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'employee' && sortDirection === 'asc'"
+                 [class.fa-sort-down]="sortField === 'employee' && sortDirection === 'desc'"></i>
+            </th>
+            <th (click)="sortData('department')" class="sortable">
+              Département
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'department' && sortDirection === 'asc'"
+                 [class.fa-sort-down]="sortField === 'department' && sortDirection === 'desc'"></i>
+            </th>
+            <th (click)="sortData('period')" class="sortable">
+              Période
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'period' && sortDirection === 'asc'"
+                 [class.fa-sort-down]="sortField === 'period' && sortDirection === 'desc'"></i>
+            </th>
+            <th (click)="sortData('grossSalary')" class="sortable">
+              Salaire Brut
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'grossSalary' && sortDirection === 'asc'"
+                 [class.fa-sort-down]="sortField === 'grossSalary' && sortDirection === 'desc'"></i>
+            </th>
+            <th (click)="sortData('charges')" class="sortable">
+              Charges
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'charges' && sortDirection === 'asc'"
+                 [class.fa-sort-down]="sortField === 'charges' && sortDirection === 'desc'"></i>
+            </th>
+            <th (click)="sortData('netSalary')" class="sortable">
+              Salaire Net
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'netSalary' && sortDirection === 'asc'"
+                 [class.fa-sort-down]="sortField === 'netSalary' && sortDirection === 'desc'"></i>
+            </th>
+            <th (click)="sortData('bonuses')" class="sortable">
+              Primes
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'bonuses' && sortDirection === 'asc'"
+                 [class.fa-sort-down]="sortField === 'bonuses' && sortDirection === 'desc'"></i>
+            </th>
+            <th (click)="sortData('status')" class="sortable">
+              Statut
+              <i class="fas fa-sort" [class.fa-sort-up]="sortField === 'status' && sortDirection === 'asc'"
+                 [class.fa-sort-down]="sortField === 'status' && sortDirection === 'desc'"></i>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let payroll of paginatedData" class="table-row">
+            <td>
+              <div class="employee-info">
+                <strong>{{ payroll.employee }}</strong>
+                <small>{{ payroll.position }}</small>
+              </div>
+            </td>
+            <td>{{ payroll.department }}</td>
+            <td>{{ payroll.period }}</td>
+            <td class="amount">{{ payroll.grossSalary | currency:'EUR':'symbol':'1.0-0' }}</td>
+            <td class="amount charges">{{ payroll.charges | currency:'EUR':'symbol':'1.0-0' }}</td>
+            <td class="amount net">{{ payroll.netSalary | currency:'EUR':'symbol':'1.0-0' }}</td>
+            <td class="amount bonus">{{ payroll.bonuses | currency:'EUR':'symbol':'1.0-0' }}</td>
+            <td>
+              <span class="status-badge" [class]="'status-' + payroll.status">
+                {{ getStatusLabel(payroll.status) }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-container" *ngIf="totalPages > 1">
+      <div class="pagination-info">
+        Affichage de {{ (currentPage - 1) * pageSize + 1 }} à {{ Math.min(currentPage * pageSize, filteredData.length) }} sur {{ filteredData.length }} entrées
+      </div>
+      <div class="pagination">
+        <button class="btn btn-sm" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button *ngFor="let page of getPageNumbers()" 
+                class="btn btn-sm" 
+                [class.active]="page === currentPage"
+                (click)="goToPage(page)">
+          {{ page }}
+        </button>
+        <button class="btn btn-sm" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

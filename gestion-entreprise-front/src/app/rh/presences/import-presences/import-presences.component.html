@@ -1,0 +1,249 @@
+<div class="import-presences-container">
+  <!-- En-tête -->
+  <div class="header">
+    <h2>Import de Présences</h2>
+    <div class="header-actions">
+      <button mat-button (click)="downloadTemplate()">
+        <mat-icon>download</mat-icon>
+        Télécharger Template
+      </button>
+      <button mat-button (click)="resetImport()" *ngIf="importResult">
+        <mat-icon>refresh</mat-icon>
+        Nouvel Import
+      </button>
+    </div>
+  </div>
+
+  <!-- Configuration d'import -->
+  <mat-card class="config-card" *ngIf="!importResult">
+    <mat-card-header>
+      <mat-card-title>Configuration d'Import</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="importForm">
+        <div class="config-row">
+          <mat-form-field>
+            <mat-label>Type d'import</mat-label>
+            <mat-select formControlName="type">
+              <mat-option *ngFor="let type of importTypes" [value]="type.value">
+                {{ type.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field *ngIf="importForm.get('type')?.value !== 'pointeuse'">
+            <mat-label>Format</mat-label>
+            <mat-select formControlName="format">
+              <mat-option *ngFor="let format of formatOptions" [value]="format.value">
+                {{ format.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field *ngIf="importForm.get('type')?.value === 'csv'">
+            <mat-label>Séparateur</mat-label>
+            <mat-select formControlName="separator">
+              <mat-option *ngFor="let sep of separators" [value]="sep.value">
+                {{ sep.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="config-row">
+          <mat-form-field>
+            <mat-label>Format de date</mat-label>
+            <input matInput formControlName="dateFormat" placeholder="DD/MM/YYYY">
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Format d'heure</mat-label>
+            <input matInput formControlName="timeFormat" placeholder="HH:mm">
+          </mat-form-field>
+
+          <mat-form-field *ngIf="importForm.get('type')?.value === 'pointeuse'">
+            <mat-label>Période</mat-label>
+            <input matInput formControlName="periode" placeholder="01/01/2024 - 31/01/2024">
+          </mat-form-field>
+        </div>
+
+        <div class="config-options">
+          <mat-checkbox formControlName="hasHeader" *ngIf="importForm.get('type')?.value !== 'pointeuse'">
+            Le fichier contient des en-têtes
+          </mat-checkbox>
+          <mat-checkbox formControlName="validateData">
+            Valider les données avant import
+          </mat-checkbox>
+          <mat-checkbox formControlName="skipErrors">
+            Ignorer les lignes avec erreurs
+          </mat-checkbox>
+        </div>
+
+        <mat-form-field class="full-width">
+          <mat-label>Commentaire (optionnel)</mat-label>
+          <textarea matInput formControlName="commentaire" rows="2"></textarea>
+        </mat-form-field>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Upload de fichier -->
+  <mat-card class="upload-card" *ngIf="!importResult && importForm.get('type')?.value !== 'pointeuse'">
+    <mat-card-header>
+      <mat-card-title>Sélection du Fichier</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="upload-zone" [class.has-file]="selectedFile">
+        <input type="file" #fileInput (change)="onFileSelected($event)" accept=".xlsx,.xls,.csv" hidden>
+        <div class="upload-content" (click)="fileInput.click()">
+          <mat-icon class="upload-icon">cloud_upload</mat-icon>
+          <div class="upload-text" *ngIf="!selectedFile">
+            <p>Cliquez pour sélectionner un fichier</p>
+            <p class="upload-hint">Formats acceptés: Excel (.xlsx, .xls), CSV (.csv)</p>
+          </div>
+          <div class="file-info" *ngIf="selectedFile">
+            <mat-icon>description</mat-icon>
+            <span>{{ selectedFile.name }}</span>
+            <span class="file-size">({{ (selectedFile.size / 1024 / 1024).toFixed(2) }} MB)</span>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Prévisualisation -->
+  <mat-card class="preview-card" *ngIf="showPreview && !importResult">
+    <mat-card-header>
+      <mat-card-title>Prévisualisation et Mapping des Colonnes</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <!-- Mapping des colonnes -->
+      <div class="column-mapping" *ngIf="importForm.get('format')?.value === 'custom'">
+        <h4>Correspondance des colonnes</h4>
+        <div class="mapping-grid">
+          <div *ngFor="let col of getPreviewColumns()" class="mapping-item">
+            <span class="source-column">{{ col }}</span>
+            <mat-icon>arrow_forward</mat-icon>
+            <mat-form-field>
+              <mat-label>Colonne cible</mat-label>
+              <mat-select (selectionChange)="updateColumnMapping(col, $event.value)">
+                <mat-option value="">-- Ignorer --</mat-option>
+                <mat-option *ngFor="let target of availableColumns" [value]="target">
+                  {{ target }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+
+      <!-- Aperçu des données -->
+      <div class="preview-table">
+        <h4>Aperçu des données (5 premières lignes)</h4>
+        <table mat-table [dataSource]="previewData.slice(0, 5)" class="preview-data-table">
+          <ng-container *ngFor="let col of getPreviewColumns()" [matColumnDef]="col">
+            <th mat-header-cell *matHeaderCellDef>{{ col }}</th>
+            <td mat-cell *matCellDef="let row">{{ row[col] }}</td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="getPreviewColumns()"></tr>
+          <tr mat-row *matRowDef="let row; columns: getPreviewColumns();"></tr>
+        </table>
+      </div>
+
+      <div class="preview-actions">
+        <button mat-raised-button color="primary" (click)="importData()" [disabled]="isLoading">
+          <mat-icon>upload</mat-icon>
+          Lancer l'Import
+        </button>
+        <button mat-button (click)="showPreview = false">
+          Modifier la configuration
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Import pointeuse -->
+  <mat-card class="pointeuse-card" *ngIf="!importResult && importForm.get('type')?.value === 'pointeuse'">
+    <mat-card-header>
+      <mat-card-title>Import depuis la Pointeuse</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="pointeuse-info">
+        <mat-icon class="info-icon">info</mat-icon>
+        <p>L'import depuis la pointeuse récupérera automatiquement toutes les données de présence pour la période spécifiée.</p>
+      </div>
+      <button mat-raised-button color="primary" (click)="importFromPointeuse()" [disabled]="isLoading || !importForm.get('periode')?.value">
+        <mat-icon>sync</mat-icon>
+        Importer depuis la Pointeuse
+      </button>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Résultats d'import -->
+  <mat-card class="result-card" *ngIf="importResult">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon [color]="importResult.success ? 'primary' : 'warn'">
+          {{ importResult.success ? 'check_circle' : 'warning' }}
+        </mat-icon>
+        Résultats de l'Import
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="result-stats">
+        <div class="stat-item success">
+          <span class="stat-value">{{ importResult.imported }}</span>
+          <span class="stat-label">Présences importées</span>
+        </div>
+        <div class="stat-item error" *ngIf="importResult.errors && importResult.errors.length > 0">
+          <span class="stat-value">{{ importResult.errors.length }}</span>
+          <span class="stat-label">Erreurs</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">{{ importResult.total }}</span>
+          <span class="stat-label">Total lignes traitées</span>
+        </div>
+      </div>
+
+      <div class="result-message" [class.success]="importResult.success" [class.warning]="!importResult.success">
+        {{ importResult.message }}
+      </div>
+
+      <!-- Erreurs détaillées -->
+      <div class="errors-section" *ngIf="importErrors.length > 0">
+        <div class="errors-header">
+          <h4>Erreurs détaillées</h4>
+          <button mat-button (click)="exportErrors()">
+            <mat-icon>download</mat-icon>
+            Exporter les erreurs
+          </button>
+        </div>
+        <div class="errors-list">
+          <mat-expansion-panel *ngFor="let error of importErrors.slice(0, 10)">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Ligne {{ error.row }} - {{ error.column }}
+              </mat-panel-title>
+              <mat-panel-description>
+                {{ error.message }}
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+            <div class="error-details">
+              <p><strong>Valeur:</strong> {{ error.value }}</p>
+              <p><strong>Erreur:</strong> {{ error.message }}</p>
+            </div>
+          </mat-expansion-panel>
+          <div class="more-errors" *ngIf="importErrors.length > 10">
+            <p>... et {{ importErrors.length - 10 }} autres erreurs</p>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Indicateur de chargement -->
+  <div class="loading-overlay" *ngIf="isLoading">
+    <mat-spinner></mat-spinner>
+    <p>Import en cours...</p>
+  </div>
+</div>

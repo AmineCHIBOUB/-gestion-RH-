@@ -1,0 +1,102 @@
+<div class="role-form-container">
+  <h2 mat-dialog-title>
+    <mat-icon>{{ isEditMode ? 'edit' : 'add' }}</mat-icon>
+    {{ isEditMode ? 'Modifier le rôle' : 'Nouveau rôle' }}
+  </h2>
+
+  <mat-dialog-content>
+    <form [formGroup]="roleForm" class="role-form">
+      <!-- Informations de base -->
+      <mat-card class="basic-info-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>info</mat-icon>
+            Informations générales
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Nom du rôle</mat-label>
+              <input matInput formControlName="name" placeholder="Ex: Administrateur, Manager...">
+              <mat-error *ngIf="roleForm.get('name')?.hasError('required')">
+                Le nom du rôle est requis
+              </mat-error>
+              <mat-error *ngIf="roleForm.get('name')?.hasError('minlength')">
+                Le nom doit contenir au moins 2 caractères
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Description</mat-label>
+              <textarea matInput formControlName="description" 
+                       placeholder="Décrivez les responsabilités de ce rôle..."
+                       rows="3"></textarea>
+              <mat-error *ngIf="roleForm.get('description')?.hasError('required')">
+                La description est requise
+              </mat-error>
+              <mat-error *ngIf="roleForm.get('description')?.hasError('minlength')">
+                La description doit contenir au moins 5 caractères
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Permissions -->
+      <mat-card class="permissions-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>security</mat-icon>
+            Permissions ({{ getSelectedPermissionsCount() }} sélectionnées)
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="permissions-container" formArrayName="permissions">
+            <div *ngFor="let category of permissionCategories | keyvalue; let isLast = last" class="permission-category">
+              <div class="category-header">
+                <mat-checkbox 
+                  [checked]="isCategoryFullySelected(category.key)"
+                  [indeterminate]="isCategoryPartiallySelected(category.key)"
+                  (change)="selectAllInCategory(category.key, $event.checked)"
+                  class="category-checkbox">
+                  <strong>{{ category.key }}</strong>
+                </mat-checkbox>
+              </div>
+              
+              <div class="category-permissions">
+                <div *ngFor="let item of getPermissionsByCategory(category.key)" 
+                     class="permission-item">
+                  <mat-checkbox [formControl]="item.control" class="permission-checkbox">
+                    <div class="permission-details">
+                      <span class="permission-name">{{ item.permission.description }}</span>
+                      <small class="permission-code">{{ item.permission.name }}</small>
+                    </div>
+                  </mat-checkbox>
+                </div>
+              </div>
+              
+              <mat-divider *ngIf="!isLast"></mat-divider>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()" [disabled]="loading">
+      Annuler
+    </button>
+    <button mat-raised-button 
+            color="primary" 
+            (click)="onSubmit()" 
+            [disabled]="!roleForm.valid || loading">
+      <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
+      <mat-icon *ngIf="!loading">{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+      {{ isEditMode ? 'Modifier' : 'Créer' }}
+    </button>
+  </mat-dialog-actions>
+</div>

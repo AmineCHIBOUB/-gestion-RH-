@@ -1,0 +1,257 @@
+/* Container principal du formulaire */
+.role-form-container {
+  padding: 0;
+  min-width: 600px;
+  max-width: 800px;
+  max-height: 90vh;
+}
+
+/* Titre du dialogue */
+h2[mat-dialog-title] {
+  margin: 0 0 20px 0;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #333;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+h2[mat-dialog-title] mat-icon {
+  color: #1976d2;
+}
+
+/* Contenu du dialogue */
+mat-dialog-content {
+  padding: 20px 0;
+  margin: 0;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+/* Formulaire */
+.role-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Cartes */
+.basic-info-card,
+.permissions-card {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-radius: 8px;
+}
+
+.basic-info-card mat-card-header,
+.permissions-card mat-card-header {
+  background-color: #f8f9fa;
+  border-radius: 8px 8px 0 0;
+}
+
+.basic-info-card mat-card-title,
+.permissions-card mat-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #495057;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.basic-info-card mat-card-title mat-icon,
+.permissions-card mat-card-title mat-icon {
+  color: #1976d2;
+}
+
+/* Lignes de formulaire */
+.form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  align-items: flex-start;
+}
+
+.form-row:last-child {
+  margin-bottom: 0;
+}
+
+/* Champs de formulaire */
+.full-width {
+  width: 100%;
+  flex: 1;
+}
+
+/* Styles pour les champs Material */
+mat-form-field {
+  font-size: 14px;
+}
+
+mat-form-field .mat-mdc-form-field-subscript-wrapper {
+  margin-top: 4px;
+}
+
+/* Textarea spécifique */
+textarea.mat-mdc-input-element {
+  resize: vertical;
+  min-height: 60px;
+}
+
+/* Container des permissions */
+.permissions-container {
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+/* Catégories de permissions */
+.permission-category {
+  margin-bottom: 20px;
+}
+
+.category-header {
+  margin-bottom: 12px;
+  padding: 8px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  border-left: 4px solid #1976d2;
+}
+
+.category-checkbox {
+  font-weight: 500;
+}
+
+.category-permissions {
+  margin-left: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+/* Items de permission */
+.permission-item {
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.permission-item:hover {
+  background-color: #f8f9fa;
+}
+
+.permission-checkbox {
+  width: 100%;
+}
+
+.permission-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.permission-name {
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.permission-code {
+  font-size: 0.75rem;
+  color: #6c757d;
+  font-family: 'Courier New', monospace;
+}
+
+/* Actions du dialogue */
+mat-dialog-actions {
+  padding: 20px 0 0 0;
+  margin: 0;
+  border-top: 1px solid #e0e0e0;
+  gap: 12px;
+}
+
+/* Boutons */
+button[mat-button] {
+  min-width: 80px;
+  height: 36px;
+}
+
+button[mat-raised-button] {
+  min-width: 100px;
+  height: 36px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Spinner dans le bouton */
+mat-spinner {
+  margin-right: 8px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .role-form-container {
+    min-width: 90vw;
+    max-width: 90vw;
+  }
+  
+  .category-permissions {
+    grid-template-columns: 1fr;
+    margin-left: 10px;
+  }
+  
+  .permissions-container {
+    max-height: 300px;
+  }
+}
+
+/* Animations */
+.role-form-container {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Améliorations d'accessibilité */
+.permission-item:focus-within {
+  background-color: #e3f2fd;
+  outline: 2px solid #1976d2;
+  outline-offset: 2px;
+}
+
+.category-header:focus-within {
+  background-color: #e3f2fd;
+}
+
+/* Scrollbar personnalisée */
+.permissions-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.permissions-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.permissions-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.permissions-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}

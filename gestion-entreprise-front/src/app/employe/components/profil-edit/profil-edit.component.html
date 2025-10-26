@@ -1,0 +1,125 @@
+<div class="profil-edit-container">
+  <div class="header">
+    <h1>Modifier mon Profil</h1>
+    <div class="actions">
+      <button 
+        mat-button 
+        (click)="onCancel()"
+        [disabled]="saving"
+        class="cancel-button">
+        Annuler
+      </button>
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="onSubmit()"
+        [disabled]="saving || profilForm.invalid"
+        class="save-button">
+        <mat-icon *ngIf="saving">hourglass_empty</mat-icon>
+        <mat-icon *ngIf="!saving">save</mat-icon>
+        {{ saving ? 'Sauvegarde...' : 'Sauvegarder' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Chargement du profil...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <mat-icon color="warn">error</mat-icon>
+    <p>{{ error }}</p>
+    <button mat-button color="primary" (click)="loadProfile()">
+      <mat-icon>refresh</mat-icon>
+      Réessayer
+    </button>
+  </div>
+
+  <!-- Formulaire de modification -->
+  <form [formGroup]="profilForm" *ngIf="!loading && !error" (ngSubmit)="onSubmit()">
+    
+    <!-- Informations Personnelles Modifiables -->
+    <div class="form-section">
+      <h3>Informations Personnelles</h3>
+      <div class="form-grid">
+        <mat-form-field>
+          <mat-label>Nom</mat-label>
+          <input matInput formControlName="nom" placeholder="Votre nom">
+          <mat-error *ngIf="profilForm.get('nom')?.hasError('required')">
+            Le nom est requis
+          </mat-error>
+        </mat-form-field>
+        
+        <mat-form-field>
+          <mat-label>Prénom</mat-label>
+          <input matInput formControlName="prenom" placeholder="Votre prénom">
+          <mat-error *ngIf="profilForm.get('prenom')?.hasError('required')">
+            Le prénom est requis
+          </mat-error>
+        </mat-form-field>
+        
+        <mat-form-field>
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" type="email" placeholder="votre.email@exemple.com">
+          <mat-error *ngIf="profilForm.get('email')?.hasError('required')">
+            L'email est requis
+          </mat-error>
+          <mat-error *ngIf="profilForm.get('email')?.hasError('email')">
+            Format d'email invalide
+          </mat-error>
+        </mat-form-field>
+        
+        <mat-form-field>
+          <mat-label>Téléphone</mat-label>
+          <input matInput formControlName="telephone" placeholder="Votre numéro de téléphone">
+          <mat-error *ngIf="profilForm.get('telephone')?.hasError('pattern')">
+            Format de téléphone invalide
+          </mat-error>
+        </mat-form-field>
+        
+        <mat-form-field>
+          <mat-label>Date de naissance</mat-label>
+          <input matInput formControlName="date_naissance" type="date">
+        </mat-form-field>
+        
+        <mat-form-field class="full-width">
+          <mat-label>Adresse</mat-label>
+          <textarea matInput formControlName="adresse" placeholder="Votre adresse complète" rows="3"></textarea>
+        </mat-form-field>
+      </div>
+    </div>
+    
+    <!-- Informations Professionnelles (lecture seule) -->
+    <div class="info-section">
+      <h3>Informations Professionnelles</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <label>Poste :</label>
+          <span>{{ profil?.poste || 'Non renseigné' }}</span>
+        </div>
+        <div class="info-item">
+          <label>Département :</label>
+          <span>{{ profil?.departement || 'Non renseigné' }}</span>
+        </div>
+        <div class="info-item">
+          <label>Date d'embauche :</label>
+          <span>{{ profil?.date_embauche || 'Non renseignée' }}</span>
+        </div>
+        <div class="info-item">
+          <label>Salaire :</label>
+          <span>{{ profil?.salaire ? (profil?.salaire + ' €') : 'Non renseigné' }}</span>
+        </div>
+        <div class="info-item">
+          <label>Statut :</label>
+          <mat-chip [class]="'status-' + (profil?.statut || 'inactif')">
+            {{ profil?.statut || 'Inactif' }}
+          </mat-chip>
+        </div>
+      </div>
+    </div>
+    
+  </form>
+</div>

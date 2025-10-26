@@ -1,0 +1,90 @@
+<div class="post-management-container">
+  <div class="header">
+    <h2>Gestion des Postes</h2>
+    <button mat-raised-button color="primary" (click)="openPostForm()">
+      <mat-icon>add</mat-icon>
+      Nouveau Poste
+    </button>
+  </div>
+
+  <div class="filters">
+    <mat-form-field appearance="outline">
+      <mat-label>Filtrer par département</mat-label>
+      <mat-select [(value)]="selectedDepartment" (selectionChange)="filterByDepartment()">
+        <mat-option value="">Tous les départements</mat-option>
+        <mat-option *ngFor="let dept of departments" [value]="dept.id">
+          {{dept.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="table-container" *ngIf="!loading">
+    <table mat-table [dataSource]="posts" class="posts-table">
+      <ng-container matColumnDef="titre">
+        <th mat-header-cell *matHeaderCellDef>Titre du Poste</th>
+        <td mat-cell *matCellDef="let post">
+          <strong>{{post.titre}}</strong>
+          <br>
+          <small class="description">{{post.description}}</small>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="department">
+        <th mat-header-cell *matHeaderCellDef>Département</th>
+        <td mat-cell *matCellDef="let post">
+          <mat-chip color="accent" selected>{{getDepartmentName(post)}}</mat-chip>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="salaire_range">
+        <th mat-header-cell *matHeaderCellDef>Salaire</th>
+        <td mat-cell *matCellDef="let post">
+          {{getSalaryRange(post)}}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="niveau">
+        <th mat-header-cell *matHeaderCellDef>Niveau</th>
+        <td mat-cell *matCellDef="let post">
+          <mat-chip color="primary" selected>{{post.niveau}}</mat-chip>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="statut">
+        <th mat-header-cell *matHeaderCellDef>Statut</th>
+        <td mat-cell *matCellDef="let post">
+          <mat-slide-toggle 
+            [checked]="post.statut === 'actif'"
+            (change)="togglePostStatus(post)"
+            color="primary">
+          </mat-slide-toggle>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let post">
+          <button mat-icon-button matTooltip="Modifier" (click)="openPostForm(post)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="deletePost(post)" matTooltip="Supprimer">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner></mat-spinner>
+    <p>Chargement des postes...</p>
+  </div>
+
+  <div *ngIf="!loading && posts.length === 0" class="no-data">
+    <p>Aucun poste trouvé</p>
+  </div>
+</div>
