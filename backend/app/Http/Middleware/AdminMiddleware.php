@@ -15,7 +15,7 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!$request->user() ) {
+        if (!$request->user() || $request->user()->role !== 'admin') {
             return response()->json([
                 'message' => 'Accès refusé. Seuls les administrateurs peuvent accéder à cette ressource.'
             ], 403);

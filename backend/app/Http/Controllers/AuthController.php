@@ -91,14 +91,14 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|in:admin,rh,employe'
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role,
+            // L'inscription publique crée toujours un employé, les autres rôles sont attribués par un admin
+            'role' => 'employe',
         ]);
 
         try {

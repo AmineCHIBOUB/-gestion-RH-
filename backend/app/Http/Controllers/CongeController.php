@@ -92,7 +92,11 @@ class CongeController extends Controller
     {
         try {
             $conge = Conge::findOrFail($id);
-            
+
+            if (!$this->peutModifier($conge)) {
+                return response()->json(['message' => 'Accès refusé.'], 403);
+            }
+
             $validatedData = $request->validatedWithCalculations();
             
             $conge->update($validatedData);
@@ -122,11 +126,30 @@ class CongeController extends Controller
     public function destroy(string $id)
     {
         $conge = Conge::findOrFail($id);
+
+        if (!$this->peutModifier($conge)) {
+            return response()->json(['message' => 'Accès refusé.'], 403);
+        }
+
         $conge->delete();
 
         return response()->json([
             'message' => 'Congé supprimé avec succès'
         ]);
+    }
+
+    /**
+     * Admin et RH peuvent tout modifier, un employé seulement ses propres congés
+     */
+    private function peutModifier(Conge $conge): bool
+    {
+        $user = Auth::user();
+
+        if (in_array($user->role, ['admin', 'rh'])) {
+            return true;
+        }
+
+        return $user->employe && $conge->employe_id === $user->employe->id;
     }
 
     /**

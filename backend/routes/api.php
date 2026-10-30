@@ -31,22 +31,6 @@ Route::get('/test', function () {
     ]);
 });
 
-// Routes d'authentification (publiques) - utiliser le middleware web pour les sessions
-Route::prefix('auth')->middleware('web')->group(function () {
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/register', [AuthController::class, 'register']);
-    
-    // Routes protégées par authentification
-    Route::middleware('auth:sanctum')->group(function () {
-        Route::post('/logout', [AuthController::class, 'logout']);
-        Route::get('/user', [AuthController::class, 'user']);
-        Route::put('/change-password', [AuthController::class, 'changePassword']);
-        Route::get('/permissions', [AuthController::class, 'permissions']);
-        Route::get('/is-manager', [AuthController::class, 'isManager']);
-        Route::get('/has-role/{role}', [AuthController::class, 'hasRole']);
-    });
-});
-
 // Profile routes with proper authentication middleware
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('profile', [EmployeController::class, 'myProfile']); // Mon profil
@@ -212,16 +196,47 @@ use App\Http\Controllers\LogController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\SettingsController;
 
-// Ajoutez ces routes dans la section admin middleware
-// Change this line:
-// Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
+// Routes /admin accessibles à tout utilisateur connecté (espace employé)
+Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
+    Route::post('pointages', [PointageController::class, 'store']);
+    Route::post('conges', [CongeController::class, 'store']);
+    Route::get('conges/my-conges', [CongeController::class, 'myConges']);
+    Route::get('conges/my-balance', [CongeController::class, 'myBalance']);
+    // Le contrôleur vérifie que l'employé modifie bien son propre congé
+    Route::put('conges/{conge}', [CongeController::class, 'update']);
+    Route::delete('conges/{conge}', [CongeController::class, 'destroy']);
+});
 
-// To this (option 1 - if you have a middleware that accepts multiple roles):
-Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
+// Routes /admin réservées aux administrateurs et aux RH
+Route::middleware(['auth:sanctum', 'rh'])->prefix('admin')->group(function () {
+    Route::get('employes', [EmployeController::class, 'index']);
+    Route::post('employes', [EmployeController::class, 'store']);
+    Route::put('employes/{employe}', [EmployeController::class, 'update']);
+    Route::delete('employes/{employe}', [EmployeController::class, 'destroy']);
+    Route::get('pointages', [PointageController::class, 'index']);
+
+    // Routes fixes avant conges/{conge}, sinon elles sont interceptées
+    Route::get('conges', [CongeController::class, 'index']);
+    Route::get('conges/pending', [CongeController::class, 'pending']);
+    Route::get('conges/approved', [CongeController::class, 'approved']);
+    Route::get('conges/rejected', [CongeController::class, 'rejected']);
+    Route::get('conges/statistics', [CongeController::class, 'statistics']);
+    Route::get('conges/calendar', [CongeController::class, 'calendar']);
+    Route::get('conges/employee/{employeId}', [CongeController::class, 'getByEmployee']);
+    Route::put('conges/{id}/approve', [CongeController::class, 'approve']);
+    Route::put('conges/{id}/reject', [CongeController::class, 'reject']);
+    Route::get('conges/{conge}', [CongeController::class, 'show']);
+
+    Route::apiResource('departments', DepartmentController::class);
+    Route::apiResource('posts', PostController::class);
+});
+
+// Routes /admin réservées aux administrateurs
+Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
     // Dashboard et statistiques
     Route::get('/dashboard/stats', [AdminController::class, 'dashboardStats']);
     Route::get('/system/health', [AdminController::class, 'systemHealth']);
-    
+
     // Gestion des utilisateurs
     Route::get('/users', [AdminController::class, 'getUsers']);
     Route::post('/users', [AdminController::class, 'createUser']);
@@ -229,44 +244,10 @@ Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
     Route::delete('/users/{user}', [AdminController::class, 'deleteUser']);
     Route::patch('/users/{user}/toggle-status', [AdminController::class, 'toggleUserStatus']);
     Route::patch('/users/{user}/reset-password', [AdminController::class, 'resetUserPassword']);
-    
-    Route::get('employes', [EmployeController::class, 'index']);
-    Route::post('employes', [EmployeController::class, 'store']);
-    Route::put('employes/{employe}', [EmployeController::class, 'update']);
-    Route::delete('employes/{employe}', [EmployeController::class, 'destroy']);
-    Route::get('pointages', [PointageController::class, 'index']);
-        Route::post('pointages', [PointageController::class, 'store']);
-        Route::post('conges', [CongeController::class, 'store']);
-        Route::put('conges/{conge}', [CongeController::class, 'update']);
-        Route::delete('conges/{conge}', [CongeController::class, 'destroy']);
-        Route::get('conges/employee/{employeId}', [CongeController::class, 'getByEmployee']);
-        Route::get('conges/my-conges', [CongeController::class, 'myConges']); // Mes congés
-        Route::get('conges/my-balance', [CongeController::class, 'myBalance']); // Solde de congés
-
-        Route::get('conges', [CongeController::class, 'index']);
-        Route::get('conges/pending', [CongeController::class, 'pending']);
-        Route::get('conges/approved', [CongeController::class, 'approved']);
-        Route::get('conges/rejected', [CongeController::class, 'rejected']);
-        Route::get('conges/statistics', [CongeController::class, 'statistics']);
-        Route::put('conges/{id}/approve', [CongeController::class, 'approve']);
-        Route::put('conges/{id}/reject', [CongeController::class, 'reject']);
-        Route::get('conges/{conge}', [CongeController::class, 'show']);
-        Route::get('conges/calendar', [CongeController::class, 'calendar']); // Vue calendrier
-
 
     // Routes pour les rôles
     Route::apiResource('roles', RoleController::class);
     Route::get('permissions', [RoleController::class, 'getPermissions']);
-    
-    // Routes pour les départements
-    Route::apiResource('departments', DepartmentController::class);
-    
-    // routes
-
-    // Posts routes
-        Route::apiResource('posts', PostController::class);
-
-
 
     // Routes pour les rapports
     Route::prefix('reports')->group(function () {
@@ -293,21 +274,19 @@ Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
         Route::put('payroll', [SettingsController::class, 'updatePayroll']);
     });
 });
-Route::middleware('auth:sanctum')->group(function () {
-        Route::get('/bulletins/{id}/download', [App\Http\Controllers\BulletinPaieController::class, 'downloadBulletin']);
-});
-// Routes pour les bulletins de paie employé
-// Remove the separate middleware group (lines 300-302)
-// And move the download route into the main bulletins group:
-
-Route::middleware('auth:sanctum')->group(function () {
-    // Static routes first
+// Bulletins de paie de tous les employés : administrateurs et RH uniquement
+Route::middleware(['auth:sanctum', 'rh'])->group(function () {
     Route::get('/bulletins/all', [App\Http\Controllers\BulletinPaieController::class, 'getAllBulletins']);
     Route::post('/bulletins/generate-all', [App\Http\Controllers\BulletinPaieController::class, 'generateBulletinsForAllEmployees']);
+    Route::get('/bulletins/download-all/{mois}/{annee}', [App\Http\Controllers\BulletinPaieController::class, 'downloadAllBulletins']);
+});
+
+// Bulletins de paie employé
+Route::middleware('auth:sanctum')->group(function () {
+    // Static routes first
     Route::get('/bulletins/my-bulletins', [App\Http\Controllers\BulletinPaieController::class, 'getMesBulletins']);
     Route::get('/bulletins/years', [App\Http\Controllers\BulletinPaieController::class, 'getAvailableYears']);
-    Route::get('/bulletins/download-all/{mois}/{annee}', [App\Http\Controllers\BulletinPaieController::class, 'downloadAllBulletins']);
-    
+
     // Specific dynamic routes before general ones
     Route::get('/bulletins/{id}/download', [App\Http\Controllers\BulletinPaieController::class, 'downloadBulletin']);
     
@@ -329,7 +308,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // Routes pour les présences RH (Admin/RH uniquement)
-Route::middleware(['auth:sanctum', 'role:Admin,RH'])->prefix('rh')->group(function () {
+Route::middleware(['auth:sanctum', 'rh'])->prefix('rh')->group(function () {
     // Présences
     Route::get('/presences', [App\Http\Controllers\PresenceController::class, 'index']);
     Route::get('/presences/statistiques', [App\Http\Controllers\PresenceController::class, 'getStatistiques']);
@@ -343,7 +322,7 @@ Route::middleware(['auth:sanctum', 'role:Admin,RH'])->prefix('rh')->group(functi
     Route::post('/rapports/export', [App\Http\Controllers\ReportController::class, 'exportRapport']);
 });
 
-// Routes d'authentification (publiques) - supprimer le middleware web
+// Routes d'authentification (publiques)
 Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'register']);
